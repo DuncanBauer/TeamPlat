@@ -18,15 +18,16 @@ Game.prototype = {
 		var bg_music = this.game.add.audio('bg_music');
 		bg_music.loopFull();
 		this.game.sound.play(bg_music);
-		
 		// BACKGROUND FIRST BECAUSE LAYERS AND SHIT
 		// Set Game background and adjust size
 		this.bkgd = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'background00');
 		this.bkgd.height = 600;
 		this.bkgd.width = 1000;	
-
 		
-/*
+		this.player = new Player(this.game, 'character_atlas', 'WalkLeft_MouthOpen_Purple3', this.game.width/2, this.game.height/2);
+		this.game.add.existing(this.player);
+		
+		/*
 		// THEN THE CollectibleManager
 		this.CollectibleManager = new CollectibleManager(this.game);
 		// THEN THE OBSTACLE MANAGE
@@ -48,7 +49,7 @@ Game.prototype = {
 		var button = this.game.add.button(this.game.world.centerX + 350, 0, 'power_Button', this.endGame, this);
 		button.scale.setTo(.5,.5);
 		this.buttons.create(button);
-*/
+
 
 		
 		// Create character, enable physics, and add animations
@@ -70,14 +71,11 @@ Game.prototype = {
 		// Set Character variables
 		this.character.jumper = 0;
 		this.game.input.keyboard.addKey(Phaser.Keyboard.UP).onDown.add(this.jump, this);
+*/
+
 	},
 	
 	update:function() {		
-		this.frameCount+=1;
-		// Scrolls background
-		this.bkgd.tilePosition.x -= this.speed;
-		
-		
 /*
 		// Scrolls obstacles/collectibles across screen
 		this.ObstacleManager.updateObstacles(this.speed);
@@ -141,13 +139,11 @@ Game.prototype = {
 			this.frameCount = 0;
 		}
 
-		
 		// Check Collectibles
 		this.game.physics.arcade.overlap(this.character, this.CollectibleManager.collectibles.children, this.collect, null, this);
 		
 		// Check mobs
 		this.game.physics.arcade.overlap(this.character, this.ObstacleManager.mobs.children, this.hit, null, this);
-*/
 
 		
 		// Sets keyboard listener, listens for arrow keys
@@ -166,9 +162,7 @@ Game.prototype = {
 			//  Move to the right
 			this.character.body.velocity.x = 300;
 		}
-
-
-/*		
+		
 		score += 0.05;
 		this.newVals[0] = (Math.floor(score));
 		this.newVals[1] = (Math.floor(this.game.time.fps));
@@ -179,8 +173,6 @@ Game.prototype = {
 		for(i=0; i < this.newVals.length; i+=1) {
 			this.newVals.pop();
 		}
-*/
-
 	},
 	
 	jump: function() {
@@ -193,8 +185,6 @@ Game.prototype = {
 		}
 	},
 	
-	
-/*
 	collect: function(player, collectible) {
 		if(collectible.typeName == 'coin') {
 			score += 20;
@@ -211,7 +201,7 @@ Game.prototype = {
 		this.game.state.start('EndGame');
 	},
 */
-
+	},
 	
 	// End the this.game and return to the main menu
 	endGame: function(end) {
