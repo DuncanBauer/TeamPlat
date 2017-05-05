@@ -25,7 +25,8 @@ Game.prototype = {
 		this.bkgd.width = 1000;	
 		
 		this.world = new World(this.game);
-
+		this.world.loadFloor();
+		
 		this.player = new Player(this.game, 'character_atlas', 'WalkLeft_MouthOpen_Purple3', this.game.width/2, this.game.height/2);
 		this.game.add.existing(this.player);
 		
@@ -78,6 +79,9 @@ Game.prototype = {
 	},
 	
 	update:function() {		
+		if(this.game.physics.arcade.collide(this.player, this.world.floor.children)) {
+			this.player.floor();
+		}
 /*
 		// Scrolls obstacles/collectibles across screen
 		this.ObstacleManager.updateObstacles(this.speed);
