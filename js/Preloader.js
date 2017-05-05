@@ -16,7 +16,7 @@ Preloader.prototype = {
 		// Load this.game assets
 		this.game.load.atlas('character_atlas', '/img/characters.png', '/img/characters.json');
 		this.game.load.atlas('tile_atlas', '/img/tiles.png', '/img/tiles.json');
-		this.game.load.atlas('coin_atlas', '/img/coin.png', '/img/coin.json');
+		this.game.load.atlas('coin_atlas', '/img/Coin.png', '/img/coin.json');
 		this.game.load.atlas('star_atlas', '/img/star.png', '/img/star.json');
 		this.game.load.image('spike0', '/img/spike0.png');
 		
