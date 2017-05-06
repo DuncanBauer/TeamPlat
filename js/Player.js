@@ -43,13 +43,7 @@ function Player(game, atlas_key, atlas_frame, x, y) {
 }
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
-Player.prototype.update = function() {	
-
-	// If the player makes contact with an obstacle, dashing will stop
-	//if(this.body.touchingRight || this.body.touchingLeft || this.body.touchingUp || this.body.touchingDown) {
-	//	this.dashCancel();
-	//}
-	
+Player.prototype.update = function() {		
 	/*
 	 * START HORIZONTAL DASHING
 	 */
@@ -112,7 +106,15 @@ Player.prototype.update = function() {
 	/*
 	 * END HORIZONTAL DASHING
 	 */
-	
+
+/*	 
+ *	A PROPER WORLD MUST BE SET UP FIRST
+ *
+ *	// Ends dash is player hits a world bound
+ *	if((this.dashingRight || this.dashingLeft || this.dashingUp || this.dashingDown) &&
+ *		)
+ */
+ 
 	// Ends dash
 	if(this.justDashed) {
 		this.body.velocity.x = 0;
@@ -156,55 +158,64 @@ Player.prototype.stopMovement = function() {
 	}
 }
 
+
+/*
+ * IS CALLED WHEN THE DASH BUTTON, D, IS PRESSED - DASHES PLAYER 
+ */
 Player.prototype.dash = function() {
 	var cursors = this.game.input.keyboard.createCursorKeys();	
 	
-	if(cursors.right.isDown || 
-	   cursors.left.isDown  || 
-	   cursors.up.isDown    || 
-	   cursors.down.isDown) {
+	// Disallows dashing mid-dash
+	if(!(this.dashingRight || this.dashingLeft || this.dashingUp || this.dashingDown)) {
+		// Executes dash if a direction is given
+		// Needs to be tuned depending on dashing mechanics
+		if(cursors.right.isDown || 
+		   cursors.left.isDown  || 
+		   cursors.up.isDown    || 
+		   cursors.down.isDown) {
 
-		this.oldPosX = this.position.x;
-		this.oldPosY = this.position.y;
-		
-		if(cursors.right.isDown) {
-			this.dashDistanceX = -1 * this.dashDistConst;
-			this.dashingRight = true;
-		}
-		else if(cursors.left.isDown) {
-			this.dashDistanceX = this.dashDistConst;
-			this.dashingLeft = true;
-		}
-	    else {
-			this.dashDistanceX = 0;
-		}
-		
-		if(cursors.up.isDown) {
-			this.dashDistanceY = -1 * this.dashDistConst;
-			this.dashingUp = true;
-		}
-		else if(cursors.down.isDown) {
-			this.dashDistanceY = this.dashDistConst;
-			this.dashingDown = true;
-		}
-		else {
-			this.dashDistanceY = 0;
+		    // Logs players pre-dash position
+			this.oldPosX = this.position.x;
+			this.oldPosY = this.position.y;
+			
+			/*
+			 * THIS NEEDS TO BE TUNED IN THE CASE OF DIAGONAL DASHING AS IT IS A GREATER DASH DISTANCE 
+			 */ 
+			
+			// Sets the horizontal dash distance and direction 
+			if(cursors.right.isDown) {
+				this.dashDistanceX = -1 * this.dashDistConst;
+				this.dashingRight = true;
+			}
+			else if(cursors.left.isDown) {
+				this.dashDistanceX = this.dashDistConst;
+				this.dashingLeft = true;
+			}
+			else {
+				this.dashDistanceX = 0;
+			}
+			
+			// Sets the vertical dash distance and direction 
+			if(cursors.up.isDown) {
+				this.dashDistanceY = -1 * this.dashDistConst;
+				this.dashingUp = true;
+			}
+			else if(cursors.down.isDown) {
+				this.dashDistanceY = this.dashDistConst;
+				this.dashingDown = true;
+			}
+			else {
+				this.dashDistanceY = 0;
+			}
 		}
 	}
 }
 
 /*
- * CHECKS IF PLAYER IS DASHING OR NOT
- */
-Player.prototype.isDashing = function() {
-	return (this.dashingRight || this.dashingLeft || this.dashingUp || this.dashingDown);
-}
-
-/*
- * IS CALLED WHEN THE SPACEBAR IS PRESSED - JUMPS CHARACTER IF NOT JUMPING
+ * IS CALLED WHEN THE SPACEBAR IS PRESSED - JUMPS PLAYER
  */
 Player.prototype.jump = function() {
-	// Executes if the character is not jumping
+	// Executes if the player is not jumping
 	if(!this.jumping) {
 		this.jumping = true;
 		// Play jump sound

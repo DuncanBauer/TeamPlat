@@ -1,9 +1,4 @@
-var Game = function(game, score) {	
-	this.newVals = [];
-	// Initialize speed and score and platform spawn delay timer
-	this.speed = 5;
-	this.platTimer = 0;
-	this.frameCount = 0;
+var Game = function(game, score) {
 };
 Game.prototype = {	
 	create: function() {
@@ -18,6 +13,7 @@ Game.prototype = {
 		var bg_music = this.game.add.audio('bg_music');
 		bg_music.loopFull();
 		this.game.sound.play(bg_music);
+		
 		// BACKGROUND FIRST BECAUSE LAYERS AND SHIT
 		// Set Game background and adjust size
 		this.bkgd = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'background00');
