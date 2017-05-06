@@ -35,10 +35,6 @@ Game.prototype = {
 		if(this.game.physics.arcade.collide(this.player, this.world.floor.children)) {
 			this.player.touchDown();
 		}
-		
-		if(this.player.body.touchingRight || this.player.body.touchingLeft) {
-			this.player.dashCancel();
-		}
 	},
 	
 	// End the this.game and return to the main menu
