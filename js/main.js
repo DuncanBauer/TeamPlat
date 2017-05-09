@@ -30,6 +30,16 @@ Game.prototype = {
 	update:function() {		
 		if(this.game.physics.arcade.collide(this.player, this.world.floor.children)) {
 			this.player.touchDown();
+			// cancel dash when hitting floor
+			if(this.player.dashingDown){
+				this.player.dashCancel();
+			}
+		}
+		// cancel dash when hitting world edges
+		if((this.player.dashingUp && this.player.body.blocked.up)||
+		(this.player.dashingLeft && this.player.body.blocked.left)||
+		(this.player.dashingRight && this.player.body.blocked.right)){
+			this.player.dashCancel();
 		}
 	},
 	

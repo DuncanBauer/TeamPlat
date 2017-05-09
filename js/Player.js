@@ -78,13 +78,10 @@ Player.prototype.update = function() {
 		 */
 		 
 	 // Debugging 
-	console.log(this.oldPosY);
-	console.log(this.position.y);
-	console.log(this.oldPosY - this.position.y);
-	console.log(this.dashDistanceY);
+	
 	
 	// Dashes player down until the dashDistance is covered
-	if(this.dashingDown && this.oldPosY - this.position.y < this.dashDistanceY) {
+	if(this.dashingDown && this.oldPosY - this.position.y > this.dashDistanceY) {
 		this.body.velocity.y = 1000;
 	}
 	// End the dash after the distance has been covered
@@ -94,7 +91,7 @@ Player.prototype.update = function() {
 	}
 	
 	// Dashes player up until the dashDistance is covered
-	if(this.dashingUp && this.oldPosY - this.position.y > this.dashDistanceY) {
+	if(this.dashingUp && this.oldPosY - this.position.y < this.dashDistanceY) {
 		this.body.velocity.y = -1000;
 	}
 	// End the dash after the distance has been covered
@@ -104,7 +101,7 @@ Player.prototype.update = function() {
 	}
 	
 	/*
-	 * END HORIZONTAL DASHING
+	 * END VERTICAL DASHING
 	 */
 
 /*	 
@@ -197,11 +194,11 @@ Player.prototype.dash = function() {
 			
 			// Sets the vertical dash distance and direction 
 			if(cursors.up.isDown) {
-				this.dashDistanceY = -1 * this.dashDistConst;
+				this.dashDistanceY = this.dashDistConst;
 				this.dashingUp = true;
 			}
 			else if(cursors.down.isDown) {
-				this.dashDistanceY = this.dashDistConst;
+				this.dashDistanceY = -1 * this.dashDistConst;
 				this.dashingDown = true;
 			}
 			else {

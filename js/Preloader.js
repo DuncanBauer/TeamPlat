@@ -5,7 +5,7 @@ Preloader.prototype = {
 		console.log('Preloader: preload');
 		
 		// Set assest path
-		this.game.load.path = '/assets';
+		this.game.load.path = 'assets';
 		
 		// Load Images
 		// Load MainMenu assets
