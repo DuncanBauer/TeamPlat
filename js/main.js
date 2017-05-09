@@ -20,11 +20,19 @@ Game.prototype = {
 		this.bkgd.height = 600;
 		this.bkgd.width = 1000;	
 		
+		//this.stage = new Stage(this.game);
+
+		this.game.world.setBounds(0,0,2400,1800);
+
 		this.world = new World(this.game);
 		this.world.loadFloor();
 		
 		this.player = new Player(this.game, 'character_atlas', 'WalkLeft_MouthOpen_Purple3', this.game.width/2, this.game.height/2);
 		this.game.add.existing(this.player);
+
+		//this.camera = new Phaser.Camera(this.game, 0, 0, 0, 1000, 600);
+		this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);		
+		this.game.camera.deadzone = new Phaser.Rectangle(100, 100, 400, 400);
 	},
 	
 	update:function() {		
@@ -45,5 +53,9 @@ Game.prototype = {
 		
 		// Return to MainMenu state
 		this.game.state.start('MainMenu');
+	},
+
+	render: function() {
+		this.game.debug.cameraInfo(this.game.camera, 32, 32);
 	}
 }
