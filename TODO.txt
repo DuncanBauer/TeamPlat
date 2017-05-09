@@ -1,0 +1,6 @@
+- Make player able to continue movement after dashing without having to repress a directional key
+	| Movement may have to be added back into the update function while handling sprite logic in the keydown events
+- Add cooldown to dashing (Complete)
+- (Already implemented but up for more discussion) Disable gravity during dash, and potentially for a short amount of time after the dash
+- Set up camera
+- Bug where while falling, player can slow their descent by repeatedly clicking the left or right directional keys

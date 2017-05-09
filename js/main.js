@@ -35,12 +35,6 @@ Game.prototype = {
 				this.player.dashCancel();
 			}
 		}
-		// cancel dash when hitting world edges
-		if((this.player.dashingUp && this.player.body.blocked.up)||
-		(this.player.dashingLeft && this.player.body.blocked.left)||
-		(this.player.dashingRight && this.player.body.blocked.right)){
-			this.player.dashCancel();
-		}
 	},
 	
 	// End the this.game and return to the main menu
