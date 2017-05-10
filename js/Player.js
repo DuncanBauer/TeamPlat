@@ -20,6 +20,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
 	
 	// Character attributes
 	this.jumping = false;
+	this.doubleJumpd = false;
 	this.facingForward = true;
 	this.attackDistance = 75;	
 
@@ -80,8 +81,8 @@ Player.prototype.update = function() {
 Player.prototype.moveRight = function() {
 	// Lets player move right when they're grounded
 	// Must be editted for movement in air
-	if(this.body.touching.down) {		
-		//  Move to the right
+	//if(this.body.touching.down) {		
+	//  Move to the right
 		if(this.body.velocity.x < -100){
 			// tiny pull back when quick turning
 			this.body.velocity.x = -50;
@@ -89,13 +90,13 @@ Player.prototype.moveRight = function() {
 		this.facingForward = true;
 		this.scale.x = -1/2;
 		this.body.acceleration.x = 600;
-	}
+	//}
 }
 
 Player.prototype.moveLeft = function() {
 	// Lets player move left when they're grounded
 	// Must be editted for movement in air
-	if(this.body.touching.down) {		
+	//if(this.body.touching.down) {		
 		//  Move to the left
 		if(this.body.velocity.x > 100){
 			// tiny pull back when quick turning
@@ -104,90 +105,89 @@ Player.prototype.moveLeft = function() {
 		this.facingForward = false;
 		this.scale.x = 1/2;
 		this.body.acceleration.x = -600;
-	}
+	//}
 }
 
 /*
  * IS CALLED WHEN THE LEFT AND RIGHT ARROW KEYS ARE RELEASED
  */
 Player.prototype.stopMovement = function() {
-	var cursors = this.game.input.keyboard.createCursorKeys();	
-	
 	// Stops character movement when not jumping and not moving in another direction
-	if(!this.jumping && !(cursors.left.isDown || cursors.right.isDown)) {
-		this.body.acceleration.x = 0;
-	}
+	this.body.acceleration.x = 0;	
 }
 
 /*
  * IS CALLED WHEN THE DASH BUTTON, D, IS PRESSED - DASHES PLAYER 
  */
 Player.prototype.dash = function() {
-	// Tests cooldown
-	if(this.game.time.now - this.dashTimeCheck > this.dashCooldown) {
-		// Starts cooldown
-		this.dashTimeCheck = this.game.time.now;
-		var cursors = this.game.input.keyboard.createCursorKeys();	
-		
-		// Stops falling pre-dash
-		this.oldVelx = this.body.velocity.x;
-		this.oldVely = this.body.velocity.y;
-		this.body.acceleration.setTo(0,0);
-		this.body.gravity.y = 0;
-		this.body.velocity.y = 0;
-		this.body.maxVelocity.x = 1000;
-		
-		// Disallows dashing mid-dash
-		if(!(this.dashingRight || this.dashingLeft || this.dashingUp || this.dashingDown)) {
-			// Executes dash if a direction is given
-			// Needs to be tuned depending on dashing mechanics
-			if(cursors.right.isDown || 
-			   cursors.left.isDown  || 
-			   cursors.up.isDown    || 
-			   cursors.down.isDown) {
+	// check dash eligibility
+	if(!this.jumping || !this.doubleJumpd){
+		// Tests cooldown
+		if(this.game.time.now - this.dashTimeCheck > this.dashCooldown) {
+			// Starts cooldown
+			this.dashTimeCheck = this.game.time.now;
+			var cursors = this.game.input.keyboard.createCursorKeys();	
+			
+			// Stops falling pre-dash
+			this.oldVelx = this.body.velocity.x;
+			this.oldVely = this.body.velocity.y;
+			this.body.acceleration.setTo(0,0);
+			this.body.gravity.y = 0;
+			this.body.velocity.y = 0;
+			this.body.maxVelocity.x = 1000;
+			
+			// Disallows dashing mid-dash
+			if(!(this.dashingRight || this.dashingLeft || this.dashingUp || this.dashingDown)) {
+				// Executes dash if a direction is given
+				// Needs to be tuned depending on dashing mechanics
+				if(cursors.right.isDown || 
+				   cursors.left.isDown  || 
+				   cursors.up.isDown    || 
+				   cursors.down.isDown) {
 
-				// Logs players pre-dash position
-				this.oldPosX = this.position.x;
-				this.oldPosY = this.position.y;
-				
-				/*
-				 * THIS NEEDS TO BE TUNED IN THE CASE OF DIAGONAL DASHING AS IT IS A GREATER DASH DISTANCE 
-				 */ 
-				
-				// Sets the horizontal dash distance and direction 
-				if(cursors.right.isDown) {
-					this.dashDistanceX = -1 * this.dashDistConst;
-					this.dashingRight = true;
-				}
-				else if(cursors.left.isDown) {
-					this.dashDistanceX = this.dashDistConst;
-					this.dashingLeft = true;
-				}
-				else {
-					this.dashDistanceX = 0;
-				}
-				
-				// Sets the vertical dash distance and direction 
-				if(cursors.up.isDown) {
-					this.dashDistanceY = this.dashDistConst;
-					// shorten diagonal distance to match
-					if(cursors.left.isDown || cursors.right.isDown){
-						this.dashDistanceY /= Math.sqrt(2);
-						this.dashDistanceX /= Math.sqrt(2);
+					// Logs players pre-dash position
+					this.oldPosX = this.position.x;
+					this.oldPosY = this.position.y;
+					
+					/*
+					 * THIS NEEDS TO BE TUNED IN THE CASE OF DIAGONAL DASHING AS IT IS A GREATER DASH DISTANCE 
+					 */ 
+					
+					// Sets the horizontal dash distance and direction 
+					if(cursors.right.isDown) {
+						this.dashDistanceX = -1 * this.dashDistConst;
+						this.dashingRight = true;
 					}
-					this.dashingUp = true;
-				}
-				else if(cursors.down.isDown) {
-					this.dashDistanceY = -1 * this.dashDistConst;
-					// shorten diagonal distance to match
-					if(cursors.left.isDown || cursors.right.isDown){
-						this.dashDistanceY /= Math.sqrt(2);
-						this.dashDistanceX /= Math.sqrt(2);
+					else if(cursors.left.isDown) {
+						this.dashDistanceX = this.dashDistConst;
+						this.dashingLeft = true;
 					}
-					this.dashingDown = true;
-				}
-				else {
-					this.dashDistanceY = 0;
+					else {
+						this.dashDistanceX = 0;
+					}
+					
+					// Sets the vertical dash distance and direction 
+					if(cursors.up.isDown) {
+						this.dashDistanceY = this.dashDistConst;
+						// shorten diagonal distance to match
+						if(cursors.left.isDown || cursors.right.isDown){
+							this.dashDistanceY /= Math.sqrt(2);
+							this.dashDistanceX /= Math.sqrt(2);
+						}
+						this.dashingUp = true;
+					}
+					else if(cursors.down.isDown) {
+						this.dashDistanceY = -1 * this.dashDistConst;
+						// shorten diagonal distance to match
+						if(cursors.left.isDown || cursors.right.isDown){
+							this.dashDistanceY /= Math.sqrt(2);
+							this.dashDistanceX /= Math.sqrt(2);
+						}
+						this.dashingDown = true;
+					}
+					else {
+						this.dashDistanceY = 0;
+					}
 				}
 			}
 		}
@@ -199,8 +199,12 @@ Player.prototype.dash = function() {
  */
 Player.prototype.jump = function() {
 	// Executes if the player is not jumping
-	if(!this.jumping) {
-		this.jumping = true;
+	if(!this.jumping || !this.doubleJumpd) {
+		if(this.jumping){
+			this.doubleJumpd = true;
+		}else{
+			this.jumping = true;
+		}
 		// Play jump sound
 		this.game.sound.play('player_jump');
 		// Jumps
@@ -214,7 +218,7 @@ Player.prototype.jump = function() {
 Player.prototype.touchDown = function() {
 	if(this.jumping) {
 		this.jumping = false;
-		this.body.velocity.y = 0;
+		this.doubleJumpd = false;
 		var cursors = this.game.input.keyboard.createCursorKeys();
 		if(!(cursors.left.isDown || cursors.right.isDown)){
 			this.body.acceleration.x = 0;
@@ -238,74 +242,103 @@ Player.prototype.dashCancel = function() {
  */
 Player.prototype.dashChecking = function() {
 	// cancel dash when hitting world edges
-	if((this.dashingUp && this.body.onCeiling())||((this.dashingLeft || this.dashingRight) && this.body.onWall())){
-		this.dashCancel();
-	}
-	
-	/*
-	 * START HORIZONTAL DASHING
-	 */
-	// Dashes player to the right until the dashDistance is covered
-	if(this.dashingRight && this.oldPosX - this.position.x > this.dashDistanceX) {
-		this.body.velocity.x = 1000;
-	}
-	// End the dash after the distance has been covered
-	else if(this.dashingRight) {
-		this.dashingRight = false;
-		this.justDashed = true;
-		this.body.velocity.x = this.oldVelx+100;
-	}
-	
-	// Dashes player to the left until the dashDistance is covered
-	if(this.dashingLeft && this.oldPosX - this.position.x < this.dashDistanceX) {
-		this.body.velocity.x = -1000;
-	}
-	// End the dash after the distance has been covered
-	else if(this.dashingLeft) {
-		this.dashingLeft = false;
-		this.justDashed = true;
-		this.body.velocity.x = this.oldVelx-100;
-	}
+	if(this.dashingUp || this.dashingRight || this.dashingLeft || this.dashingDown || this.justDashed){
+		if((this.dashingUp && this.body.onCeiling())||((this.dashingLeft || this.dashingRight) && this.body.onWall())){
+			this.dashCancel();
+			this.doubleJumpd = true;
+		}
+		
+		/*
+		 * START HORIZONTAL DASHING
+		 */
+		// Dashes player to the right until the dashDistance is covered
+		if(this.dashingRight && this.oldPosX - this.position.x > this.dashDistanceX) {
+			this.body.velocity.x = 1000;
+		}
+		// End the dash after the distance has been covered
+		else if(this.dashingRight) {
+			this.dashingRight = false;
+			this.justDashed = true;
+			if(this.oldVelx > 0){
+				this.body.velocity.x = this.oldVelx+100;
+			}else{
+				this.body.velocity.x = 100;
+			}
 
-	/*
-	 * END HORIZONTAL DASHING
-	 * START VERTICAL DASHING
-	 */
-	
-	// Dashes player down until the dashDistance is covered
-	if(this.dashingDown && this.oldPosY - this.position.y > this.dashDistanceY) {
-		this.body.velocity.y = 1000;
-	}
-	// End the dash after the distance has been covered
-	else if(this.dashingDown) {
-		this.dashingDown = false;
-		this.justDashed = true;
-		//this.body.velocity.y = this.oldVely+100;
-	}
-	
-	// Dashes player up until the dashDistance is covered
-	if(this.dashingUp && this.oldPosY - this.position.y < this.dashDistanceY) {
-		this.body.velocity.y = -1000;
-	}
-	// End the dash after the distance has been covered
-	else if(this.dashingUp) {
-		this.dashingUp = false;
-		this.justDashed = true;
-		this.body.velocity.y = -100;
-	}
-	/*
-	 * END VERTICAL DASHING
-	 */
- 
-	// Ends dash
-	if(this.justDashed) {
-		this.gravityTimeCheck = this.game.time.now;
-		this.body.maxVelocity.x = 300;
-		this.justDashed = false;
-	}
-	
-	if(this.game.time.now - this.gravityTimeCheck > this.gravityCooldown) {
-		this.body.gravity.y = 1000;
+			if(this.jumping){
+				this.doubleJumpd = true;
+			}
+		}
+		
+		// Dashes player to the left until the dashDistance is covered
+		if(this.dashingLeft && this.oldPosX - this.position.x < this.dashDistanceX) {
+			this.body.velocity.x = -1000;
+		}
+		// End the dash after the distance has been covered
+		else if(this.dashingLeft) {
+			this.dashingLeft = false;
+			this.justDashed = true;
+			if(this.oldVelx < 0){
+				this.body.velocity.x = this.oldVelx-100;
+			}else{
+				this.body.velocity.x = -100;
+			}
+
+			if(this.jumping){
+				this.doubleJumpd = true;
+			}
+		}
+
+		/*
+		 * END HORIZONTAL DASHING
+		 * START VERTICAL DASHING
+		 */
+		
+		// Dashes player down until the dashDistance is covered
+		if(this.dashingDown && this.oldPosY - this.position.y > this.dashDistanceY) {
+			this.body.velocity.y = 1000;
+		}
+		// End the dash after the distance has been covered
+		else if(this.dashingDown) {
+			this.dashingDown = false;
+			this.justDashed = true;
+			this.body.velocity.y = 300;
+
+			if(this.doubleJumpd){
+				this.doubleJumpd = false;
+			}
+		}
+		
+		// Dashes player up until the dashDistance is covered
+		if(this.dashingUp && this.oldPosY - this.position.y < this.dashDistanceY) {
+			this.body.velocity.y = -1000;
+		}
+		// End the dash after the distance has been covered
+		else if(this.dashingUp) {
+			this.dashingUp = false;
+			this.justDashed = true;
+			this.body.velocity.y = -100;
+
+			if(this.jumping){
+				this.doubleJumpd = true;
+			}else{
+				this.jumping = true;
+			}
+		}
+		/*
+		 * END VERTICAL DASHING
+		 */
+	 
+		// Ends dash
+		if(this.justDashed) {
+			this.gravityTimeCheck = this.game.time.now;
+			this.body.maxVelocity.x = 300;
+			this.justDashed = false;
+		}
+		
+		if(this.game.time.now - this.gravityTimeCheck > this.gravityCooldown) {
+			this.body.gravity.y = 1000;
+		}
 	}
 }
 
