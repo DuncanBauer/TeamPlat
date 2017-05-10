@@ -1,9 +1,12 @@
 function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
+//function Player(game, sprite, x, y, world, enemies) {
 	Phaser.Sprite.call(this, game, x, y, atlas_key, atlas_frame);
+//	Phaser.Sprite.call(this, game, x, y, sprite);
 	
 	this.anchor.setTo(.5,.5);
 	this.game.physics.arcade.enable(this);
-	
+
+	//this.animations.add('walk');
 	this.animations.add('walk', Phaser.Animation.generateFrameNames('WalkLeft_MouthOpen_Purple', 1, 3, '', 1), 23, true);
 	this.animations.add('idle', ['WalkLeft_MouthOpen_Purple3'], 30, false);
 		
@@ -347,16 +350,16 @@ Player.prototype.attack = function() {
 
 	let triggerBox;
 	if(cursors.right.isDown) {
-		triggerBox = this.game.add.sprite(this.x + this.width/2, this.y - this.height/2, 'spike0');
+		triggerBox = this.game.add.sprite(this.x + this.width/2, this.y - this.height/4, null);
 		this.game.physics.enable(triggerBox, Phaser.Physics.ARCADE);
 		triggerBox.anchor.setTo(0,.5);
-		triggerBox.body.setSize(this.x + this.width/2, this.y - this.height/2, this.attackDistance, 20);
+		triggerBox.body.setSize(this.x + this.width/2, this.y - this.height/4, this.attackDistance, this.height/2);
 	}
 	else if(cursors.left.isDown) {		
-		triggerBox = this.game.add.sprite(this.x - this.width/2 - this.attackDistance, this.y - this.height/2, 'spike0');
+		triggerBox = this.game.add.sprite(this.x - this.width/2- this.attackDistance, this.y - this.height/4, null);
 		this.game.physics.enable(triggerBox, Phaser.Physics.ARCADE);
-		triggerBox.anchor.setTo(0,.5);
-		triggerBox.body.setSize(this.x - this.width/2 - this.attackDistance, this.y - this.height/2, this.attackDistance, 20);
+		triggerBox.anchor.setTo(1,.5);
+		//triggerBox.body.setSize(this.x - this.width/2 - this.attackDistance, this.y - this.height/2, this.attackDistance, 20);
 	}	
 	else {
 		triggerBox = new Phaser.Rectangle(0, 0, 0, 0);
@@ -369,5 +372,5 @@ Player.prototype.attack = function() {
 		console.log("HEY! you hit me");
 	}
 
-	triggerBox.destroy();
+	//triggerBox.destroy();
 }
