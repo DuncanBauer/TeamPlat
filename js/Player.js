@@ -1,4 +1,4 @@
-function Player(game, atlas_key, atlas_frame, x, y) {
+function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
 	Phaser.Sprite.call(this, game, x, y, atlas_key, atlas_frame);
 	
 	this.anchor.setTo(.5,.5);
@@ -34,6 +34,11 @@ function Player(game, atlas_key, atlas_frame, x, y) {
 	this.dashingDown = false;
 	this.justDashed = false;
 
+	this.attackForward = false;
+	this.attackBack = false;
+	this.attackUp = false;
+	this.attackDown = false;
+
 	this.oldPosX = 0;
 	this.oldPosY = 0;
 	this.dashDistConst = 200;
@@ -47,12 +52,27 @@ function Player(game, atlas_key, atlas_frame, x, y) {
 	
 	this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.add(this.jump, this);
 	this.game.input.keyboard.addKey(Phaser.Keyboard.D).onDown.add(this.dash, this);
+	this.game.input.keyboard.addKey(Phaser.Keyboard.A).onDown.add(this.attack, this);
+
+	this.myWorld = world;
+	this.enemies = enemies;
 }
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
 Player.prototype.update = function() {		
 	this.dashChecking();
+	
+	if(this.game.physics.arcade.collide(this, this.myWorld.floor.children)) {
+		this.touchDown();
+		// cancel dash when hitting floor
+		if(this.dashingDown){
+			this.dashCancel();
+		}
+	}
 
+	if(this.game.physics.arcade.overlap(this, this.enemies.enemies.children)) {
+		console.log("HEY! you hit me");
+	}
 	
 }
 
@@ -260,4 +280,14 @@ Player.prototype.dashChecking = function() {
 	if(this.game.time.now - this.gravityTimeCheck > this.gravityCooldown) {
 		this.body.gravity.y = 1000;
 	}
+}
+
+Player.prototype.attack = function() {
+	var cursors = this.game.keyboard.createCursorKeys();
+
+	if(cursors.left.isDown) { this.attackForward = true; }
+	if(cursors.right.isDown) { this.attackBack = true; }
+	if(cursors.up.isDown) { this.attackUp = true; }
+	if(cursors.down.isDown) { this.attackDown = true; }
+
 }

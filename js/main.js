@@ -26,31 +26,20 @@ Game.prototype = {
 		// Create world
 		this.world = new World(this.game);
 		this.world.loadFloor();
+
+		this.mobManager = new MobManager(this.game);
+		this.mobManager.spawnEnemies(this.world);
 		
-		this.player = new Player(this.game, 'character_atlas', 'WalkLeft_MouthOpen_Purple3', this.game.width/2, this.game.height/2);
+		this.player = new Player(this.game, 'character_atlas', 'WalkLeft_MouthOpen_Purple3', this.game.width/2, this.game.height/2, this.world, this.mobManager);
 		this.game.add.existing(this.player);
 
 		// Create camera and lock it to the player with mario-esque deadzone
 		this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);		
 		this.game.camera.deadzone = new Phaser.Rectangle(100, 100, 400, 400);
 
-		this.MobManager = new MobManager(this.game);
-		this.MobManager.spawnEnemies();
-		// Test mob
-		//this.mob = new Mob(this.game, 'character_atlas', 'WalkLeft_MouthOpen_Red3', this.game.width/2 + 100, this.game.height/2);
-		//this.game.add.existing(this.mob);
 	},
 	
-	update:function() {		
-		if(this.game.physics.arcade.collide(this.player, this.world.floor.children)) {
-			this.player.touchDown();
-			// cancel dash when hitting floor
-			if(this.player.dashingDown){
-				this.player.dashCancel();
-			}
-		}
-
-		this.game.physics.arcade.collide(this.MobManager.enemies.children, this.world.floor.children);
+	update:function() {	
 	},
 	
 	// End the game and return to the main menu

@@ -1,4 +1,4 @@
-function Mob(game, atlas_key, atlas_frame, x, y) {
+function Mob(game, atlas_key, atlas_frame, x, y, world) {
 	Phaser.Sprite.call(this, game, x, y, atlas_key, atlas_frame);
 
 	this.anchor.setTo(.5,.5);
@@ -9,15 +9,18 @@ function Mob(game, atlas_key, atlas_frame, x, y) {
 		
 	this.body.collideWorldBounds = true;
 	this.body.gravity.y = 1000;
-	this.body.drag = 50;
+	this.body.drag.x = 500;
+//	this.body.immovable = true;
 	this.anchor.setTo(.5, .5);
 	this.scale.x = -1;
 	this.scale.x = this.scale.x / 2;
 	this.scale.y = this.scale.y / 2;
-	this.animations.play('walk');
+	this.animations.play('idle');
+
+	this.myWorld = world;
 }
 
 Mob.prototype = Object.create(Phaser.Sprite.prototype);
 Mob.prototype.update = function() {
-	
+	this.game.physics.arcade.collide(this, this.myWorld.floor.children);
 }

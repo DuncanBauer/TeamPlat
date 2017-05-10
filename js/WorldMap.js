@@ -1,6 +1,6 @@
 var World = function(game) {
 	this.floor = game.add.group();
-	this.floor.enableBody = true;
+	this.floor.enableBody = true
 	this.game = game;
 };
 	

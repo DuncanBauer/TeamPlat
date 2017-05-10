@@ -5,12 +5,13 @@ var MobManager = function(game) {
 };
 	
 MobManager.prototype = {
-	spawnEnemies: function(){
+	spawnEnemies: function(world){
 		this.enemies.add(new Mob(this.game, 
 					    'character_atlas', 
 					    'WalkLeft_MouthOpen_Red3', 
 					    this.game.width/2 + 100, 
-					    this.game.height/2));
+					    this.game.height/2,
+					    world));
 		
 	}
 }
