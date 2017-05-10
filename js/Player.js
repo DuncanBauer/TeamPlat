@@ -9,8 +9,9 @@ function Player(game, atlas_key, atlas_frame, x, y) {
 		
 	// Set scale and physics for character
 	this.body.collideWorldBounds = true;
+	this.body.maxVelocity.x = 300;
 	this.body.gravity.y = 1000;
-	this.body.drag = 50;
+	this.body.drag.x = 450;
 	this.anchor.setTo(.5, .5);
 	this.scale.x = -1;
 	this.scale.x = this.scale.x / 2;
@@ -39,11 +40,13 @@ function Player(game, atlas_key, atlas_frame, x, y) {
 	this.dashDistConst = 200;
 	
 	// Key Bindings
-	this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT).onDown.add(this.moveRight, this);
-	this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT).onUp.add(this.stopMovement, this);
+	this.rightKey = this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+	//this.rightKey.onDown.add(this.moveRight, this);
+	this.rightKey.onUp.add(this.stopMovement, this);
 	
-	this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT).onDown.add(this.moveLeft, this);
-	this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT).onUp.add(this.stopMovement, this);
+	this.leftKey = this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+	//this.leftKey.onDown.add(this.moveLeft, this);
+	this.leftKey.onUp.add(this.stopMovement, this);
 	
 	this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.add(this.jump, this);
 	this.game.input.keyboard.addKey(Phaser.Keyboard.D).onDown.add(this.dash, this);
@@ -53,7 +56,12 @@ Player.prototype = Object.create(Phaser.Sprite.prototype);
 Player.prototype.update = function() {		
 	this.dashChecking();
 
-	
+	var cursors = this.game.input.keyboard.createCursorKeys();
+	if(cursors.left.isDown){
+		this.moveLeft();
+	}else if(cursors.right.isDown){
+		this.moveRight();
+	}
 }
 
 Player.prototype.moveRight = function() {
@@ -61,9 +69,13 @@ Player.prototype.moveRight = function() {
 	// Must be editted for movement in air
 	if(this.body.touching.down) {		
 		//  Move to the right
+		if(this.body.velocity.x < -100){
+			// tiny pull back when quick turning
+			this.body.velocity.x = -50;
+		}
 		this.facingForward = true;
 		this.scale.x = -1/2;
-		this.body.velocity.x = 300;
+		this.body.acceleration.x = 600;
 	}
 }
 
@@ -72,9 +84,13 @@ Player.prototype.moveLeft = function() {
 	// Must be editted for movement in air
 	if(this.body.touching.down) {		
 		//  Move to the left
+		if(this.body.velocity.x > 100){
+			// tiny pull back when quick turning
+			this.body.velocity.x = 50;
+		}
 		this.facingForward = false;
 		this.scale.x = 1/2;
-		this.body.velocity.x = -300;
+		this.body.acceleration.x = -600;
 	}
 }
 
@@ -86,8 +102,7 @@ Player.prototype.stopMovement = function() {
 	
 	// Stops character movement when not jumping and not moving in another direction
 	if(!this.jumping && !(cursors.left.isDown || cursors.right.isDown)) {
-		this.body.velocity.x = 0;
-		this.body.velocity.y = 0;
+		this.body.acceleration.x = 0;
 	}
 }
 
@@ -102,8 +117,12 @@ Player.prototype.dash = function() {
 		var cursors = this.game.input.keyboard.createCursorKeys();	
 		
 		// Stops falling pre-dash
+		this.oldVelx = this.body.velocity.x;
+		this.oldVely = this.body.velocity.y;
+		this.body.acceleration.setTo(0,0);
 		this.body.gravity.y = 0;
 		this.body.velocity.y = 0;
+		this.body.maxVelocity.x = 1000;
 		
 		// Disallows dashing mid-dash
 		if(!(this.dashingRight || this.dashingLeft || this.dashingUp || this.dashingDown)) {
@@ -138,10 +157,20 @@ Player.prototype.dash = function() {
 				// Sets the vertical dash distance and direction 
 				if(cursors.up.isDown) {
 					this.dashDistanceY = this.dashDistConst;
+					// shorten diagonal distance to match
+					if(cursors.left.isDown || cursors.right.isDown){
+						this.dashDistanceY /= Math.sqrt(2);
+						this.dashDistanceX /= Math.sqrt(2);
+					}
 					this.dashingUp = true;
 				}
 				else if(cursors.down.isDown) {
 					this.dashDistanceY = -1 * this.dashDistConst;
+					// shorten diagonal distance to match
+					if(cursors.left.isDown || cursors.right.isDown){
+						this.dashDistanceY /= Math.sqrt(2);
+						this.dashDistanceX /= Math.sqrt(2);
+					}
 					this.dashingDown = true;
 				}
 				else {
@@ -172,7 +201,11 @@ Player.prototype.jump = function() {
 Player.prototype.touchDown = function() {
 	if(this.jumping) {
 		this.jumping = false;
-		this.body.velocity.x = 0;
+		this.body.velocity.y = 0;
+		var cursors = this.game.input.keyboard.createCursorKeys();
+		if(!(cursors.left.isDown || cursors.right.isDown)){
+			this.body.acceleration.x = 0;
+		}
 	}
 }
 
@@ -192,9 +225,7 @@ Player.prototype.dashCancel = function() {
  */
 Player.prototype.dashChecking = function() {
 	// cancel dash when hitting world edges
-	if((this.dashingUp && this.body.blocked.up)||
-	   (this.dashingLeft && this.body.blocked.left)||
-	   (this.dashingRight && this.body.blocked.right)){
+	if((this.dashingUp && this.body.onCeiling())||((this.dashingLeft || this.dashingRight) && this.body.onWall())){
 		this.dashCancel();
 	}
 	
@@ -209,6 +240,7 @@ Player.prototype.dashChecking = function() {
 	else if(this.dashingRight) {
 		this.dashingRight = false;
 		this.justDashed = true;
+		this.body.velocity.x = this.oldVelx+100;
 	}
 	
 	// Dashes player to the left until the dashDistance is covered
@@ -219,6 +251,7 @@ Player.prototype.dashChecking = function() {
 	else if(this.dashingLeft) {
 		this.dashingLeft = false;
 		this.justDashed = true;
+		this.body.velocity.x = this.oldVelx-100;
 	}
 
 	/*
@@ -234,6 +267,7 @@ Player.prototype.dashChecking = function() {
 	else if(this.dashingDown) {
 		this.dashingDown = false;
 		this.justDashed = true;
+		//this.body.velocity.y = this.oldVely+100;
 	}
 	
 	// Dashes player up until the dashDistance is covered
@@ -244,6 +278,7 @@ Player.prototype.dashChecking = function() {
 	else if(this.dashingUp) {
 		this.dashingUp = false;
 		this.justDashed = true;
+		this.body.velocity.y = -100;
 	}
 	/*
 	 * END VERTICAL DASHING
@@ -252,8 +287,7 @@ Player.prototype.dashChecking = function() {
 	// Ends dash
 	if(this.justDashed) {
 		this.gravityTimeCheck = this.game.time.now;
-		this.body.velocity.x = 0;
-		this.body.velocity.y = 0;
+		this.body.maxVelocity.x = 300;
 		this.justDashed = false;
 	}
 	
