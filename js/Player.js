@@ -283,7 +283,7 @@ Player.prototype.dashChecking = function() {
 }
 
 Player.prototype.attack = function() {
-	var cursors = this.game.keyboard.createCursorKeys();
+	var cursors = this.game.input.keyboard.createCursorKeys();
 
 	if(cursors.left.isDown) { this.attackForward = true; }
 	if(cursors.right.isDown) { this.attackBack = true; }
