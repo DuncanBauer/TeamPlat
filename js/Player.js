@@ -21,7 +21,8 @@ function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
 	// Character attributes
 	this.jumping = false;
 	this.facingForward = true;
-	
+	this.attackDistance = 75;	
+
 	// Cooldown Constants in milliseconds
 	this.dashCooldown = 330; 
 	this.gravityCooldown = 300;
@@ -34,11 +35,6 @@ function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
 	this.dashingUp = false;
 	this.dashingDown = false;
 	this.justDashed = false;
-
-	this.attackForward = false;
-	this.attackBack = false;
-	this.attackUp = false;
-	this.attackDown = false;
 
 	this.oldPosX = 0;
 	this.oldPosY = 0;
@@ -71,10 +67,6 @@ Player.prototype.update = function() {
 		if(this.dashingDown){
 			this.dashCancel();
 		}
-	}
-
-  if(this.game.physics.arcade.overlap(this, this.enemies.enemies.children)) {
-		console.log("HEY! you hit me");
 	}
 	
 	var cursors = this.game.input.keyboard.createCursorKeys();
@@ -318,11 +310,31 @@ Player.prototype.dashChecking = function() {
 }
 
 Player.prototype.attack = function() {
-	var cursors = this.game.input.keyboard.createCursorKeys();
+	let cursors = this.game.input.keyboard.createCursorKeys();
 
-	if(cursors.left.isDown) { this.attackForward = true; }
-	if(cursors.right.isDown) { this.attackBack = true; }
-	if(cursors.up.isDown) { this.attackUp = true; }
-	if(cursors.down.isDown) { this.attackDown = true; }
+	let triggerBox;
+	if(cursors.right.isDown) {
+		triggerBox = this.game.add.sprite(this.x + this.width/2, this.y - this.height/2, 'spike0');
+		this.game.physics.enable(triggerBox, Phaser.Physics.ARCADE);
+		triggerBox.anchor.setTo(0,.5);
+		triggerBox.body.setSize(this.x + this.width/2, this.y - this.height/2, this.attackDistance, 20);
+	}
+	else if(cursors.left.isDown) {		
+		triggerBox = this.game.add.sprite(this.x - this.width/2 - this.attackDistance, this.y - this.height/2, 'spike0');
+		this.game.physics.enable(triggerBox, Phaser.Physics.ARCADE);
+		triggerBox.anchor.setTo(0,.5);
+		triggerBox.body.setSize(this.x - this.width/2 - this.attackDistance, this.y - this.height/2, this.attackDistance, 20);
+	}	
+	else {
+		triggerBox = new Phaser.Rectangle(0, 0, 0, 0);
+	}
 
+	console.log(this.position);
+	console.log(triggerBox);
+
+	if(this.game.physics.arcade.collide(triggerBox, this.enemies.enemies.children)) {
+		console.log("HEY! you hit me");
+	}
+
+	triggerBox.destroy();
 }
