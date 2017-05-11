@@ -4,8 +4,9 @@ function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
 	this.anchor.setTo(.5,.5);
 	this.game.physics.arcade.enable(this);
 	
-	this.animations.add('walk', Phaser.Animation.generateFrameNames('WalkLeft_MouthOpen_Purple', 1, 3, '', 1), 23, true);
-	this.animations.add('idle', ['WalkLeft_MouthOpen_Purple3'], 30, false);
+	//this.animations.add('walk', Phaser.Animation.generateFrameNames('WalkLeft_MouthOpen_Purple', 1, 3, '', 1), 23, true);
+	this.animations.add('walk', Phaser.Animation.generateFrameNames('player_', 1, 2, '', 0), 10, true);
+	//this.animations.add('idle', ['WalkLeft_MouthOpen_Purple3'], 30, false);
 		
 	// Set scale and physics for character
 	this.body.collideWorldBounds = true;

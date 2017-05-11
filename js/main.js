@@ -30,7 +30,8 @@ Game.prototype = {
 		this.mobManager = new MobManager(this.game);
 		this.mobManager.spawnEnemies(this.world);
 		
-		this.player = new Player(this.game, 'character_atlas', 'WalkLeft_MouthOpen_Purple3', this.game.width/2, this.game.height/2, this.world, this.mobManager);
+		//this.player = new Player(this.game, 'character_atlas', 'WalkLeft_MouthOpen_Purple3', this.game.width/2, this.game.height/2, this.world, this.mobManager);
+		this.player = new Player(this.game, 'player_atlas', 'player_1', this.game.width/2, this.game.height/2, this.world, this.mobManager);
 		this.game.add.existing(this.player);
 
 		// Create camera and lock it to the player with mario-esque deadzone
