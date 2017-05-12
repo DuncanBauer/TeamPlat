@@ -14,7 +14,7 @@ Preloader.prototype = {
 		this.game.load.image('power_Button', '/img/power_Button.png');
 		
 		// Load this.game assets
-		//this.game.load.spritesheet('player', '/img/Player_Spritesheet_(Untextured).png', 123, 164);
+		this.game.load.atlas('player_atlas', '/img/Player.png', '/img/sprites.json');
 		this.game.load.atlas('character_atlas', '/img/characters.png', '/img/characters.json');
 		this.game.load.atlas('tile_atlas', '/img/tiles.png', '/img/tiles.json');
 		this.game.load.atlas('coin_atlas', '/img/Coin.png', '/img/coin.json');
