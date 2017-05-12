@@ -25,6 +25,14 @@ function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
 	this.doubleJumpd = false;
 	this.facingForward = true;
 	this.attackDistance = 75;	
+	
+	// Setting up player weapon
+	this.weapon = this.game.add.weapon(3, 'spike0');
+	this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
+	this.weapon.fireAngle = 270; // In degrees
+	this.weapon.bulletSpeed = 1250;
+	this.weapon.fireRate = 1000;
+	this.weapon.trackSprite(this); // Has the weapon follow the player
 
 	// Cooldown Constants in milliseconds
 	this.dashCooldown = 330; 
@@ -77,6 +85,18 @@ Player.prototype.update = function() {
 		this.moveLeft();
 	}else if(cursors.right.isDown){
 		this.moveRight();
+	}
+	
+	var anyBullet = false;
+	this.weapon.bullets.forEach(function(item){
+			if(item.alive){	
+				anyBullet = true;
+			}
+	});
+	if(anyBullet) {
+		if(this.game.physics.arcade.overlap(this.weapon.bullets, this.enemies.enemies)) {
+			console.log("HIT");
+		}
 	}
 }
 
@@ -150,10 +170,6 @@ Player.prototype.dash = function() {
 					// Logs players pre-dash position
 					this.oldPosX = this.position.x;
 					this.oldPosY = this.position.y;
-					
-					/*
-					 * THIS NEEDS TO BE TUNED IN THE CASE OF DIAGONAL DASHING AS IT IS A GREATER DASH DISTANCE 
-					 */ 
 					
 					// Sets the horizontal dash distance and direction 
 					if(cursors.right.isDown) {
@@ -346,7 +362,8 @@ Player.prototype.dashChecking = function() {
 
 Player.prototype.attack = function() {
 	let cursors = this.game.input.keyboard.createCursorKeys();
-
+	
+/*	
 	let triggerBox;
 	if(cursors.right.isDown) {
 		triggerBox = this.game.add.sprite(this.x + this.width/2, this.y - this.height/4, null);
@@ -372,4 +389,21 @@ Player.prototype.attack = function() {
 	}
 
 	//triggerBox.destroy();
+*/
+
+	// Angles are mirrored across the the X-axis. Its fucking me up a bit to be honest
+	if(cursors.right.isDown) {
+		this.weapon.fireAngle = 0;
+		if(cursors.down.isDown && this.jumping) {
+			this.weapon.fireAngle = 45;
+		}
+	}
+	else if(cursors.left.isDown) {
+		this.weapon.fireAngle = 180;
+		if(cursors.down.isDown && this.jumping) {
+			this.weapon.fireAngle = 135;
+		}
+	}
+	this.weapon.fire();
+	
 }
