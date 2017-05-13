@@ -24,23 +24,27 @@ function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
 	this.jumping = false;
 	this.doubleJumpd = false;
 	this.facingForward = true;
-	this.attackDistance = 75;	
+	this.attackDistance = 250;	
 	
 	// Setting up player weapon
 	this.weapon = this.game.add.weapon(3, 'spike0');
 	this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
 	this.weapon.fireAngle = 270; // In degrees
 	this.weapon.bulletSpeed = 1250;
-	this.weapon.fireRate = 1000;
+	//this.weapon.fireRate = 1000;  Using attackCooldown instead
 	this.weapon.trackSprite(this); // Has the weapon follow the player
 
 	// Cooldown Constants in milliseconds
 	this.dashCooldown = 330; 
 	this.gravityCooldown = 300;
+	this.attackCooldown = 450;
 	
+	// Cooldown timers
 	this.dashTimeCheck = 0;
 	this.gravityTimeCheck = 0;
+	this.attackTimeCheck = 0;
 	
+	// Dash Booleans
 	this.dashingForward = false;
 	this.dashingBack = false;
 	this.dashingUp = false;
@@ -50,6 +54,19 @@ function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
 	this.oldPosX = 0;
 	this.oldPosY = 0;
 	this.dashDistConst = 200;
+	
+	/*
+	 * HITBOXES
+	 */	 
+	// Horizontal hitbox
+	this.triggerBoxHorizontal = this.game.add.sprite(0, 0, null);
+	this.game.physics.enable(this.triggerBoxHorizontal, Phaser.Physics.ARCADE);
+	this.triggerBoxHorizontal.body.setSize(this.attackDistance, this.height/2);
+	
+	// Vertical hitbox
+	this.triggerBoxVertical = this.game.add.sprite(0, 0, null);
+	this.game.physics.enable(this.triggerBoxVertical, Phaser.Physics.ARCADE);
+	this.triggerBoxVertical.body.setSize(Math.abs(this.width), this.attackDistance);
 	
 	// Key Bindings
 	this.rightKey = this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
@@ -87,17 +104,16 @@ Player.prototype.update = function() {
 		this.moveRight();
 	}
 	
-	var anyBullet = false;
-	this.weapon.bullets.forEach(function(item){
-			if(item.alive){	
-				anyBullet = true;
-			}
-	});
-	if(anyBullet) {
-		if(this.game.physics.arcade.overlap(this.weapon.bullets, this.enemies.enemies)) {
-			console.log("HIT");
-		}
+/*
+	if(this.game.physics.arcade.overlap(this.weapon.bullets, this.enemies.enemies, this.enemyHit, null, this)) {
+		console.log("HIT");
 	}
+*/
+}
+
+Player.prototype.enemyHit = function(bullet, enemy) {
+	enemy.death();
+	bullet.kill();
 }
 
 Player.prototype.moveRight = function() {
@@ -361,49 +377,73 @@ Player.prototype.dashChecking = function() {
 }
 
 Player.prototype.attack = function() {
-	let cursors = this.game.input.keyboard.createCursorKeys();
-	
-/*	
-	let triggerBox;
-	if(cursors.right.isDown) {
-		triggerBox = this.game.add.sprite(this.x + this.width/2, this.y - this.height/4, null);
-		this.game.physics.enable(triggerBox, Phaser.Physics.ARCADE);
-		triggerBox.anchor.setTo(0,.5);
-		triggerBox.body.setSize(this.x + this.width/2, this.y - this.height/4, this.attackDistance, this.height/2);
-	}
-	else if(cursors.left.isDown) {		
-		triggerBox = this.game.add.sprite(this.x - this.width/2- this.attackDistance, this.y - this.height/4, null);
-		this.game.physics.enable(triggerBox, Phaser.Physics.ARCADE);
-		triggerBox.anchor.setTo(1,.5);
-		//triggerBox.body.setSize(this.x - this.width/2 - this.attackDistance, this.y - this.height/2, this.attackDistance, 20);
-	}	
-	else {
-		triggerBox = new Phaser.Rectangle(0, 0, 0, 0);
-	}
+	if(this.game.time.now - this.attackTimeCheck > this.attackCooldown) {
+		// Starts cooldown
+		this.attackTimeCheck = this.game.time.now;
 
-	console.log(this.position);
-	console.log(triggerBox);
+		let cursors = this.game.input.keyboard.createCursorKeys();
+		var triggerBox = null;
 
-	if(this.game.physics.arcade.collide(triggerBox, this.enemies.enemies.children)) {
-		console.log("HEY! you hit me");
-	}
-
-	//triggerBox.destroy();
-*/
-
-	// Angles are mirrored across the the X-axis. Its fucking me up a bit to be honest
-	if(cursors.right.isDown) {
-		this.weapon.fireAngle = 0;
-		if(cursors.down.isDown && this.jumping) {
-			this.weapon.fireAngle = 45;
+		// Angles are mirrored across the the X-axis. Its fucking me up a bit to be honest
+		if(cursors.right.isDown) {
+			this.weapon.fireAngle = 0;
+			
+			triggerBox = this.triggerBoxHorizontal;
+			triggerBox.anchor.setTo(0,.5);
+			triggerBox.body.x = this.x + this.width/2;
+			triggerBox.body.y = this.y - this.height/4;
+			
+			if(cursors.down.isDown && this.jumping) {
+				this.weapon.fireAngle = 45;
+			}
 		}
-	}
-	else if(cursors.left.isDown) {
-		this.weapon.fireAngle = 180;
-		if(cursors.down.isDown && this.jumping) {
-			this.weapon.fireAngle = 135;
+		else if(cursors.left.isDown) {
+			this.weapon.fireAngle = 180;
+			
+			triggerBox = this.triggerBoxHorizontal;
+			triggerBox.anchor.setTo(1,.5);
+			triggerBox.body.x = this.x - this.width/2 - this.attackDistance;
+			triggerBox.body.y = this.y - this.height/4;
+			
+			if(cursors.down.isDown && this.jumping) {
+				this.weapon.fireAngle = 135;
+			}
 		}
+		else if(cursors.down.isDown) {
+			this.body.velocity.y = -325;
+			this.weapon.fireAngle = 90;
+			
+			triggerBox = this.triggerBoxVertical;
+			triggerBox.anchor.setTo(.5, 1);
+			triggerBox.body.x = this.x;
+			triggerBox.body.y = this.y - this.height/2;
+		}
+		else if(this.facingForward) {
+			this.weapon.fireAngle = 0;
+			
+			triggerBox = this.triggerBoxHorizontal;
+			triggerBox.anchor.setTo(0,.5);
+			triggerBox.body.x = this.x + this.width/2;
+			triggerBox.body.y = this.y - this.height/4;
+		}
+		else {
+			this.weapon.fireAngle = 180;
+			
+			triggerBox = this.triggerBoxHorizontal;
+			triggerBox.anchor.setTo(1,.5);
+			triggerBox.body.x = this.x - this.width/2 - this.attackDistance;
+			triggerBox.body.y = this.y - this.height/4;
+		}
+		
+		if(this.game.physics.arcade.overlap(triggerBox, this.enemies.enemies.children, this.targeting, null, this)) {
+			console.log("TriggerBox has hit an enemy. Targeting enemy");
+		}
+		else {
+			this.weapon.fire();
+		}			
 	}
-	this.weapon.fire();
-	
+}
+
+Player.prototype.targeting = function(triggerBox, enemy) {
+	this.weapon.fireAtSprite(enemy);
 }

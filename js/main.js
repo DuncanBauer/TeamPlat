@@ -55,6 +55,5 @@ Game.prototype = {
 
 	render: function() {
 		this.game.debug.cameraInfo(this.game.camera, 32, 32);
-		
 	}
 }

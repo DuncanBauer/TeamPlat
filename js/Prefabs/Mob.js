@@ -24,3 +24,7 @@ Mob.prototype = Object.create(Phaser.Sprite.prototype);
 Mob.prototype.update = function() {
 	this.game.physics.arcade.collide(this, this.myWorld.floor.children);
 }
+
+Mob.prototype.death = function() {
+	this.kill();
+}
