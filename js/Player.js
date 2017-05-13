@@ -385,65 +385,85 @@ Player.prototype.attack = function() {
 		var triggerBox = null;
 
 		// Angles are mirrored across the the X-axis. Its fucking me up a bit to be honest
+		// If player is aiming right
 		if(cursors.right.isDown) {
+			// Sets firing angle
 			this.weapon.fireAngle = 0;
 			
-			triggerBox = this.triggerBoxHorizontal;
-			triggerBox.anchor.setTo(0,.5);
-			triggerBox.body.x = this.x + this.width/2;
-			triggerBox.body.y = this.y - this.height/4;
+			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
+			triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 0, .5, this.x + this.width/2, this.y - this.height/4);
 			
+			// To fire at an angle downward while in the air
 			if(cursors.down.isDown && this.jumping) {
+				// Sets firing angle
 				this.weapon.fireAngle = 45;
 			}
 		}
+		// If player is aiming left
 		else if(cursors.left.isDown) {
+			// Sets firing angle
 			this.weapon.fireAngle = 180;
 			
-			triggerBox = this.triggerBoxHorizontal;
-			triggerBox.anchor.setTo(1,.5);
-			triggerBox.body.x = this.x - this.width/2 - this.attackDistance;
-			triggerBox.body.y = this.y - this.height/4;
+			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
+			triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 1, .5, this.x - this.width/2 - this.attackDistance, this.y - this.height/4);
 			
+			// To fire at an angle downward while in the air
 			if(cursors.down.isDown && this.jumping) {
+				// Sets firing angle
 				this.weapon.fireAngle = 135;
 			}
 		}
+		// If player is aiming down
 		else if(cursors.down.isDown) {
+			// Bounce the player up when firing directly down
 			this.body.velocity.y = -325;
+			// Sets firing angle
 			this.weapon.fireAngle = 90;
 			
-			triggerBox = this.triggerBoxVertical;
-			triggerBox.anchor.setTo(.5, 1);
-			triggerBox.body.x = this.x;
-			triggerBox.body.y = this.y - this.height/2;
+			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
+			triggerBox = this.setHitbox(triggerBox, this.triggerBoxVertical, .5, 1, this.x, this.y - this.height/2);
 		}
+		// If no button is being pressed, check which way the player is facing
 		else if(this.facingForward) {
+			// Sets firing angle
 			this.weapon.fireAngle = 0;
 			
-			triggerBox = this.triggerBoxHorizontal;
-			triggerBox.anchor.setTo(0,.5);
-			triggerBox.body.x = this.x + this.width/2;
-			triggerBox.body.y = this.y - this.height/4;
+			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
+			triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 0, .5, this.x + this.width/2, this.y - this.height/4);
 		}
 		else {
+			// Sets firing angle
 			this.weapon.fireAngle = 180;
 			
-			triggerBox = this.triggerBoxHorizontal;
-			triggerBox.anchor.setTo(1,.5);
-			triggerBox.body.x = this.x - this.width/2 - this.attackDistance;
-			triggerBox.body.y = this.y - this.height/4;
+			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
+			triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 1, .5, this.x - this.width/2 - this.attackDistance, this.y - this.height/4);
 		}
 		
+		// If an enemy is in the hitbox, the weapon will target it
 		if(this.game.physics.arcade.overlap(triggerBox, this.enemies.enemies.children, this.targeting, null, this)) {
 			console.log("TriggerBox has hit an enemy. Targeting enemy");
 		}
 		else {
+			// Else it fires at the intended angle
 			this.weapon.fire();
 		}			
 	}
 }
 
+/*
+ * IS CALLED WHEN THE PLAYER ATTACKS - SETS THE HITBOX POSITION AND SIZE 
+ */
+Player.prototype.setHitbox = function(triggerBox, triggerBoxNew, anchorX, anchorY, bodyX, bodyY) {
+	triggerBox = triggerBoxNew;
+	triggerBox.anchor.setTo(anchorX, anchorY);
+	triggerBox.body.x = bodyX;
+	triggerBox.body.y = bodyY;
+	return triggerBox;
+}
+
+/*
+ * IS CALLED WHEN THE HITBOX OVERLAPS AN ENEMY - TARGETS AND FIRES AT THE ENEMY 
+ */
 Player.prototype.targeting = function(triggerBox, enemy) {
 	this.weapon.fireAtSprite(enemy);
 }

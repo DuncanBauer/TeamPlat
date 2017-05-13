@@ -11,8 +11,8 @@ Game.prototype = {
 		
 		// Start music
 		this.bg_music = this.game.add.audio('bg_music');
-		bg_music.loopFull();
-		this.game.sound.play(bg_music);
+		this.bg_music.loopFull();
+		this.game.sound.play(this.bg_music);
 		
 		// BACKGROUND FIRST BECAUSE LAYERS AND SHIT
 		// Set Game background and adjust size
