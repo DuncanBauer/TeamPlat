@@ -1,4 +1,4 @@
-var Game = function(game, score) {
+var Game = function(game) {
 };
 Game.prototype = {	
 	create: function() {
@@ -10,7 +10,7 @@ Game.prototype = {
 		this.game.time.advancedTiming = true;
 		
 		// Start music
-		var bg_music = this.game.add.audio('bg_music');
+		this.bg_music = this.game.add.audio('bg_music');
 		bg_music.loopFull();
 		this.game.sound.play(bg_music);
 		
@@ -30,14 +30,12 @@ Game.prototype = {
 		this.mobManager = new MobManager(this.game);
 		this.mobManager.spawnEnemies(this.world);
 		
-		//this.player = new Player(this.game, 'character_atlas', 'WalkLeft_MouthOpen_Purple3', this.game.width/2, this.game.height/2, this.world, this.mobManager);
 		this.player = new Player(this.game, 'player_atlas', 'player_1', this.game.width/2, this.game.height/2, this.world, this.mobManager);
 		this.game.add.existing(this.player);
 
 		// Create camera and lock it to the player with mario-esque deadzone
 		this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);		
 		this.game.camera.deadzone = new Phaser.Rectangle(400, 250, 200, 70);
-
 	},
 	
 	update:function() {	
@@ -46,8 +44,6 @@ Game.prototype = {
 	// End the game and return to the main menu
 	endGame: function(end) {
 		console.log('Game: endGame');
-		this.speed = 5;
-		score = 0;
 		
 		// Return to MainMenu state
 		this.game.state.start('MainMenu');
