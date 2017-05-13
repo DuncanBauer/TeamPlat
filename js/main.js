@@ -21,7 +21,7 @@ Game.prototype = {
 		this.bkgd.width = 1000;	
 
 		// Set world bounds
-		this.game.world.setBounds(0, 0, 2400,1800);
+		this.game.world.setBounds(0, 0, 2400, 1800);
 
 		// Create world
 		this.world = new World(this.game);
@@ -36,7 +36,7 @@ Game.prototype = {
 
 		// Create camera and lock it to the player with mario-esque deadzone
 		this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);		
-		this.game.camera.deadzone = new Phaser.Rectangle(100, 100, 400, 400);
+		this.game.camera.deadzone = new Phaser.Rectangle(400, 250, 200, 70);
 
 	},
 	
