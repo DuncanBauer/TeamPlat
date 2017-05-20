@@ -27,7 +27,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
 	this.attackDistance = 250;	
 	
 	// Setting up player weapon
-	this.weapon = this.game.add.weapon(3, 'spike0');
+	this.weapon = this.game.add.weapon(100, 'spike0');
 	this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
 	this.weapon.fireAngle = 270; // In degrees
 	this.weapon.bulletSpeed = 1250;
