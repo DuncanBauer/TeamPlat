@@ -59,12 +59,12 @@ function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
 	 * HITBOXES
 	 */	 
 	// Horizontal hitbox
-	this.triggerBoxHorizontal = this.game.add.sprite(0, 0, null);
+	this.triggerBoxHorizontal = this.game.add.sprite(0, 0, 'spike0');
 	this.game.physics.enable(this.triggerBoxHorizontal, Phaser.Physics.ARCADE);
 	this.triggerBoxHorizontal.body.setSize(this.attackDistance, this.height/2);
 	
 	// Vertical hitbox
-	this.triggerBoxVertical = this.game.add.sprite(0, 0, null);
+	this.triggerBoxVertical = this.game.add.sprite(0, 0, 'spike0');
 	this.game.physics.enable(this.triggerBoxVertical, Phaser.Physics.ARCADE);
 	this.triggerBoxVertical.body.setSize(Math.abs(this.width), this.attackDistance);
 	

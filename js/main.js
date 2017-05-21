@@ -27,8 +27,7 @@ Game.prototype = {
 		this.world = new World(this.game);
 		this.world.loadFloor();
 
-		this.mobManager = new MobManager(this.game);
-		this.mobManager.spawnEnemies(this.world);
+		this.mobManager = new MobManager(this.game, this.world);
 		
 		this.player = new Player(this.game, 'player_atlas', 'player_1', this.game.width/2, this.game.height/2, this.world, this.mobManager);
 		this.game.add.existing(this.player);
@@ -36,6 +35,8 @@ Game.prototype = {
 		// Create camera and lock it to the player with mario-esque deadzone
 		this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);		
 		this.game.camera.deadzone = new Phaser.Rectangle(400, 250, 200, 70);
+		
+		this.mobManager.spawnEnemies(this.player);
 	},
 	
 	update:function() {	
