@@ -25,7 +25,6 @@ Game.prototype = {
 
 		// Create world
 		this.world = new World(this.game);
-		this.world.loadFloor();
 
 		this.mobManager = new MobManager(this.game);
 		this.mobManager.spawnEnemies(this.world);

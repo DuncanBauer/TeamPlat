@@ -89,7 +89,7 @@ Player.prototype = Object.create(Phaser.Sprite.prototype);
 Player.prototype.update = function() {		
 	this.dashChecking();
 	
-	if(this.game.physics.arcade.collide(this, this.myWorld.floor.children)) {
+	if(this.game.physics.arcade.collide(this, this.myWorld.ground.children)) {
 		this.touchDown();
 		// cancel dash when hitting floor
 		if(this.dashingDown){
@@ -97,6 +97,8 @@ Player.prototype.update = function() {
 		}
 	}
 	
+
+	this.game.physics.arcade.collide(this, this.myWorld.walls.children);
 	var cursors = this.game.input.keyboard.createCursorKeys();
 	if(cursors.left.isDown){
 		this.moveLeft();

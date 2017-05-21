@@ -22,7 +22,7 @@ function Mob(game, atlas_key, atlas_frame, x, y, world) {
 
 Mob.prototype = Object.create(Phaser.Sprite.prototype);
 Mob.prototype.update = function() {
-	this.game.physics.arcade.collide(this, this.myWorld.floor.children);
+	this.game.physics.arcade.collide(this, this.myWorld.ground.children);
 }
 
 Mob.prototype.death = function() {
