@@ -33,6 +33,10 @@ Game.prototype = {
 		this.player = new Player(this.game, 'player_atlas', 'player_1', this.game.width/2, this.game.height/2, this.world, this.mobManager);
 		this.game.add.existing(this.player);
 
+		// Create a checkpoint
+		this.checktest = new Checkpoint(this.game, 'player_test', this.player, this.player.x-100, this.player.y+100);
+		this.game.add.existing(this.checktest);
+
 		// Create camera and lock it to the player with mario-esque deadzone
 		this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);		
 		this.game.camera.deadzone = new Phaser.Rectangle(400, 250, 200, 70);
