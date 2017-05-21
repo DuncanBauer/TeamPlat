@@ -3,4 +3,3 @@
 - Add cooldown to dashing (Complete)
 - (Already implemented but up for more discussion) Disable gravity during dash, and potentially for a short amount of time after the dash
 - Set up camera
-- Bug where while falling, player can slow their descent by repeatedly clicking the left or right directional keys
