@@ -25,11 +25,8 @@ Game.prototype = {
 
 		// Create world
 		this.world = new World(this.game);
-
-		this.mobManager = new MobManager(this.game);
-		this.mobManager.spawnEnemies(this.world);
 		
-		this.player = new Player(this.game, 'player_atlas', 'player_1', this.game.width/2, this.game.height/2, this.world, this.mobManager);
+		this.player = new Player(this.game, 'player_atlas', 'player_1', this.game.width/2, this.game.height/2, this.world);
 		this.game.add.existing(this.player);
 
 		// Create a checkpoint

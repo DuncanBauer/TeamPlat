@@ -1,4 +1,4 @@
-function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
+function Player(game, atlas_key, atlas_frame, x, y, world) {
 //function Player(game, sprite, x, y, world, enemies) {
 	Phaser.Sprite.call(this, game, x, y, atlas_key, atlas_frame);
 //	Phaser.Sprite.call(this, game, x, y, sprite);
@@ -88,7 +88,6 @@ function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
 	this.game.input.keyboard.addKey(Phaser.Keyboard.A).onDown.add(this.attack, this);
 
 	this.myWorld = world;
-	this.enemies = enemies;
 }
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -113,7 +112,7 @@ Player.prototype.update = function() {
 	}
 	
 /*
-	if(this.game.physics.arcade.overlap(this.weapon.bullets, this.enemies.enemies, this.enemyHit, null, this)) {
+	if(this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)) {
 		console.log("HIT");
 	}
 */
@@ -458,7 +457,7 @@ Player.prototype.attack = function() {
 		}
 		
 		// If an enemy is in the hitbox, the weapon will target it
-		if(this.game.physics.arcade.overlap(triggerBox, this.enemies.enemies.children, this.targeting, null, this)) {
+		if(this.game.physics.arcade.overlap(triggerBox, this.myWorld.enemies.children, this.targeting, null, this)) {
 			console.log("TriggerBox has hit an enemy. Targeting enemy");
 		}
 		else {
