@@ -104,7 +104,19 @@ Player.prototype.update = function() {
 	}
 	
 
-	this.game.physics.arcade.collide(this, this.myWorld.walls.children);
+	if(this.game.physics.arcade.collide(this, this.myWorld.walls.children)){
+		if(this.body.drag.y == 0){
+			this.body.drag.y = 500;
+			this.doubleJumpd = false;
+			console.log("drag "+this.body.drag.y);
+		}
+	}else{
+		if(this.body.drag.y == 500){
+			this.body.drag.y = 0;
+			console.log("drag "+this.body.drag.y);
+		}
+	}
+
 	var cursors = this.game.input.keyboard.createCursorKeys();
 	if(cursors.left.isDown){
 		this.moveLeft();
@@ -129,9 +141,9 @@ Player.prototype.moveRight = function() {
 	// Must be editted for movement in air
 	//if(this.body.touching.down) {		
 	//  Move to the right
-		if(this.body.velocity.x < -100){
+		if(this.body.velocity.x < -200){
 			// tiny pull back when quick turning
-			this.body.velocity.x = -50;
+			this.body.velocity.x = -150;
 		}
 		this.facingForward = true;
 		this.scale.x = 1/3;
@@ -144,9 +156,9 @@ Player.prototype.moveLeft = function() {
 	// Must be editted for movement in air
 	//if(this.body.touching.down) {		
 		//  Move to the left
-		if(this.body.velocity.x > 100){
+		if(this.body.velocity.x > 200){
 			// tiny pull back when quick turning
-			this.body.velocity.x = 50;
+			this.body.velocity.x = 150;
 		}
 		this.facingForward = false;
 		this.scale.x = -1/3;
