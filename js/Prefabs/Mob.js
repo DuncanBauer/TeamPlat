@@ -40,7 +40,8 @@ Mob.prototype = Object.create(Phaser.Sprite.prototype);
 Mob.prototype.update = function() {
 	this.game.physics.arcade.collide(this, this.myWorld.ground.children);
 	this.stateInterpreter();
-	console.log(this.detectPlayer());
+	// this log line makes the game lag a lot only use it when you really need to please ;)
+	//console.log(this.detectPlayer());
 	
 	if(this.detectPlayer()) {
 		this.state = 3;

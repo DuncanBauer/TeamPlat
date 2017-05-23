@@ -104,7 +104,18 @@ Player.prototype.update = function() {
 	}
 	
 
-	this.game.physics.arcade.collide(this, this.myWorld.walls.children);
+	/* Initial wall collision handling (seems to work great so far)
+	**********************************/
+	this.game.physics.arcade.collide(this, this.myWorld.walls.children, this.wallCollide, null, this);
+	// have to call this if statement outside collide function otherwise
+	// the logic will never call it
+	if(this.body.drag.y == 500 && !this.body.touching.right){
+		this.body.drag.y = 0;
+		this.wallX = null;
+		console.log("drag "+this.body.drag.y);
+	}
+	/*********************************/
+
 	var cursors = this.game.input.keyboard.createCursorKeys();
 	if(cursors.left.isDown){
 		this.moveLeft();
@@ -118,6 +129,23 @@ Player.prototype.update = function() {
 
 }
 
+Player.prototype.wallCollide = function (player, wall) {
+	if(this.body.drag.y == 0){
+		this.body.drag.y = 500;
+		if(this.wallX == null){this.wallX = this.x;}
+		this.doubleJumpd = false;
+		// this keeps the player sprite in place if it slips between tiles
+		/* there is a small issue where it does a drag change when you pass almost if
+			not every tile seam, not sure if this will cause any noticeable gameplay
+			problems yet
+		*/
+		if(this.x != this.wallX){
+			this.x = this.wallX;
+		}
+		console.log("drag "+this.body.drag.y);
+	}
+}
+
 Player.prototype.enemyHit = function(bullet, enemy) {
 	enemy.death();
 	bullet.kill();
@@ -128,9 +156,9 @@ Player.prototype.moveRight = function() {
 	// Must be editted for movement in air
 	//if(this.body.touching.down) {		
 	//  Move to the right
-		if(this.body.velocity.x < -100){
+		if(this.body.velocity.x < -200){
 			// tiny pull back when quick turning
-			this.body.velocity.x = -50;
+			this.body.velocity.x = -150;
 		}
 		this.facingForward = true;
 		this.scale.x = 1/3;
@@ -143,9 +171,9 @@ Player.prototype.moveLeft = function() {
 	// Must be editted for movement in air
 	//if(this.body.touching.down) {		
 		//  Move to the left
-		if(this.body.velocity.x > 100){
+		if(this.body.velocity.x > 200){
 			// tiny pull back when quick turning
-			this.body.velocity.x = 50;
+			this.body.velocity.x = 150;
 		}
 		this.facingForward = false;
 		this.scale.x = -1/3;
