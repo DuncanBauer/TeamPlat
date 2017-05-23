@@ -34,3 +34,9 @@ World.prototype.loadEnemies = function() {
 
 World.prototype.loadObstacles = function() {
 }
+
+World.prototype.resetWorld = function() {
+	this.enemies.forEach(function(enemy) {
+		enemy.reinitialize();
+	}, Mob);
+}
