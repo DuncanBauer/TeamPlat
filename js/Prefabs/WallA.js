@@ -1,15 +1,15 @@
-function WallA(game) {
+function WallA(game, atlas, frame, tileCount) {
 	Phaser.Group.call(this, game);
 	this.game = game;
-	this.createWall();
+	this.createWall(atlas, frame, tileCount);
 };
 
 WallA.prototype = Object.create(Phaser.Group.prototype);
 WallA.prototype.constructor = WallA;
 
-WallA.prototype.createWall = function() {
-	for(i=0; i<1000/64; i+=1) {
-		let temp = this.add(new Tile(this.game, 'tile_atlas', 'WaveCandy_Square', 32, 568 + (i * 32), 0.5, 0.5));
+WallA.prototype.createWall = function(atlas, frame, tileCount) {
+	for(i=0; i<tileCount; i+=1) {
+		let temp = this.add(new Tile(this.game, atlas, frame, 32, 568 + (i * 32), 0.5, 0.5));
 		this.game.physics.arcade.enable(temp);
 		temp.rotation = -Math.PI/2;
 		temp.body.checkCollision.up = false;

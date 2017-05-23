@@ -43,8 +43,10 @@ Mob.prototype.update = function() {
 	// this log line makes the game lag a lot only use it when you really need to please ;)
 	//console.log(this.detectPlayer());
 	
-	if(this.detectPlayer()) {
-		this.state = 3;
+	if(this.state != 3) {
+		if(this.detectPlayer()) {
+			this.state = 3;
+		}
 	}
 }
 
