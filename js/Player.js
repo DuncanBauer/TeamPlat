@@ -8,7 +8,8 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	//this.animations.add('walk', Phaser.Animation.generateFrameNames('WalkLeft_MouthOpen_Purple', 1, 3, '', 1), 23, true);
 	//this.animations.add('walk', Phaser.Animation.generateFrameNames('player_', 1, 2, '', 0), 10, true);
 	//this.animations.add('idle', ['WalkLeft_MouthOpen_Purple3'], 30, false);
-	this.animations.add('walk', [1,2,1,4],5, true);
+	this.animations.add('dash', [8],5, true);
+	this.animations.add('walk', [1,2,1,4], 5, true);
 	this.animations.add('stand', [1, 1], 5, false);
 		
 	// Set scale and physics for character
@@ -110,7 +111,7 @@ Player.prototype.update = function() {
 	this.game.physics.arcade.collide(this, this.myWorld.walls.children, this.wallCollide, null, this);
 	// have to call this if statement outside collide function otherwise
 	// the logic will never call it
-	if(this.body.drag.y == 500 && !this.body.touching.right){
+	if(this.body.drag.y == 700 && (!this.body.touching.right && !this.body.touching.left)){
 		this.body.drag.y = 0;
 		this.wallX = null;
 		this.onWall = false;
@@ -121,11 +122,11 @@ Player.prototype.update = function() {
 	var cursors = this.game.input.keyboard.createCursorKeys();
 	if(cursors.left.isDown){
 		this.moveLeft();
-		this.animations.play('walk');
+		if(!this.jumping && !this.dashing){this.animations.play('walk');}
 	}else if(cursors.right.isDown){
 		this.moveRight();
-		this.animations.play('walk');
-	}else{
+		if(!this.jumping && !this.dashing){this.animations.play('walk');}
+	}else if(this.body.velocity.x == 0){
 		this.animations.play('stand');	
 	}
 	
@@ -139,10 +140,11 @@ Player.prototype.update = function() {
 
 Player.prototype.wallCollide = function (player, wall) {
 	if(this.body.drag.y == 0){
-		this.body.drag.y = 500;
+		if(this.dashing){this.dashCancel();}
+		this.body.drag.y = 700;
+		this.body.velocity.y = 0;
 		if(this.wallX == null){this.wallX = this.x;}
 		this.onWall = true;
-		this.doubleJumpd = false;
 		// this keeps the player sprite in place if it slips between tiles
 		/* there is a small issue where it does a drag change when you pass almost if
 			not every tile seam, not sure if this will cause any noticeable gameplay
@@ -211,6 +213,7 @@ Player.prototype.dash = function() {
 			var cursors = this.game.input.keyboard.createCursorKeys();	
 			
 			this.dashing = true;
+			this.animations.play('dash');
 			
 			// Stops falling pre-dash
 			this.oldVelx = this.body.velocity.x;
@@ -294,7 +297,7 @@ Player.prototype.jump = function() {
 		this.body.velocity.y = -500;	
 	}else if(this.onWall){
 		this.body.velocity.y = -500;
-		this.body.velocity.x = 300*Math.sign(this.scale.x)*(-1);
+		this.body.velocity.x = -300*Math.sign(this.scale.x);
 		console.log(this.body.velocity.x);
 	}
 }
