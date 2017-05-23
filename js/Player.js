@@ -1,4 +1,4 @@
-function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
+function Player(game, atlas_key, atlas_frame, x, y, world) {
 //function Player(game, sprite, x, y, world, enemies) {
 	Phaser.Sprite.call(this, game, x, y, atlas_key, atlas_frame);
 //	Phaser.Sprite.call(this, game, x, y, sprite);
@@ -56,6 +56,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
 	this.dashingUp = false;
 	this.dashingDown = false;
 	this.justDashed = false;
+	this.dashing = false;
 
 	this.oldPosX = 0;
 	this.oldPosY = 0;
@@ -88,7 +89,6 @@ function Player(game, atlas_key, atlas_frame, x, y, world, enemies) {
 	this.game.input.keyboard.addKey(Phaser.Keyboard.A).onDown.add(this.attack, this);
 
 	this.myWorld = world;
-	this.enemies = enemies;
 }
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -124,11 +124,10 @@ Player.prototype.update = function() {
 		this.moveRight();
 	}
 	
-/*
-	if(this.game.physics.arcade.overlap(this.weapon.bullets, this.enemies.enemies, this.enemyHit, null, this)) {
-		console.log("HIT");
-	}
-*/
+	this.game.physics.arcade.overlap(this, this.myWorld.enemies.children, this.determineLoser, null, this)
+	
+	this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
+
 }
 
 Player.prototype.enemyHit = function(bullet, enemy) {
@@ -185,6 +184,8 @@ Player.prototype.dash = function() {
 			// Starts cooldown
 			this.dashTimeCheck = this.game.time.now;
 			var cursors = this.game.input.keyboard.createCursorKeys();	
+			
+			this.dashing = true;
 			
 			// Stops falling pre-dash
 			this.oldVelx = this.body.velocity.x;
@@ -293,6 +294,7 @@ Player.prototype.dashCancel = function() {
 	this.dashingUp = false;
 	this.dashingDown = false;
 	this.justDashed = true;
+	this.dashing = true;
 }
 
 /*
@@ -397,6 +399,7 @@ Player.prototype.dashChecking = function() {
 			this.gravityTimeCheck = this.game.time.now;
 			this.body.maxVelocity.x = 350;
 			this.justDashed = false;
+			this.dashing = false;
 			console.log("just dashed");
 		}
 		
@@ -470,7 +473,7 @@ Player.prototype.attack = function() {
 		}
 		
 		// If an enemy is in the hitbox, the weapon will target it
-		if(this.game.physics.arcade.overlap(triggerBox, this.enemies.enemies.children, this.targeting, null, this)) {
+		if(this.game.physics.arcade.overlap(triggerBox, this.myWorld.enemies.children, this.targeting, null, this)) {
 			console.log("TriggerBox has hit an enemy. Targeting enemy");
 		}
 		else {
@@ -496,4 +499,26 @@ Player.prototype.setHitbox = function(triggerBox, triggerBoxNew, anchorX, anchor
  */
 Player.prototype.targeting = function(triggerBox, enemy) {
 	this.weapon.fireAtSprite(enemy);
+}
+
+Player.prototype.respawn = function() {
+	if(this.dashingBack || this.dashingDown || this.dashingUp || this.dashingForward) {
+		this.dashCancel();
+	}
+	this.x = this.checkpointX;
+	this.y = this.checkpointY;
+	this.body.velocity.x = 0;
+	this.body.velocity.y = 0;
+	this.body.acceleration.x = 0;
+	this.body.acceleration.y = 0;
+	this.myWorld.resetWorld();
+}
+
+Player.prototype.determineLoser = function(player, enemy) {
+	if(!this.dashing) {
+		player.respawn();
+	}
+	else {
+		enemy.death();
+	}
 }
