@@ -1,4 +1,4 @@
-function Tile(game, atlas_key, atlas_frame, x, y, scaleX, scaleY, _rotation) {
+function Obstacle(game, atlas_key, atlas_frame, x, y, scaleX, scaleY, _rotation) {
 	Phaser.Sprite.call(this, game, x, y, atlas_key, atlas_frame);
 
 	this.game.physics.arcade.enable(this);
@@ -9,5 +9,5 @@ function Tile(game, atlas_key, atlas_frame, x, y, scaleX, scaleY, _rotation) {
 	this.rotation = _rotation;
 }
 
-Tile.prototype = Object.create(Phaser.Sprite.prototype);
-Tile.prototype.constructor = Tile;
+Obstacle.prototype = Object.create(Phaser.Sprite.prototype);
+Obstacle.prototype.constructor = Obstacle;
