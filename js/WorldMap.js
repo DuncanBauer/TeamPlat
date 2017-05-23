@@ -48,6 +48,30 @@ World.prototype.loadFloor = function(atlas, frame) {
 	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 6));
 	temp.x = 408;
 	temp.y = 448;
+
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 13));
+	temp.x = 1308;
+	temp.y = 648;
+
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 6));
+	temp.x = 1308 + (5*32);
+	temp.y = 348;
+
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 7));
+	temp.x = 1308 - (15*32);
+	temp.y = 98;
+
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 4));
+	temp.x = 1308 + (16 * 32);
+	temp.y = 448;
+
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 7));
+	temp.x = 1308 + (16 * 32);
+	temp.y = 1148;
+
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 7));
+	temp.x = 1308 + (30 * 32);
+	temp.y = 1348;
 }
 
 World.prototype.loadWalls = function(atlas, frame) {
@@ -66,10 +90,45 @@ World.prototype.loadWalls = function(atlas, frame) {
 	temp = this.walls.add(new WallA(this.game, atlas, frame, 20));
 	temp.x = 280;
 	temp.y = 704;
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 1));
+	temp.x = 280;
+	temp.y = 704
 
 	temp = this.walls.add(new WallA(this.game, atlas, frame, 20));
 	temp.x = 408;
 	temp.y = 576;
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 1));
+	temp.x = 408;
+	temp.y = 576;
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 14));
+	temp.x = 1308 + (12 * 32);
+	temp.y = 648;
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 15));
+	temp.x = 1308 + (16 * 32);
+	temp.y = 448;
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 20));
+	temp.x = 1308 + (19 * 32);
+	temp.y = 448 - (19 * 32);
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 1));
+	temp.x = 1308 + (19 * 32);
+	temp.y = 448 - (19 * 32);
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 18));
+	temp.x = 1308 + (23 * 32);
+	temp.y = 416;
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 1));
+	temp.x = 1308 + (23 * 32);
+	temp.y = 416;
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 19));
+	temp.x = 1308 + (27 * 32);
+	temp.y = 480;
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 1));
+	temp.x = 1308 + (27 * 32);
+	temp.y = 480;
 }
 
 World.prototype.loadEnemies = function() {
