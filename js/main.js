@@ -22,7 +22,7 @@ Game.prototype = {
 		this.bkgd.fixedToCamera = true;
 
 		// Set world bounds
-		this.game.world.setBounds(0, 0, 2400, 1800);
+		this.game.world.setBounds(0, 0, 2400, 2400);
 
 		// Create world
 		this.world = new World(this.game);

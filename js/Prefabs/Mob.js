@@ -13,14 +13,13 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.body.gravity.y = 1000;
 	this.body.drag.x = 500;
 	this.body.maxVelocity.x = 350;
-	this.anchor.setTo(.5, .5);
+	this.anchor.setTo(0.5, 0.5);
 	this.scale.x = this.scale.x / 2;
 	this.scale.y = this.scale.y / 2;
 	this.animations.play('idle');
 	
 	this.detectionBox = this.game.add.sprite(0, 0, 'spike0');
 	this.game.physics.arcade.enable(this.detectionBox);
-	this.detectionBox.anchor.setTo(.5,.5);
 	this.detectionBox.body.setSize(324, 202);
 
 	this.state = 0; /*  
@@ -59,7 +58,7 @@ Mob.prototype.generateState = function() {
 Mob.prototype.stateInterpreter = function() {
 	if(this.game.time.now - this.stateStart > this.stateTime) {
 		if(this.state != 3) {
-			this.generateState();
+		//	this.generateState();
 		}
 		
 		switch(this.state) {
@@ -85,13 +84,15 @@ Mob.prototype.stateInterpreter = function() {
 }
 
 Mob.prototype.detectPlayer = function() {
-	this.repositionDetectionBox();
-	return this.game.physics.arcade.overlap(this.detectionBox, this.player)
+	let temp = this.repositionDetectionBox();
+	return this.game.physics.arcade.overlap(temp, this.player)
 }
 
 Mob.prototype.repositionDetectionBox = function() {
+	this.detectionBox.anchor.setTo(0.5,0.5);
 	this.detectionBox.body.x = this.body.x;
 	this.detectionBox.body.y = this.body.y;
+	return this.detectionBox;
 }
 
 Mob.prototype.death = function() {
