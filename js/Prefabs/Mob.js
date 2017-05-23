@@ -26,6 +26,7 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player) {
 
 Mob.prototype = Object.create(Phaser.Sprite.prototype);
 Mob.prototype.update = function() {
+<<<<<<< HEAD
 	this.game.physics.arcade.collide(this, this.myWorld.floor.children);
 	console.log(this.detectPlayer());
 }
@@ -38,6 +39,9 @@ Mob.prototype.detectPlayer = function() {
 Mob.prototype.repositionDetectionBox = function() {
 	this.detectionBox.body.x = this.body.x;
 	this.detectionBox.body.y = this.body.y;
+=======
+	this.game.physics.arcade.collide(this, this.myWorld.ground.children);
+>>>>>>> 6958547b14b577d944ddb68d152a3acec26b58b1
 }
 
 Mob.prototype.death = function() {

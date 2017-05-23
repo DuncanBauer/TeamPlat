@@ -1,26 +1,26 @@
-var World = function(game) {
-	this.floor = game.add.group();
-	this.floor.enableBody = true
+function World(game) {
+	Phaser.Group.call(this, game);
 	this.game = game;
+
+	this.ground = this.add(this.game.add.group());
+	this.walls  = this.add(this.game.add.group());
+	this.obstacles = this.add(this.game.add.group());
+	this.enemies = this.add(this.game.add.group());
+
+	this.loadFloor();
+	this.loadWalls();
 };
-	
-World.prototype = {
-	loadFloor: function(){
-		for(i=0; i<1000/64; i+=1){
-			let temp = this.floor.create(32 + (i * 64), 568, 'tile_atlas', 'WaveCandy_Square');		
-			temp.anchor.setTo(.5, .5);
-			temp.enableBody = true;
-			temp.body.immovable = true;
-			this.game.physics.enable(temp, Phaser.Physics.ARCADE);
-		}		
-	
-		for(i=0; i<1000/64; i+=1){
-			let temp = this.floor.create(800 + (i * 64), 368, 'tile_atlas', 'WaveCandy_Square');		
-			temp.anchor.setTo(.5, .5);
-			temp.enableBody = true;
-			temp.body.immovable = true;
-			this.game.physics.enable(temp, Phaser.Physics.ARCADE);
-		}
-	}
+
+World.prototype = Object.create(Phaser.Group.prototype);
+World.prototype.constructor = World;
+
+World.prototype.loadFloor = function() {
+	let temp = this.ground.add(new PlatformA(this.game));
+	temp.x = 500;
+}
+
+World.prototype.loadWalls = function() {
+	let temp = this.walls.add(new WallA(this.game));
+	temp.x = 500;
 }
 
