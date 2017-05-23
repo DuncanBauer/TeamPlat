@@ -104,18 +104,17 @@ Player.prototype.update = function() {
 	}
 	
 
-	if(this.game.physics.arcade.collide(this, this.myWorld.walls.children)){
-		if(this.body.drag.y == 0){
-			this.body.drag.y = 500;
-			this.doubleJumpd = false;
-			console.log("drag "+this.body.drag.y);
-		}
-	}else{
-		if(this.body.drag.y == 500){
-			this.body.drag.y = 0;
-			console.log("drag "+this.body.drag.y);
-		}
+	/* Initial wall collision handling (seems to work great so far)
+	**********************************/
+	this.game.physics.arcade.collide(this, this.myWorld.walls.children, this.wallCollide, null, this);
+	// have to call this if statement outside collide function otherwise
+	// the logic will never call it
+	if(this.body.drag.y == 500 && !this.body.touching.right){
+		this.body.drag.y = 0;
+		this.wallX = null;
+		console.log("drag "+this.body.drag.y);
 	}
+	/*********************************/
 
 	var cursors = this.game.input.keyboard.createCursorKeys();
 	if(cursors.left.isDown){
@@ -128,6 +127,23 @@ Player.prototype.update = function() {
 	
 	this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
 
+}
+
+Player.prototype.wallCollide = function (player, wall) {
+	if(this.body.drag.y == 0){
+		this.body.drag.y = 500;
+		if(this.wallX == null){this.wallX = this.x;}
+		this.doubleJumpd = false;
+		// this keeps the player sprite in place if it slips between tiles
+		/* there is a small issue where it does a drag change when you pass almost if
+			not every tile seam, not sure if this will cause any noticeable gameplay
+			problems yet
+		*/
+		if(this.x != this.wallX){
+			this.x = this.wallX;
+		}
+		console.log("drag "+this.body.drag.y);
+	}
 }
 
 Player.prototype.enemyHit = function(bullet, enemy) {

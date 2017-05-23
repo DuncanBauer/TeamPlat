@@ -19,6 +19,7 @@ Game.prototype = {
 		this.bkgd = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'background00');
 		this.bkgd.height = 600;
 		this.bkgd.width = 1000;	
+		this.bkgd.fixedToCamera = true;
 
 		// Set world bounds
 		this.game.world.setBounds(0, 0, 2400, 1800);

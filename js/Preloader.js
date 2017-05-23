@@ -19,6 +19,7 @@ Preloader.prototype = {
 		this.game.load.atlas('tile_atlas', '/img/tiles.png', '/img/tiles.json');
 		this.game.load.atlas('coin_atlas', '/img/Coin.png', '/img/coin.json');
 		this.game.load.atlas('star_atlas', '/img/star.png', '/img/star.json');
+		this.game.load.atlas('platform_atlas', '/img/platforms.png', '/img/platforms.json');
 		this.game.load.image('spike0', '/img/spike0.png');
 		this.game.load.spritesheet('checkpoint', '', 100, 100);
 		this.game.load.spritesheet('player_test', '/img/Player.png', 123, 164);
