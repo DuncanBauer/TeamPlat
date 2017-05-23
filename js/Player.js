@@ -9,6 +9,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	//this.animations.add('walk', Phaser.Animation.generateFrameNames('player_', 1, 2, '', 0), 10, true);
 	//this.animations.add('idle', ['WalkLeft_MouthOpen_Purple3'], 30, false);
 	this.animations.add('walk', [1,2,1,4],5, true);
+	this.animations.add('stand', [1, 1], 5, false);
 		
 	// Set scale and physics for character
 	this.body.collideWorldBounds = true;
@@ -112,6 +113,7 @@ Player.prototype.update = function() {
 	if(this.body.drag.y == 500 && !this.body.touching.right){
 		this.body.drag.y = 0;
 		this.wallX = null;
+		this.onWall = false;
 		console.log("drag "+this.body.drag.y);
 	}
 	/*********************************/
@@ -119,8 +121,12 @@ Player.prototype.update = function() {
 	var cursors = this.game.input.keyboard.createCursorKeys();
 	if(cursors.left.isDown){
 		this.moveLeft();
+		this.animations.play('walk');
 	}else if(cursors.right.isDown){
 		this.moveRight();
+		this.animations.play('walk');
+	}else{
+		this.animations.play('stand');	
 	}
 	
 	this.game.physics.arcade.overlap(this, this.myWorld.enemies.children, this.determineLoser, null, this)
@@ -133,6 +139,7 @@ Player.prototype.wallCollide = function (player, wall) {
 	if(this.body.drag.y == 0){
 		this.body.drag.y = 500;
 		if(this.wallX == null){this.wallX = this.x;}
+		this.onWall = true;
 		this.doubleJumpd = false;
 		// this keeps the player sprite in place if it slips between tiles
 		/* there is a small issue where it does a drag change when you pass almost if
@@ -273,7 +280,7 @@ Player.prototype.dash = function() {
  */
 Player.prototype.jump = function() {
 	// Executes if the player is not jumping
-	if(!this.jumping || !this.doubleJumpd) {
+	if((!this.jumping || !this.doubleJumpd) && !this.onWall) {
 		if(this.jumping){
 			this.doubleJumpd = true;
 		}else{
@@ -283,6 +290,10 @@ Player.prototype.jump = function() {
 		this.game.sound.play('player_jump');
 		// Jumps
 		this.body.velocity.y = -500;	
+	}else if(this.onWall){
+		this.body.velocity.y = -500;
+		this.body.velocity.x = 300*Math.sign(this.scale.x)*(-1);
+		console.log(this.body.velocity.x);
 	}
 }
 
