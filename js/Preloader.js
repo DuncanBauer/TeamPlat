@@ -9,7 +9,7 @@ Preloader.prototype = {
 		
 		// Load Images
 		// Load MainMenu assets
-		this.game.load.image('background00', '/img/background00.png');
+		this.game.load.image('background00', '/img/background01.png');
 		this.game.load.image('play_Button', '/img/play_button.png');
 		this.game.load.image('power_Button', '/img/power_Button.png');
 		
