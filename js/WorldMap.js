@@ -7,8 +7,8 @@ function World(game) {
 	this.obstacles = this.add(this.game.add.group());
 	this.enemies = this.add(this.game.add.group());
 
-	this.loadFloor();
-	this.loadWalls();
+	this.loadFloor('platform_atlas', 'platform0');
+	this.loadWalls('platform_atlas', 'platform0');
 	this.loadEnemies();
 	this.loadObstacles();
 };
@@ -16,14 +16,14 @@ function World(game) {
 World.prototype = Object.create(Phaser.Group.prototype);
 World.prototype.constructor = World;
 
-World.prototype.loadFloor = function() {
-	let temp = this.ground.add(new PlatformA(this.game));
+World.prototype.loadFloor = function(atlas, frame) {
+	let temp = this.ground.add(new PlatformA(this.game, atlas, frame, 15));
 	temp.x = 500;
 	temp.y = 500;
 }
 
-World.prototype.loadWalls = function() {
-	let temp = this.walls.add(new WallA(this.game));
+World.prototype.loadWalls = function(atlas, frame) {
+	let temp = this.walls.add(new WallA(this.game, atlas, frame, 15));
 	temp.x = 500;
 	temp.y = 500;
 }
