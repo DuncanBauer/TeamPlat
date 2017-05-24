@@ -66,11 +66,11 @@ World.prototype.loadFloor = function(atlas, frame) {
 	temp.y = 448;
 
 	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 7));
-	temp.x = 1308 + (16 * 32);
+	temp.x = 1820;
 	temp.y = 1148;
 
 	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 7));
-	temp.x = 1308 + (30 * 32);
+	temp.x = 1948;
 	temp.y = 1348;
 }
 
@@ -97,17 +97,16 @@ World.prototype.loadWalls = function(atlas, frame) {
 	temp = this.walls.add(new WallA(this.game, atlas, frame, 20));
 	temp.x = 408;
 	temp.y = 576;
-<<<<<<< HEAD
 
 	temp = this.walls.add(new WallA(this.game, atlas, frame, 30));
 	temp.x = 1493;
 	temp.y = 876;
-=======
+
 	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 1));
 	temp.x = 408;
 	temp.y = 576;
 
-	temp = this.walls.add(new WallA(this.game, atlas, frame, 14));
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 17));
 	temp.x = 1308 + (12 * 32);
 	temp.y = 648;
 
@@ -123,19 +122,23 @@ World.prototype.loadWalls = function(atlas, frame) {
 	temp.y = 448 - (19 * 32);
 
 	temp = this.walls.add(new WallA(this.game, atlas, frame, 18));
-	temp.x = 1308 + (23 * 32);
+	temp.x = 2044;
 	temp.y = 416;
 	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 1));
-	temp.x = 1308 + (23 * 32);
+	temp.x = 2044;
 	temp.y = 416;
 
-	temp = this.walls.add(new WallA(this.game, atlas, frame, 19));
-	temp.x = 1308 + (27 * 32);
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 23));
+	temp.x = 2172;
 	temp.y = 480;
 	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 1));
-	temp.x = 1308 + (27 * 32);
+	temp.x = 2172;
 	temp.y = 480;
->>>>>>> master
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 28));
+	temp.x = 2332;
+	temp.y = 480;
+
 }
 
 World.prototype.loadEnemies = function() {
@@ -150,6 +153,22 @@ World.prototype.loadObstacles = function(atlas, frame) {
 	temp = this.obstacles.add(new Obstacle(this.game, atlas, frame, 0, 0, 0.5, 0.5, 0, 5));
 	temp.x = 310;
 	temp.y = 1440;
+
+	temp = this.obstacles.add(new Obstacle(this.game, atlas, frame, 0, 0, 0.5, 0.5, 0, 3));
+	temp.x = 1724;
+	temp.y = 1180;
+
+	temp = this.obstacles.add(new Obstacle(this.game, atlas, frame, 0, 0, 0.5, 0.5, 0, 4));
+	temp.x = 2044;
+	temp.y = 1180;
+
+	temp = this.obstacles.add(new Obstacle(this.game, atlas, frame, 0, 0, 0.5, 0.5, Math.PI, 9));
+	temp.x = 2076;
+	temp.y = 308;
+
+	temp = this.obstacles.add(new Obstacle(this.game, atlas, frame, 0, 0, 0.5, 0.5, 0, 7));
+	temp.x = 2140;
+	temp.y = 1380;
 }
 
 World.prototype.resetWorld = function() {
