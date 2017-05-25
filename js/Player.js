@@ -134,7 +134,7 @@ Player.prototype.update = function() {
 	
 	this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
 
-	this.game.physics.arcade.overlap(this, this.myWorld.obstacles, this.stupidPlayer, null, this);
+	this.game.physics.arcade.overlap(this, this.myWorld.obstacles.children, this.stupidPlayer, null, this);
 
 }
 
