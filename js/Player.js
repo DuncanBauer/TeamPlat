@@ -8,7 +8,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	//this.animations.add('walk', Phaser.Animation.generateFrameNames('WalkLeft_MouthOpen_Purple', 1, 3, '', 1), 23, true);
 	//this.animations.add('walk', Phaser.Animation.generateFrameNames('player_', 1, 2, '', 0), 10, true);
 	//this.animations.add('idle', ['WalkLeft_MouthOpen_Purple3'], 30, false);
-	this.animations.add('dash', [8],5, true);
+	this.animations.add('dash', [3],5, true);
 	this.animations.add('walk', [1,2,1,4], 5, true);
 	this.animations.add('stand', [1, 1], 5, false);
 		
