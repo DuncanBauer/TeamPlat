@@ -21,6 +21,7 @@ Preloader.prototype = {
 		this.game.load.atlas('star_atlas', '/img/star.png', '/img/star.json');
 		this.game.load.atlas('platform_atlas', '/img/platforms.png', '/img/platforms.json');
 		this.game.load.image('lemon', '/img/lemon.png');
+		this.game.load.image('tileShade', '/img/tile_shadow.png');
 		this.game.load.spritesheet('checkpoint', '', 100, 100);
 		this.game.load.spritesheet('player_test', '/img/Player.png', 123, 164);
 		

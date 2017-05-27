@@ -6,6 +6,7 @@ function World(game) {
 	this.walls  = this.add(this.game.add.group());
 	this.obstacles = this.add(this.game.add.group());
 	this.enemies = this.add(this.game.add.group());
+	this.checkpoints = this.add(this.game.add.group());
 };
 
 World.prototype = Object.create(Phaser.Group.prototype);
@@ -17,10 +18,23 @@ World.prototype.retreivePlayer = function(player) {
 }
 
 World.prototype.init = function() {
-	this.loadFloor('platform_atlas', 'platform0');
 	this.loadWalls('platform_atlas', 'platform0');
+	this.loadFloor('platform_atlas', 'platform0');
+	this.loadChecks();
 	this.loadEnemies();
 	this.loadObstacles('platform_atlas', 'bigspike');
+}
+
+World.prototype.loadChecks = function() {
+	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, this.thePlayer.x-100, this.thePlayer.y+100));
+
+	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 1265, 2300));
+
+	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 500, 1800));
+
+	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 110, 900));
+
+	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 1850, 1550));
 }
 
 World.prototype.loadFloor = function(atlas, frame) {
@@ -143,6 +157,10 @@ World.prototype.loadWalls = function(atlas, frame) {
 	temp.y = 480;
 
 	temp = this.walls.add(new WallA(this.game, atlas, frame, 28));
+	temp.x = 2332;
+	temp.y = 480;
+
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 1));
 	temp.x = 2332;
 	temp.y = 480;
 
