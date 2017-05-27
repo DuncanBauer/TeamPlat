@@ -29,6 +29,7 @@ Game.prototype = {
 		
 		this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2300, this.world);
 		this.game.add.existing(this.player);
+		this.world.retreivePlayer(this.player);
 
 		/* Create a checkpoint*/
 		this.checktest = new Checkpoint(this.game, 'player_test', this.player, this.player.x-100, this.player.y+100);
@@ -52,5 +53,9 @@ Game.prototype = {
 
 	render: function() {
 		this.game.debug.cameraInfo(this.game.camera, 32, 32);
+		this.game.debug.body(this.world.enemies.children[0]); 	
+		this.game.debug.body(this.world.enemies.children[0].box); 	
+		this.game.debug.body(this.world.enemies.children[0].killBox); 	
+		this.game.debug.body(this.player);
 	}
 }

@@ -6,15 +6,22 @@ function World(game) {
 	this.walls  = this.add(this.game.add.group());
 	this.obstacles = this.add(this.game.add.group());
 	this.enemies = this.add(this.game.add.group());
-
-	this.loadFloor('platform_atlas', 'platform0');
-	this.loadWalls('platform_atlas', 'platform0');
-	this.loadEnemies();
-	this.loadObstacles('platform_atlas', 'bigspike');
 };
 
 World.prototype = Object.create(Phaser.Group.prototype);
 World.prototype.constructor = World;
+
+World.prototype.retreivePlayer = function(player) {
+	this.thePlayer = player;
+	this.init();
+}
+
+World.prototype.init = function() {
+	this.loadFloor('platform_atlas', 'platform0');
+	this.loadWalls('platform_atlas', 'platform0');
+	this.loadEnemies();
+	this.loadObstacles('platform_atlas', 'bigspike');
+}
 
 World.prototype.loadFloor = function(atlas, frame) {
 	let temp = this.ground.add(new PlatformA(this.game, atlas, frame, 32));
@@ -142,7 +149,7 @@ World.prototype.loadWalls = function(atlas, frame) {
 }
 
 World.prototype.loadEnemies = function() {
-	this.enemies.add(new Mob(this.game, 'character_atlas', 'WalkLeft_MouthOpen_Red3', this.game.width/2 + 100, this.game.height/2, this));
+	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.game.width/2 + 100, this.game.height/2, this, this.thePlayer));
 }
 
 World.prototype.loadObstacles = function(atlas, frame) {
