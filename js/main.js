@@ -16,7 +16,7 @@ Game.prototype = {
 		
 		// BACKGROUND FIRST BECAUSE LAYERS AND SHIT
 		// Set Game background and adjust size
-		this.bkgd = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'background00');
+		this.bkgd = this.add.sprite(0, 0, 'background00');
 		this.bkgd.height = 600;
 		this.bkgd.width = 1000;	
 		this.bkgd.fixedToCamera = true;
@@ -27,7 +27,7 @@ Game.prototype = {
 		// Create world
 		this.world = new World(this.game);
 		
-		this.player = new Player(this.game, 'player_atlas', 'player_1', this.game.width/2, this.game.height/2, this.world);
+		this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2300, this.world);
 		this.game.add.existing(this.player);
 
 		/* Create a checkpoint*/
