@@ -3,12 +3,12 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	Phaser.Sprite.call(this, game, x, y, atlas_key, atlas_frame);
 //	Phaser.Sprite.call(this, game, x, y, sprite);
 	
-	this.anchor.setTo(.5,.5);
+	this.anchor.setTo(0.5,1);
 	this.game.physics.arcade.enable(this);	
 	//this.animations.add('walk', Phaser.Animation.generateFrameNames('WalkLeft_MouthOpen_Purple', 1, 3, '', 1), 23, true);
 	//this.animations.add('walk', Phaser.Animation.generateFrameNames('player_', 1, 2, '', 0), 10, true);
 	//this.animations.add('idle', ['WalkLeft_MouthOpen_Purple3'], 30, false);
-	this.animations.add('dash', [8],5, true);
+	this.animations.add('dash', [3],5, true);
 	this.animations.add('walk', [1,2,1,4], 5, true);
 	this.animations.add('stand', [1, 1], 5, false);
 		
@@ -35,7 +35,9 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	this.checkpointID = x*y;
 	
 	// Setting up player weapon
-	this.weapon = this.game.add.weapon(100, 'spike0');
+	this.weapon = this.game.add.weapon(100, 'lemon');
+	this.weapon.bullets.setAll('scale.x', .5);
+	this.weapon.bullets.setAll('scale.y', .5);
 	this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
 	this.weapon.fireAngle = 270; // In degrees
 	this.weapon.bulletSpeed = 1250;
@@ -133,9 +135,8 @@ Player.prototype.update = function() {
 	this.game.physics.arcade.overlap(this, this.myWorld.enemies.children, this.determineLoser, null, this)
 	
 	this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
-
-	this.game.physics.arcade.overlap(this, this.myWorld.obstacles, this.stupidPlayer, null, this);
-
+	
+	this.game.physics.arcade.overlap(this, this.myWorld.obstacles.children, this.stupidPlayer, null, this);
 }
 
 Player.prototype.wallCollide = function (player, wall) {
@@ -158,8 +159,10 @@ Player.prototype.wallCollide = function (player, wall) {
 }
 
 Player.prototype.enemyHit = function(bullet, enemy) {
-	enemy.death();
-	bullet.kill();
+	if(this.game.physics.arcade.overlap(bullet, enemy.killBox)) {
+		enemy.death();
+		bullet.kill();
+	}
 }
 
 Player.prototype.moveRight = function() {
@@ -505,13 +508,13 @@ Player.prototype.attack = function() {
 		}
 		
 		// If an enemy is in the hitbox, the weapon will target it
-		if(this.game.physics.arcade.overlap(triggerBox, this.myWorld.enemies.children, this.targeting, null, this)) {
-			console.log("TriggerBox has hit an enemy. Targeting enemy");
-		}
-		else {
+		//if(this.game.physics.arcade.overlap(triggerBox, this.myWorld.enemies.children, this.targeting, null, this)) {
+		//	console.log("TriggerBox has hit an enemy. Targeting enemy");
+		//}
+		//else {
 			// Else it fires at the intended angle
 			this.weapon.fire();
-		}			
+		//}			
 	}
 }
 
