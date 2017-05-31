@@ -96,7 +96,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 }
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
-Player.prototype.update = function() {		
+Player.prototype.update = function() {
 	this.dashChecking();
 	
 	if(this.game.physics.arcade.collide(this, this.myWorld.ground.children)) {

@@ -79,21 +79,29 @@ Boss.prototype.determineMove = function() {
 	this.idle(); 
 	
 	var nextAttack = 0;
-	var rand = Math.floor(Math.random() * 20);
-	console.log(rand);
+	var rand = Math.floor(Math.random() * 30);
+	/*
 	if(rand <= 11) {
 		nextAttack = 0;
 	}
-	else if(rand > 11) {
+	else if(rand > 11 && rand < 21) {
 		nextAttack = 1;
 	}
+	else 
+		if(rand >= 21) {
+		nextAttack = 2;
+	}
+	*/
+	nextAttack = 2;
 	
-	console.log(nextAttack);
 	if(nextAttack == 0){
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.charge, this);
 	}
 	else if(nextAttack == 1) {
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.openFire, this);
+	}
+	else if(nextAttack == 2) {
+		this.game.time.events.add(Phaser.Timer.SECOND*2, this.myWorld.reviveMinions, this.myWorld);
 	}
 }
 
@@ -174,7 +182,7 @@ Boss.prototype.hitWorldBounds = function () {
 }
 
 Boss.prototype.setup = function() {
-	this.game.time.events.add(Phaser.Timer.SECOND*3, this.charge, this);
+	this.game.time.events.add(Phaser.Timer.SECOND*3, this.determineMove, this);
 	this.set = true;
 	/*
 	console.log("this");
@@ -208,19 +216,5 @@ Boss.prototype.death = function() {
 	this.box.kill();
 	this.killBox.kill();
 	this.kill();
-}
-
-Boss.prototype.reinitialize = function() {
-	this.x = this.ogX;
-	this.y = this.ogY;
-	
-	this.revive();
-	this.box.revive();
-	this.killBox.revive();
-	
-	this.body.velocity.x = 0;
-	this.body.velocity.y = 0;
-	this.body.acceleration.x = 0;
-	this.body.acceleration.y = 0;
 }
 */

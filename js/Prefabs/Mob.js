@@ -8,15 +8,11 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player, _upsideDown) {
 	
 	this.animations.add('flail', Phaser.Animation.generateFrameNames('robobitch', 0, 7, '', 1), 15, true);
 	this.animations.add('idle', ['robobitch0'], 30, false);
-		
-	//this.body.collideWorldBounds = true;
-	//this.body.gravity.y = 1000;
-	//this.body.drag.x = 500;
-	//this.body.maxVelocity.x = 350;
+	this.animations.play('idle');
+
 	this.anchor.set(.5);
 	this.scale.x = this.scale.x / 2;
 	this.scale.y = this.scale.y / 2;
-	this.animations.play('idle');
 	
 	this.box = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.box, Phaser.Physics.ARCADE);
@@ -26,18 +22,7 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player, _upsideDown) {
 	this.game.physics.enable(this.killBox, Phaser.Physics.ARCADE);
 	this.killBox.body.setSize(20, 20);
 	
-	this.state = 0; /*  
-					 *	0 - idle
-					 *  1 - move right
-					 *  2 - move left
-					 *  3 - attacking
-					 */
-					 
-	this.stateTime = 0;
-	this.stateStart = 0;
-	
 	this.flailing = false;
-	this.set = false;
 	this.upsideDown = _upsideDown;
 	
 	this.myWorld = world;
@@ -45,23 +30,10 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player, _upsideDown) {
 }
 
 Mob.prototype = Object.create(Phaser.Sprite.prototype);
-Mob.prototype.update = function() {
-	/*
-//	console.log(this.position);
-//	this.stateInterpreter();
-	// this log line makes the game lag a lot only use it when you really need to please ;)
+Mob.prototype.update = function() {	
+	//this.game.physics.arcade.collide(this, this.myWorld.ground.children);
 	
-//	if(this.state != 3) {
-//		if(this.detectPlayer()) {
-//			this.state = 3;
-//		}
-//	}
-*/
-	this.game.physics.arcade.collide(this, this.myWorld.ground.children);
-	
-	if(!this.set) {
-		this.setup();
-	}
+	this.setup();
 
 	if(!this.flailing && this.detectPlayer()) {
 		this.flailing = true;
@@ -74,60 +46,20 @@ Mob.prototype.update = function() {
 }
 
 Mob.prototype.setup = function() {
-	console.log("this");
-	this.set = true;
 	var killBox = this.killBox;
-	this.killBox.anchor.setTo(0.5,0.5);
+	this.killBox.anchor.set(0.5);
 	if(!this.upsideDown) {
-		killBox.body.x = this.x - killBox.width / 2 - 9;
-		killBox.body.y = this.y - killBox.height / 2 - 18;
+		killBox.body.x = this.x - (killBox.width / 2) - 9;
+		killBox.body.y = this.y - (killBox.height / 2) - 18;
 	}
 	else{
-		this.scale.y = this.scale.y * -1;
-		killBox.body.x = this.x - killBox.width / 2 - 9;
-		killBox.body.y = this.y - killBox.height / 2 - 10;
+		if(this.scale.y > 0) {
+			this.scale.y = this.scale.y * -1;
+		}
+		killBox.body.x = this.x - (killBox.width / 2) - 9;
+		killBox.body.y = this.y - (killBox.height / 2) - 10;
 	}
 }
-
-Mob.prototype.flip = function() {
-	this.upsideDown = true;
-}
-
-/*
-Mob.prototype.generateState = function() {
-	this.state = Math.floor(Math.random() * 3);
-	this.stateStart = this.game.time.now;
-	this.stateTime = Math.floor(Math.random() * 3000 + 2000);
-}
-
-Mob.prototype.stateInterpreter = function() {
-	if(this.game.time.now - this.stateStart > this.stateTime) {
-		if(this.state != 3) {
-		//	this.generateState();
-		}
-		
-		switch(this.state) {
-			case 0 : this.animations.play('idle');
-					 this.body.acceleration.x = 0;
-					 break;
-			case 1 : this.animations.play('walk');
-					 if(this.scale.x > 0) {
-						this.scale.x = -1 * this.scale.x;
-					 }
-					 this.body.acceleration.x = 400;
-					 break;
-			case 2 : this.animations.play('walk');
-					 if(this.scale.x < 0) {
-						this.scale.x = -1 * this.scale.x;
-					 }
-					 this.body.acceleration.x = -400;
-					 break;
-			case 3 : // attacks and player tracking go here
-					 break;
-		}
-	}
-}
-*/
 
 Mob.prototype.detectPlayer = function() {
 	var box = this.box;
@@ -137,6 +69,7 @@ Mob.prototype.detectPlayer = function() {
 	if(this.game.physics.arcade.overlap(box, this.thePlayer)) {
 		return true;
 	}
+	return false;
 }
 
 Mob.prototype.death = function() {
@@ -146,6 +79,7 @@ Mob.prototype.death = function() {
 }
 
 Mob.prototype.reinitialize = function() {
+	console.log("called");
 	this.x = this.ogX;
 	this.y = this.ogY;
 	this.revive();
