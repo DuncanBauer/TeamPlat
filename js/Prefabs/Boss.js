@@ -12,7 +12,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.body.collideWorldBounds = true;
 	this.body.gravity.y = 1000;
 	this.body.drag.x = 600;
-	this.body.maxVelocity.x = 1000;
+	this.body.maxVelocity.x = 500;
 	this.anchor.set(.5);
 	this.scale.x = this.scale.x * 1.5;
 	this.scale.y = this.scale.y * 1.5;
@@ -109,11 +109,18 @@ Boss.prototype.idle = function() {
 }
 
 Boss.prototype.idleTime = function() {
-	if(this.idleLeft) {		
-		this.body.velocity.x = -1 * this.idleSpeed;
+	var vel = this.body.velocity.x;
+	if(vel < 0) {		
+		this.body.acceleration.x = -1 * this.idleSpeed;
+	}
+	else if(vel > 0){
+		this.body.acceleration.x = this.idleSpeed;
+	}
+	else if(this.idleLeft) {
+		this.body.acceleration.x = -1 * this.idleSpeed;
 	}
 	else {
-		this.body.velocity.x = this.idleSpeed;
+		this.body.acceleration.x = this.idleSpeed;
 	}
 }
 
@@ -149,10 +156,10 @@ Boss.prototype.charge = function() {
 
 Boss.prototype.letsCharge = function() {
 	if(this.chargeRight) {
-		this.body.velocity.x = this.chargeSpeed;
+		this.body.acceleration.x = this.chargeSpeed;
 	}
 	else {
-		this.body.velocity.x = -1 * this.chargeSpeed;
+		this.body.acceleration.x = -1 * this.chargeSpeed;
 	}
 }
 
