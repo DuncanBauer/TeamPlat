@@ -14,8 +14,8 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.body.drag.x = 600;
 	this.body.maxVelocity.x = 1000;
 	this.anchor.set(.5);
-	this.scale.x = this.scale.x * 2;
-	this.scale.y = this.scale.y * 2;
+	this.scale.x = this.scale.x * 1.5;
+	this.scale.y = this.scale.y * 1.5;
 	this.animations.play('idle');
 	
 	this.body.onWorldBounds = new Phaser.Signal();
@@ -41,7 +41,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.firing = false;
 	
 	this.idling = true;
-	this.idleLeft = false;
+	this.idleLeft = null;
 	this.idleSpeed = 200;
 	
 	this.weapon = this.game.add.weapon(100, 'lemon');
@@ -99,8 +99,8 @@ Boss.prototype.determineMove = function() {
 
 Boss.prototype.idle = function() {
 	this.idling = true;
-	var x = this.thePlayer.x;
-	if(x > this.x) {
+	var x = Math.floor(Math.random() * 2);
+	if(x) {
 		this.idleLeft = false;
 	}
 	else {
@@ -144,7 +144,7 @@ Boss.prototype.charge = function() {
 	else {
 		this.chargeRight = false;
 	}
-	this.game.time.events.add(Phaser.Timer.SECOND*3, this.endCharge, this);
+	this.game.time.events.add(Phaser.Timer.SECOND*2, this.endCharge, this);
 }
 
 Boss.prototype.letsCharge = function() {

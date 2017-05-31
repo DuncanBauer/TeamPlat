@@ -61,7 +61,7 @@ Game.prototype = {
 		this.game.debug.body(this.world.enemies.children[1]); 	
 		this.game.debug.body(this.world.enemies.children[1].box); 	
 		this.game.debug.body(this.world.enemies.children[1].killBox); 	
-		*/
 		this.game.debug.body(this.player);
+		*/
 	}
 }
