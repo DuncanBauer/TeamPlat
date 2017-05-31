@@ -44,6 +44,8 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.idleLeft = null;
 	this.idleSpeed = 200;
 	
+	this.minionCount = 0;
+	
 	this.weapon = this.game.add.weapon(100, 'lemon');
 	this.weapon.bullets.setAll('scale.x', .5);
 	this.weapon.bullets.setAll('scale.y', .5);
@@ -70,7 +72,7 @@ Boss.prototype.update = function() {
 	else if(this.firing) {
 		this.fire();
 	}
-	else if(this.idling) {
+	else if(this.idling || this.myWorld.minionCount > 0) {
 		this.idleTime();
 	}
 }

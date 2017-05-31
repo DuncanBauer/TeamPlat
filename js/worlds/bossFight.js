@@ -42,8 +42,9 @@ BossFight.prototype = {
 	
 	minionHit: function(bullet, minion) {
 		if(this.game.physics.arcade.overlap(bullet, minion.killBox)) {
-			minion.death();
+			minion.kills();
 			bullet.kill();
+			this.game.time.events.add(1, this.world.killMinion, this.world);
 		}
 	},
 	

@@ -10,6 +10,7 @@ function BossRoom(game) {
 	this.minions = this.add(this.game.add.group());
 	
 	this.mobSpawnLocations = [];
+	this.minionCount = 0;
 };
 
 BossRoom.prototype = Object.create(Phaser.Group.prototype);
@@ -215,7 +216,16 @@ BossRoom.prototype.callMinions = function() {
 BossRoom.prototype.reviveMinions = function() {
 	this.minions.forEach(function(minion) {
 		minion.reinitialize();
+		minion.resetLoc(this.mobSpawnLocations[this.minionCount]);
+		this.minionCount+=1;
 	});
+}
+
+BossRoom.prototype.killMinion = function() {
+	this.minionCount--;
+	if(this.minionCount == 0) {
+		this.game.time.events.add(1, this.enemies.children[0].determineMove, this.enemies.children[0]);
+	}
 }
 
 BossRoom.prototype.loadObstacles = function(atlas, frame) {

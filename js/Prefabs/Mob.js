@@ -72,16 +72,13 @@ Mob.prototype.detectPlayer = function() {
 	return false;
 }
 
-Mob.prototype.death = function() {
+Mob.prototype.kills = function() {
 	this.box.kill();
 	this.killBox.kill();
 	this.kill();
 }
 
 Mob.prototype.reinitialize = function() {
-	console.log("called");
-	this.x = this.ogX;
-	this.y = this.ogY;
 	this.revive();
 	this.box.revive();
 	this.killBox.revive();
@@ -89,4 +86,12 @@ Mob.prototype.reinitialize = function() {
 	this.body.velocity.y = 0;
 	this.body.acceleration.x = 0;
 	this.body.acceleration.y = 0;
+}
+
+Mob.prototype.resetLoc = function(loc) {
+	console.log("now");
+	this.x = loc[0];
+	this.y = loc[1];
+	this.body.x = loc[0];
+	this.body.y = loc[1];
 }
