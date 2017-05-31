@@ -1,6 +1,6 @@
-var Game = function(game) {
+var BossFight = function(game) {
 };
-Game.prototype = {	
+BossFight.prototype = {	
 	create: function() {
 		console.log('Game: create');
 
@@ -25,16 +25,11 @@ Game.prototype = {
 		this.game.world.setBounds(0, 0, 3600, 3600);
 
 		// Create world
-		this.world = new World(this.game);
+		this.world = new BossRoom(this.game);
 		
-		//this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2300, this.world);
-		this.player = new Player(this.game, 'player_atlas', 'player_1', this.game.width/2 - 100, this.game.height/2, this.world);
+		this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2300, this.world);
 		this.game.add.existing(this.player);
 		this.world.retreivePlayer(this.player);
-
-		/* Create a checkpoint*/
-		/*this.checktest = new Checkpoint(this.game, 'player_test', this.player, this.player.x-100, this.player.y+100);
-		this.game.add.existing(this.checktest);*/
 
 		// Create camera and lock it to the player with mario-esque deadzone
 		this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);		
@@ -50,18 +45,5 @@ Game.prototype = {
 		
 		// Return to MainMenu state
 		this.game.state.start('MainMenu');
-	},
-
-	render: function() {
-		/*
-		this.game.debug.cameraInfo(this.game.camera, 32, 32);
-		this.game.debug.body(this.world.enemies.children[0]); 	
-		this.game.debug.body(this.world.enemies.children[0].box); 	
-		this.game.debug.body(this.world.enemies.children[0].killBox);
-		this.game.debug.body(this.world.enemies.children[1]); 	
-		this.game.debug.body(this.world.enemies.children[1].box); 	
-		this.game.debug.body(this.world.enemies.children[1].killBox); 	
-		*/
-		this.game.debug.body(this.player);
 	}
 }
