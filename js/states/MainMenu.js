@@ -21,6 +21,7 @@ MainMenu.prototype = {
 		console.log('MainMenu: playthis.game');
 		
 		// Start this.game state
-		this.game.state.start('LevelSelect');
+		this.game.state.start('BossFight');
+		//this.game.state.start('Game');
 	}
 }

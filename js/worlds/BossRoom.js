@@ -1,4 +1,4 @@
-function World(game) {
+function BossRoom(game) {
 	Phaser.Group.call(this, game);
 	this.game = game;
 
@@ -7,25 +7,48 @@ function World(game) {
 	this.obstacles = this.add(this.game.add.group());
 	this.enemies = this.add(this.game.add.group());
 	this.checkpoints = this.add(this.game.add.group());
+	this.minions = this.add(this.game.add.group());
+	
+	this.mobSpawnLocations = [];
+	this.minionCount = 0;
 };
 
-World.prototype = Object.create(Phaser.Group.prototype);
-World.prototype.constructor = World;
+BossRoom.prototype = Object.create(Phaser.Group.prototype);
+BossRoom.prototype.constructor = BossRoom;
 
-World.prototype.retreivePlayer = function(player) {
+BossRoom.prototype.retreivePlayer = function(player) {
 	this.thePlayer = player;
 	this.init();
 }
 
-World.prototype.init = function() {
+BossRoom.prototype.init = function() {
+	this.mobSpawnLocations.push([172,2327]);
+	this.mobSpawnLocations.push([525,2327]);
+	this.mobSpawnLocations.push([942,2327]);
+	this.mobSpawnLocations.push([1328,2327]);
+	this.mobSpawnLocations.push([1738,2327]);
+	this.mobSpawnLocations.push([1438,2327]);
+	this.mobSpawnLocations.push([238,2327]);
+	this.mobSpawnLocations.push([738,2327]);
+	
+	this.mobSpawnLocations.push([372,2008]);
+	this.mobSpawnLocations.push([593,2008]);
+	this.mobSpawnLocations.push([875,2008]);
+	this.mobSpawnLocations.push([1172,2008]);
+	this.mobSpawnLocations.push([1492,2008]);
+	this.mobSpawnLocations.push([1700,2008]);
+	this.mobSpawnLocations.push([1950,2008]);
+	
 	this.loadWalls('platform_atlas', 'platform0');
 	this.loadFloor('platform_atlas', 'platform0');
 	this.loadChecks();
 	this.loadEnemies();
 	this.loadObstacles('platform_atlas', 'bigspike');
+	this.callMinions();
 }
 
-World.prototype.loadChecks = function() {
+BossRoom.prototype.loadChecks = function() {
+	/*
 	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, this.thePlayer.x-100, this.thePlayer.y+100));
 
 	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 1265, 2300));
@@ -35,13 +58,19 @@ World.prototype.loadChecks = function() {
 	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 110, 900));
 
 	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 1850, 1550));
+	*/
 }
 
-World.prototype.loadFloor = function(atlas, frame) {
-	let temp = this.ground.add(new PlatformA(this.game, atlas, frame, 32));
+BossRoom.prototype.loadFloor = function(atlas, frame) {
+	let temp = this.ground.add(new PlatformA(this.game, atlas, frame, 63));
 	temp.x = -32;
-	temp.y = 2000;
+	temp.y = 1800;
 	
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 63));
+	temp.x = -32;
+	temp.y = 1400;
+	
+	/*
 	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 6));
 	temp.x = 1205;
 	temp.y = 1900;
@@ -93,9 +122,11 @@ World.prototype.loadFloor = function(atlas, frame) {
 	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 7));
 	temp.x = 1948;
 	temp.y = 1348;
+	*/
 }
 
-World.prototype.loadWalls = function(atlas, frame) {
+BossRoom.prototype.loadWalls = function(atlas, frame) {
+	/*
 	let temp = this.walls.add(new WallA(this.game, atlas, frame, 3));
 	temp.x = 1365;
 	temp.y = 1804;
@@ -163,15 +194,42 @@ World.prototype.loadWalls = function(atlas, frame) {
 	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 1));
 	temp.x = 2332;
 	temp.y = 480;
-
+	*/
 }
 
-World.prototype.loadEnemies = function() {
-	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.game.width/2 + 100, this.game.height/2 + 600, this, this.thePlayer, true));
-	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.game.width/2, this.game.height/2 + 600, this, this.thePlayer, false));
+BossRoom.prototype.loadEnemies = function() {
+	this.enemies.add(new Boss(this.game, 'robobitch_atlas', 'robobitch0', this.game.width/2 + 200, 2000, this, this.thePlayer));
 }
 
-World.prototype.loadObstacles = function(atlas, frame) {
+BossRoom.prototype.callMinions = function() {
+	for(let i = 0; i < 8; i++) {
+		this.minions.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.mobSpawnLocations[i][0], this.mobSpawnLocations[i][1], this, this.thePlayer, false));
+	}
+	for(let i = 8; i < 15; i++) {
+		this.minions.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.mobSpawnLocations[i][0], this.mobSpawnLocations[i][1], this, this.thePlayer, true));
+	}
+	this.minions.forEach(function(minion) {
+		minion.kill();
+	});
+}
+
+BossRoom.prototype.reviveMinions = function() {
+	this.minions.forEach(function(minion) {
+		minion.reinitialize();
+		minion.resetLoc(this.mobSpawnLocations[this.minionCount]);
+		this.minionCount+=1;
+	});
+}
+
+BossRoom.prototype.killMinion = function() {
+	this.minionCount--;
+	if(this.minionCount == 0) {
+		this.game.time.events.add(1, this.enemies.children[0].determineMove, this.enemies.children[0]);
+	}
+}
+
+BossRoom.prototype.loadObstacles = function(atlas, frame) {
+	/*
 	temp = this.obstacles.add(new Obstacle(this.game, atlas, frame, 0, 0, 0.5, 0.5, 0, 7));
 	temp.x = 986;
 	temp.y = 2100;
@@ -195,10 +253,5 @@ World.prototype.loadObstacles = function(atlas, frame) {
 	temp = this.obstacles.add(new Obstacle(this.game, atlas, frame, 0, 0, 0.5, 0.5, 0, 7));
 	temp.x = 2140;
 	temp.y = 1380;
-}
-
-World.prototype.resetWorld = function() {
-	this.enemies.forEach(function(enemy) {
-		enemy.reinitialize();
-	}, Mob);
+	*/
 }
