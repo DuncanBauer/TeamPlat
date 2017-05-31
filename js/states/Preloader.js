@@ -12,6 +12,7 @@ Preloader.prototype = {
 		this.game.load.image('background00', '/img/background01.png');
 		this.game.load.image('play_Button', '/img/play_button.png');
 		this.game.load.image('power_Button', '/img/power_Button.png');
+		this.game.load.image('lvlbutton', '/img/levelButton.png');
 		
 		// Load this.game assets
 		this.game.load.atlas('player_atlas', '/img/Player.png', '/img/sprites.json');
