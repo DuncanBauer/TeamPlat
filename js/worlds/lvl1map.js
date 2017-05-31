@@ -6,15 +6,36 @@ function World(game) {
 	this.walls  = this.add(this.game.add.group());
 	this.obstacles = this.add(this.game.add.group());
 	this.enemies = this.add(this.game.add.group());
-
-	this.loadFloor('platform_atlas', 'platform0');
-	this.loadWalls('platform_atlas', 'platform0');
-	this.loadEnemies();
-	this.loadObstacles('platform_atlas', 'bigspike');
+	this.checkpoints = this.add(this.game.add.group());
 };
 
 World.prototype = Object.create(Phaser.Group.prototype);
 World.prototype.constructor = World;
+
+World.prototype.retreivePlayer = function(player) {
+	this.thePlayer = player;
+	this.init();
+}
+
+World.prototype.init = function() {
+	this.loadWalls('platform_atlas', 'platform0');
+	this.loadFloor('platform_atlas', 'platform0');
+	this.loadChecks();
+	this.loadEnemies();
+	this.loadObstacles('platform_atlas', 'bigspike');
+}
+
+World.prototype.loadChecks = function() {
+	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, this.thePlayer.x-100, this.thePlayer.y+100));
+
+	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 1265, 2300));
+
+	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 500, 1800));
+
+	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 110, 900));
+
+	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 1850, 1550));
+}
 
 World.prototype.loadFloor = function(atlas, frame) {
 	let temp = this.ground.add(new PlatformA(this.game, atlas, frame, 32));
@@ -139,10 +160,14 @@ World.prototype.loadWalls = function(atlas, frame) {
 	temp.x = 2332;
 	temp.y = 480;
 
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 1));
+	temp.x = 2332;
+	temp.y = 480;
+
 }
 
 World.prototype.loadEnemies = function() {
-	this.enemies.add(new Mob(this.game, 'character_atlas', 'WalkLeft_MouthOpen_Red3', this.game.width/2 + 100, this.game.height/2, this));
+	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.game.width/2 + 100, this.game.height/2, this, this.thePlayer));
 }
 
 World.prototype.loadObstacles = function(atlas, frame) {
