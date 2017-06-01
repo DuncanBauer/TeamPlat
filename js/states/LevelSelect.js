@@ -22,7 +22,7 @@ LevelSelect.prototype = {
 		console.log('LevelSelect: playthis.game');
 		
 		// Start this.game state
-		//this.game.state.start('BossFight');
-		this.game.state.start('Game');
+		this.game.state.start('BossFight');
+		//this.game.state.start('Game');
 	}
 }
