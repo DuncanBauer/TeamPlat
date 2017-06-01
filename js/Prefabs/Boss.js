@@ -101,7 +101,8 @@ Boss.prototype.determineMove = function() {
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.openFire, this);
 	}
 	else if(nextAttack == 2) {
-		//this.game.time.events.add(Phaser.Timer.SECOND*2, this.myWorld.reviveMinions, this.myWorld);
+		this.idling = false;
+		this.game.time.events.add(Phaser.Timer.SECOND*2, this.myWorld.callMinions, this.myWorld);
 	}
 }
 

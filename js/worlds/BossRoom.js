@@ -44,7 +44,7 @@ BossRoom.prototype.init = function() {
 	this.loadChecks();
 	this.loadEnemies();
 	this.loadObstacles('platform_atlas', 'bigspike');
-	this.callMinions();
+	//this.callMinions();
 }
 
 BossRoom.prototype.loadChecks = function() {
@@ -203,34 +203,20 @@ BossRoom.prototype.loadEnemies = function() {
 
 BossRoom.prototype.callMinions = function() {
 	for(let i = 0; i < 8; i++) {
+		this.minionCount++;
 		this.minions.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.mobSpawnLocations[i][0], this.mobSpawnLocations[i][1], this, this.thePlayer, false));
 	}
 	for(let i = 8; i < 15; i++) {
+		this.minionCount++;
 		this.minions.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.mobSpawnLocations[i][0], this.mobSpawnLocations[i][1], this, this.thePlayer, true));
 	}
-
-/*
-	this.minions.forEach(function(minion) {
-		minion.kill();
-	});
-*/
-}
-
-BossRoom.prototype.reviveMinions = function() {
-	//var temp = this.mobSpawnLocations;
-	//var temp2 = this.minionCount;
-	//this.minions.forEach(function(minion) {
-	//	minion.reinitialize();
-		//minion.resetLoc(temp[temp2]);
-		//temp2+=1;
-	//});
 }
 
 BossRoom.prototype.killMinion = function() {
-	//this.minionCount--;
-	//if(this.minionCount == 0) {
-	//	this.game.time.events.add(1, this.enemies.children[0].determineMove, this.enemies.children[0]);
-	//}
+	this.minionCount--;
+	if(this.minionCount == 0) {
+		this.game.time.events.add(1, this.enemies.children[0].determineMove, this.enemies.children[0]);
+	}
 }
 
 BossRoom.prototype.loadObstacles = function(atlas, frame) {
