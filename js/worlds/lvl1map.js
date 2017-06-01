@@ -36,7 +36,7 @@ World.prototype.loadChecks = function() {
 
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1850, 1550));
 	
-	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 1950, 1850));
+	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 1950, 1850, 'BossFight'));
 }
 
 World.prototype.loadFloor = function(atlas, frame) {
@@ -169,8 +169,6 @@ World.prototype.loadWalls = function(atlas, frame) {
 }
 
 World.prototype.loadEnemies = function() {
-	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.game.width/2 + 100, this.game.height/2 + 600, this, this.thePlayer, true));
-	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.game.width/2, this.game.height/2 + 600, this, this.thePlayer, false));
 }
 
 World.prototype.loadObstacles = function(atlas, frame) {

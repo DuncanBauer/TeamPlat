@@ -31,8 +31,6 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player, _upsideDown) {
 
 Mob.prototype = Object.create(Phaser.Sprite.prototype);
 Mob.prototype.update = function() {	
-	//this.game.physics.arcade.collide(this, this.myWorld.ground.children);
-	
 	this.setup();
 
 	if(!this.flailing && this.detectPlayer()) {

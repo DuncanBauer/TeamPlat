@@ -45,26 +45,7 @@ BossFight.prototype = {
 			this.world.killMinion();
 			minion.kills();
 			bullet.kill();
-			//this.game.time.events.add(1, this.world.killMinion, this.world);
 		}
-	},
-	
-	render: function() {
-		this.game.debug.cameraInfo(this.game.camera, 32, 32);
-		/*
-		var i = null;
-		for(i = 0; i < this.world.enemies.children.length; i+=1) {
-			this.game.debug.body(this.world.enemies.children[i]); 	
-			this.game.debug.body(this.world.enemies.children[i].box);
-			this.game.debug.body(this.world.enemies.children[i].killBox);
-		}
-		for(i = 0; i < this.world.minions.children.length; i+=1) {
-			this.game.debug.body(this.world.minions.children[i]); 	
-			this.game.debug.body(this.world.minions.children[i].box);
-			this.game.debug.body(this.world.minions.children[i].killBox);
-		}
-		this.game.debug.body(this.player);
-		*/
 	},
 	
 	// End the game and return to the main menu

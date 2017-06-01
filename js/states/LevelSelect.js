@@ -21,8 +21,8 @@ LevelSelect.prototype = {
 	playgame: function() {
 		console.log('LevelSelect: playthis.game');
 		
-		// Start this.game state
-		this.game.state.start('BossFight');
-		//this.game.state.start('Game');
+		// Start game state
+		//this.game.state.start('BossFight');
+		this.game.state.start('Game');
 	}
 }
