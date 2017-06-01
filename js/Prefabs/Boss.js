@@ -72,7 +72,7 @@ Boss.prototype.update = function() {
 	else if(this.firing) {
 		this.fire();
 	}
-	else if(this.idling || this.myWorld.minionCount > 0) {
+	else if(this.idling) {
 		this.idleTime();
 	}
 }
@@ -82,7 +82,7 @@ Boss.prototype.determineMove = function() {
 	
 	var nextAttack = 0;
 	var rand = Math.floor(Math.random() * 30);
-	/*
+	
 	if(rand <= 11) {
 		nextAttack = 0;
 	}
@@ -93,8 +93,6 @@ Boss.prototype.determineMove = function() {
 		if(rand >= 21) {
 		nextAttack = 2;
 	}
-	*/
-	nextAttack = 2;
 	
 	if(nextAttack == 0){
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.charge, this);
@@ -103,7 +101,7 @@ Boss.prototype.determineMove = function() {
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.openFire, this);
 	}
 	else if(nextAttack == 2) {
-		this.game.time.events.add(Phaser.Timer.SECOND*2, this.myWorld.reviveMinions, this.myWorld);
+		//this.game.time.events.add(Phaser.Timer.SECOND*2, this.myWorld.reviveMinions, this.myWorld);
 	}
 }
 

@@ -44,7 +44,7 @@ BossFight.prototype = {
 		if(this.game.physics.arcade.overlap(bullet, minion.killBox)) {
 			minion.kills();
 			bullet.kill();
-			this.game.time.events.add(1, this.world.killMinion, this.world);
+			//this.game.time.events.add(1, this.world.killMinion, this.world);
 		}
 	},
 	
