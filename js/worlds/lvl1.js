@@ -34,6 +34,57 @@ Game.prototype = {
 		// Create camera and lock it to the player with mario-esque deadzone
 		this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);		
 		this.game.camera.deadzone = new Phaser.Rectangle(400, 250, 200, 70);
+		
+		this.game.input.keyboard.addKey(Phaser.Keyboard.ESC).onDown.add(this.pause, this);
+		this.pauseFollow = this.game.add.sprite(0,0,null);
+		
+		this.game.input.keyboard.addKey(Phaser.Keyboard.W).onDown.add(this.pauseUp, this);
+		this.game.input.keyboard.addKey(Phaser.Keyboard.A).onDown.add(this.pauseRight, this);
+		this.game.input.keyboard.addKey(Phaser.Keyboard.S).onDown.add(this.pauseDown, this);
+		this.game.input.keyboard.addKey(Phaser.Keyboard.D).onDown.add(this.pauseLeft, this);
+	},
+	
+	pause: function() {
+		if(this.game.paused) {
+			this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);
+			this.game.camera.deadzone = new Phaser.Rectangle(400, 250, 200, 70);
+			this.game.paused = false;
+		}
+		else {
+			this.pauseFollow.x = this.player.x;
+			this.pauseFollow.y = this.player.y;
+			this.game.camera.follow(this.pauseFollow, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);
+			this.game.camera.deadzone = new Phaser.Rectangle(400, 250, 200, 70);
+			this.game.paused = true;
+		}
+	},
+	
+	pauseUp: function() {
+		console.log("this");
+		this.game.paused = false;
+		this.pauseFollow.y -= 1;
+		this.game.paused = true;
+	},
+	
+	pauseDown: function() {
+		console.log("this");
+		this.game.paused = false;
+		this.pauseFollow.y += 1;
+		this.game.paused = true;
+	},
+	
+	pauseRight: function() {
+		console.log("this");
+		this.game.paused = false;
+		this.pauseFollow.x -= 1;
+		this.game.paused = true;
+	},
+	
+	pauseLeft: function() {
+		console.log("this");
+		this.game.paused = false;
+		this.pauseFollow.x += 1;
+		this.game.paused = true;
 	},
 	
 	update:function() {	
