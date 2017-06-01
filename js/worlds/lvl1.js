@@ -27,8 +27,8 @@ Game.prototype = {
 		// Create world
 		this.world = new World(this.game);
 		
-		//this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2300, this.world);
-		this.player = new Player(this.game, 'player_atlas', 'player_1', this.game.width/2 - 100, this.game.height/2, this.world);
+		this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2300, this.world);
+		//this.player = new Player(this.game, 'player_atlas', 'player_1', this.game.width/2 - 100, this.game.height/2, this.world);
 		this.game.add.existing(this.player);
 		this.world.retreivePlayer(this.player);
 

@@ -160,7 +160,7 @@ Player.prototype.wallCollide = function (player, wall) {
 
 Player.prototype.enemyHit = function(bullet, enemy) {
 	if(this.game.physics.arcade.overlap(bullet, enemy.killBox)) {
-		enemy.death();
+		enemy.kills();
 		bullet.kill();
 	}
 }
