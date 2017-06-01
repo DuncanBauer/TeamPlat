@@ -18,8 +18,6 @@ MainMenu.prototype = {
 	},
 	
 	playgame: function() {
-		console.log('MainMenu: playthis.game');
-		
 		this.game.state.start('LevelSelect');
 	}
 }

@@ -13,16 +13,30 @@ LevelSelect.prototype = {
 		this.buttons = this.game.add.group();
 		
 		// Create start this.game button
-		var button = this.game.add.button(this.game.world.centerX - 100, 10, 'lvlbutton', this.playgame, this);
-		var btext = this.game.add.text(this.game.world.centerX + 10, 90, "Level 1", {fontSize: '32px', fill: '#fff'});
+		var button = this.game.add.button(this.game.world.centerX, 100, 'lvlbutton', this.playLevel1, this);
+		button.anchor.set(.5);
+		var btext = this.game.add.text(this.game.world.centerX, 100, "Level 1", {fontSize: '32px', fill: '#fff'});
+		btext.anchor.set(.5);
 		this.buttons.create(button);
+		
+		//if(this.game.levelsComplete[0]) {
+			button = this.game.add.button(this.game.world.centerX, 210, 'lvlbutton', this.playBoss, this);
+			button.anchor.set(.5);
+			btext = this.game.add.text(this.game.world.centerX, 210, "Boss", {fontSize: '32px', fill: '#fff'});
+			btext.anchor.set(.5);
+			this.buttons.create(button);
+		//}
 	},
 	
-	playgame: function() {
-		console.log('LevelSelect: playthis.game');
-		
-		// Start game state
-		//this.game.state.start('BossFight');
+	playLevel1: function() {
 		this.game.state.start('Game');
+	},
+	
+	render: function() {
+		//this.game.debug.cameraInfo(this.game.camera, 32, 32);
+	},
+	
+	playBoss: function() {
+		this.game.state.start('BossFight');
 	}
 }

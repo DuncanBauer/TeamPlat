@@ -36,7 +36,7 @@ World.prototype.loadChecks = function() {
 
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1850, 1550));
 	
-	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 1950, 1850, 'BossFight'));
+	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 1950, 1850, 'LevelSelect', 0));
 }
 
 World.prototype.loadFloor = function(atlas, frame) {
