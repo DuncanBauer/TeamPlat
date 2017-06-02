@@ -85,11 +85,16 @@ BossRoom.prototype.callMinions = function() {
 	for(i = 0; i < rand; i++) {
 		this.minionCount++;
 		if(temp[i] < 8) {
-			this.minions.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.mobSpawnLocations[temp[i]][0], this.mobSpawnLocations[temp[i]][1], this, this.thePlayer, false));
+			this.minions.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.mobSpawnLocations[temp[i]][0], this.mobSpawnLocations[temp[i]][1], this, this.thePlayer, 0));
 		}
 		else {
-			this.minions.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.mobSpawnLocations[temp[i]][0], this.mobSpawnLocations[temp[i]][1], this, this.thePlayer, true));	
+			this.minions.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.mobSpawnLocations[temp[i]][0], this.mobSpawnLocations[temp[i]][1], this, this.thePlayer, 180));	
 		}
+	}
+	
+	for(i = 0; i < temp.length; i++) {
+		temp.pop();
+		taken.pop();
 	}
 }
 

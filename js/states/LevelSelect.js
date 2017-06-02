@@ -8,6 +8,7 @@ LevelSelect.prototype = {
 		this.bkgd = this.game.add.sprite(0, 0, 'background00');
 		this.bkgd.height = 600;
 		this.bkgd.width = 1000;
+		this.game.world.setBounds(0, 0,1000,600);
 		
 		// Create buttons for main menu
 		this.buttons = this.game.add.group();
@@ -33,7 +34,7 @@ LevelSelect.prototype = {
 	},
 	
 	render: function() {
-		//this.game.debug.cameraInfo(this.game.camera, 32, 32);
+		this.game.debug.cameraInfo(this.game.camera, 32, 32);
 	},
 	
 	playBoss: function() {

@@ -22,19 +22,14 @@ BossFight.prototype = {
 		this.bkgd.fixedToCamera = true;
 
 		// Set world bounds
-		this.game.world.setBounds(0, 0, 3600, 3600);
+		this.game.world.setBounds(0, 0, 2000, 2600);
 
 		// Create world
-		this.world = new lvl2Map(this.game);
+		this.world = new BossRoom(this.game);
 		
-		//this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2300, this.world);
-		this.player = new Player(this.game, 'player_atlas', 'player_1', this.game.width/2 - 100, this.game.height/2, this.world);
+		this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2000, this.world);
 		this.game.add.existing(this.player);
 		this.world.retreivePlayer(this.player);
-
-		/* Create a checkpoint*/
-		/*this.checktest = new Checkpoint(this.game, 'player_test', this.player, this.player.x-100, this.player.y+100);
-		this.game.add.existing(this.checktest);*/
 
 		// Create camera and lock it to the player with mario-esque deadzone
 		this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);		
@@ -42,6 +37,26 @@ BossFight.prototype = {
 	},
 	
 	update:function() {	
+		this.game.physics.arcade.overlap(this.player.weapon.bullets, this.world.minions, this.minionHit, null, this);
+	},
+	
+	minionHit: function(bullet, minion) {
+		if(this.game.physics.arcade.overlap(bullet, minion.killBox)) {
+			this.world.killMinion();
+			minion.kills();
+			bullet.kill();
+		}
+	},
+	
+	render: function() {
+		this.game.debug.cameraInfo(this.game.camera, 32, 32);
+		this.game.debug.body(this.player);
+		
+		for(let i = 0; i < this.world.minions.length; i++) {
+			this.game.debug.body(this.world.minions.children[i].killBox);
+			this.game.debug.body(this.world.minions.children[i].hitBox1);
+			this.game.debug.body(this.world.minions.children[i].hitBox2);
+		}
 	},
 	
 	// End the game and return to the main menu
@@ -50,18 +65,5 @@ BossFight.prototype = {
 		
 		// Return to MainMenu state
 		this.game.state.start('MainMenu');
-	},
-
-	render: function() {
-		/*
-		this.game.debug.cameraInfo(this.game.camera, 32, 32);
-		this.game.debug.body(this.world.enemies.children[0]); 	
-		this.game.debug.body(this.world.enemies.children[0].box); 	
-		this.game.debug.body(this.world.enemies.children[0].killBox);
-		this.game.debug.body(this.world.enemies.children[1]); 	
-		this.game.debug.body(this.world.enemies.children[1].box); 	
-		this.game.debug.body(this.world.enemies.children[1].killBox); 	
-		*/
-		this.game.debug.body(this.player);
 	}
 }

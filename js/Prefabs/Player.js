@@ -126,9 +126,6 @@ Player.prototype.update = function() {
 	}else if(this.body.velocity.x == 0){
 		this.animations.play('stand');	
 	}
-	
-	//this.game.physics.arcade.overlap(this, this.myWorld.enemies.children, this.determineLoser, null, this)
-	
 	this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
 	
 	this.game.physics.arcade.overlap(this, this.myWorld.obstacles.children, this.stupidPlayer, null, this);

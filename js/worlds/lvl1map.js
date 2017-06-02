@@ -7,6 +7,8 @@ function World(game) {
 	this.obstacles = this.add(this.game.add.group());
 	this.enemies = this.add(this.game.add.group());
 	this.checkpoints = this.add(this.game.add.group());
+	
+	this.absBottom = null;
 };
 
 World.prototype = Object.create(Phaser.Group.prototype);
@@ -23,6 +25,8 @@ World.prototype.init = function() {
 	this.loadChecks();
 	this.loadEnemies();
 	this.loadObstacles('platform_atlas', 'bigspike');
+	
+	this.loadAbsBottom();
 }
 
 World.prototype.loadChecks = function() {
@@ -169,6 +173,10 @@ World.prototype.loadWalls = function(atlas, frame) {
 }
 
 World.prototype.loadEnemies = function() {
+	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 232, 2500, this, this.thePlayer, 0));
+	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 332, 2500, this, this.thePlayer, 90));
+	this.enemies.add(new Mob2(this.game, 'robobitch_atlas', 'robobitch0', 432, 2500, this, this.thePlayer, 180));
+	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 532, 2500, this, this.thePlayer, 270));
 }
 
 World.prototype.loadObstacles = function(atlas, frame) {
@@ -197,6 +205,12 @@ World.prototype.loadObstacles = function(atlas, frame) {
 	temp.y = 1380;
 }
 
+World.prototype.loadAbsBottom = function() {
+	this.absBottom = this.game.add.sprite(0, 3000, null);
+	this.game.physics.enable(this.absBottom, Phaser.Physics.ARCADE);
+	this.absBottom.body.setSize(this.game.world.width, 5);
+
+}
 World.prototype.resetWorld = function() {
 	this.enemies.forEach(function(enemy) {
 		enemy.reinitialize();

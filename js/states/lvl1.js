@@ -34,14 +34,16 @@ Game.prototype = {
 		// Create camera and lock it to the player with mario-esque deadzone
 		this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);		
 		this.game.camera.deadzone = new Phaser.Rectangle(400, 250, 200, 70);
-		
+
+		/*		
 		this.game.input.keyboard.addKey(Phaser.Keyboard.ESC).onDown.add(this.pause, this);
 		this.pauseFollow = this.game.add.sprite(0,0,null);
-		
+
 		this.game.input.keyboard.addKey(Phaser.Keyboard.W).onDown.add(this.pauseUp, this);
 		this.game.input.keyboard.addKey(Phaser.Keyboard.A).onDown.add(this.pauseRight, this);
 		this.game.input.keyboard.addKey(Phaser.Keyboard.S).onDown.add(this.pauseDown, this);
 		this.game.input.keyboard.addKey(Phaser.Keyboard.D).onDown.add(this.pauseLeft, this);
+		*/
 	},
 	
 	pause: function() {
@@ -87,7 +89,21 @@ Game.prototype = {
 		this.game.paused = true;
 	},
 	
+	render: function() {
+		this.game.debug.cameraInfo(this.game.camera, 32, 32);
+		this.game.debug.body(this.player);
+		
+		for(let i = 0; i < this.world.enemies.length; i++) {
+			this.game.debug.body(this.world.enemies.children[i].killBox);
+			this.game.debug.body(this.world.enemies.children[i].hitBox1);
+			this.game.debug.body(this.world.enemies.children[i].hitBox2);
+		}
+		
+		this.game.debug.body(this.world.absBottom);
+	},
+	
 	update:function() {	
+		this.game.physics.arcade.overlap(this.player, this.world.absBottom, null, this.player.respawn, this.player);
 	},
 	
 	// End the game and return to the main menu
