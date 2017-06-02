@@ -1,4 +1,2 @@
-- Set up pause camera view
-- Make mob that can shoot
-- Make mobs spawn on walls
+- Set up pause camera view ( tentative )
 - Make player bounce back when mob is destroyed if within certain distance
