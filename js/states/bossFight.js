@@ -62,7 +62,7 @@ BossFight.prototype = {
 			this.game.camera.x -= 5;
 			if(this.game.camera.x + this.camera.width / 2 <= this.player.x) {
 				this.panningBack = false;
-				this.game.time.events.add(Phaser.Timer.SECOND*3, this.resetCamera, this);
+				this.game.time.events.add(Phaser.Timer.SECOND*.1, this.resetCamera, this);
 			}
 		}
 	},
@@ -77,7 +77,7 @@ BossFight.prototype = {
 		this.game.camera.deadzone = new Phaser.Rectangle(400, 250, 200, 70);
 
 		this.fightStarted = true;
-		this.game.time.events.add(Phaser.Timer.SECOND*6, this.world.enemies.children[0].determineMove, this.world.enemies.children[0]);
+		this.game.time.events.add(Phaser.Timer.SECOND*3, this.world.enemies.children[0].determineMove, this.world.enemies.children[0]);
 	},
 	
 	minionHit: function(bullet, minion) {
