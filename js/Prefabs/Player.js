@@ -555,7 +555,7 @@ Player.prototype.determineLoser = function(player, enemy) {
 		player.respawn();
 	}
 	else {
-		enemy.death();
+		enemy.kills();
 	}
 }
 

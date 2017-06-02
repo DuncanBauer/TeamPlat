@@ -70,8 +70,8 @@ Mob2.prototype.update = function() {
 			this.game.time.events.add(Phaser.Timer.SECOND * .5, this.openFire, this);
 		}
 		
-		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
-		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+		//this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
+		//this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 	}
 }
 
@@ -280,23 +280,21 @@ Mob2.prototype.kills = function() {
 	
 	var dist = Math.sqrt((x*x) + (y*y));
 	var scale = 0;
-	console.log(dist);
 	
-	if(dist >= 20) {
-		scale = 1.5;
-	}
-	else if(dist >= 100) {
-		scale = 1;
-	}
-	else if(dist >= 150) {
-		scale = .5;
+	if(dist <= 100) {
+		scale = 2;
 	}
 	else if(dist <= 200) {
-		scale = 0;
+		scale = 1.5;
+	}
+	else if(dist <= 220) {
+		scale = 1;
 	}
 	
-	var angle = this.game.physics.arcade.angleBetween(this, this.thePlayer) * (180/Math.PI);
-	this.game.physics.arcade.velocityFromAngle(angle, 50 * scale, this.thePlayer.body.velocity);
+	if(scale > 0) {
+		var angle = this.game.physics.arcade.angleBetween(this, this.thePlayer) * (180/Math.PI);
+		this.game.physics.arcade.velocityFromAngle(angle, 300 * scale, this.thePlayer.body.velocity);
+	}
 	
 	this.box.kill();
 	this.killBox.kill();
@@ -309,6 +307,8 @@ Mob2.prototype.reinitialize = function() {
 	this.revive();
 	this.box.revive();
 	this.killBox.revive();
+	this.hitBox1.revive();
+	this.hitBox2.revive();
 	this.body.velocity.x = 0;
 	this.body.velocity.y = 0;
 	this.body.acceleration.x = 0;

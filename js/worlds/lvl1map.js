@@ -211,6 +211,7 @@ World.prototype.loadAbsBottom = function() {
 	this.absBottom.body.setSize(this.game.world.width, 5);
 
 }
+
 World.prototype.resetWorld = function() {
 	this.enemies.forEach(function(enemy) {
 		enemy.reinitialize();

@@ -40,11 +40,13 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	
 	this.firing = false;
 	
-	this.idling = true;
+	this.idling = false;
 	this.idleLeft = null;
 	this.idleSpeed = 200;
 	
 	this.minionCount = 0;
+	
+	this.disabled = true;
 	
 	this.weapon = this.game.add.weapon(100, 'lemon');
 	this.weapon.bullets.setAll('scale.x', .5);
@@ -58,15 +60,12 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 
 Boss.prototype = Object.create(Phaser.Sprite.prototype);
 Boss.prototype.update = function() {
-
-	//console.log(Object.values(this));
 	this.game.physics.arcade.collide(this, this.myWorld.ground.children);
 
 	if(!this.set) {
 		this.setup();
 	}
-	
-	if(this.charging) {
+	else if(this.charging) {
 		this.letsCharge();
 	}
 	else if(this.firing) {
@@ -75,9 +74,12 @@ Boss.prototype.update = function() {
 	else if(this.idling) {
 		this.idleTime();
 	}
+	else if(this.disabled) {
+	}
 }
 
 Boss.prototype.determineMove = function() {	
+	this.disabled = false;
 	this.idle(); 
 	
 	var nextAttack = 0;
@@ -109,6 +111,7 @@ Boss.prototype.determineMove = function() {
 Boss.prototype.idle = function() {
 	this.idling = true;
 	var x = Math.floor(Math.random() * 2);
+	console.log(x);
 	if(x) {
 		this.idleLeft = false;
 	}
@@ -183,7 +186,7 @@ Boss.prototype.hitWorldBounds = function () {
 }
 
 Boss.prototype.setup = function() {
-	this.game.time.events.add(Phaser.Timer.SECOND*3, this.determineMove, this);
+	//this.game.time.events.add(Phaser.Timer.SECOND*3, this.determineMove, this);
 	this.set = true;
 	/*
 	console.log("this");

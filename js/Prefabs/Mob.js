@@ -53,8 +53,8 @@ Mob.prototype.update = function() {
 		this.animations.play('idle');
 	}
 	else if(this.flailing) {
-		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
-		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+		//this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
+		//this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 	}
 }
 
@@ -259,7 +259,6 @@ Mob.prototype.kills = function() {
 	
 	var dist = Math.sqrt((x*x) + (y*y));
 	var scale = 0;
-	console.log(dist);
 	
 	if(dist <= 100) {
 		scale = 2;
@@ -287,6 +286,8 @@ Mob.prototype.reinitialize = function() {
 	this.revive();
 	this.box.revive();
 	this.killBox.revive();
+	this.hitBox1.revive();
+	this.hitBox2.revive();
 	this.body.velocity.x = 0;
 	this.body.velocity.y = 0;
 	this.body.acceleration.x = 0;
