@@ -96,7 +96,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 }
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
-Player.prototype.update = function() {		
+Player.prototype.update = function() {
 	this.dashChecking();
 	
 	if(this.game.physics.arcade.collide(this, this.myWorld.ground.children)) {
@@ -132,7 +132,7 @@ Player.prototype.update = function() {
 		this.animations.play('stand');	
 	}
 	
-	this.game.physics.arcade.overlap(this, this.myWorld.enemies.children, this.determineLoser, null, this)
+	//this.game.physics.arcade.overlap(this, this.myWorld.enemies.children, this.determineLoser, null, this)
 	
 	this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
 	
@@ -160,7 +160,7 @@ Player.prototype.wallCollide = function (player, wall) {
 
 Player.prototype.enemyHit = function(bullet, enemy) {
 	if(this.game.physics.arcade.overlap(bullet, enemy.killBox)) {
-		enemy.death();
+		enemy.kills();
 		bullet.kill();
 	}
 }
@@ -450,7 +450,7 @@ Player.prototype.attack = function() {
 		this.attackTimeCheck = this.game.time.now;
 
 		let cursors = this.game.input.keyboard.createCursorKeys();
-		var triggerBox = null;
+		//var triggerBox = null;
 
 		// Angles are mirrored across the the X-axis. Its fucking me up a bit to be honest
 		// If player is aiming right
@@ -459,12 +459,15 @@ Player.prototype.attack = function() {
 			this.weapon.fireAngle = 0;
 			
 			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
-			triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 0, .5, this.x + this.width/2, this.y - this.height/4);
+			//triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 0, .5, this.x + this.width/2, this.y - this.height/4);
 			
 			// To fire at an angle downward while in the air
 			if(cursors.down.isDown && this.jumping) {
 				// Sets firing angle
 				this.weapon.fireAngle = 45;
+			}
+			else if(cursors.up.isDown) {
+				this.weapon.fireAngle = 315;
 			}
 		}
 		// If player is aiming left
@@ -473,12 +476,15 @@ Player.prototype.attack = function() {
 			this.weapon.fireAngle = 180;
 			
 			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
-			triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 1, .5, this.x - this.width/2 - this.attackDistance, this.y - this.height/4);
+			//triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 1, .5, this.x - this.width/2 - this.attackDistance, this.y - this.height/4);
 			
 			// To fire at an angle downward while in the air
 			if(cursors.down.isDown && this.jumping) {
 				// Sets firing angle
 				this.weapon.fireAngle = 135;
+			}
+			else if(cursors.up.isDown) {
+				this.weapon.fireAngle = 225;
 			}
 		}
 		// If player is aiming down
@@ -489,7 +495,10 @@ Player.prototype.attack = function() {
 			this.weapon.fireAngle = 90;
 			
 			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
-			triggerBox = this.setHitbox(triggerBox, this.triggerBoxVertical, .5, 1, this.x, this.y - this.height/2);
+			//triggerBox = this.setHitbox(triggerBox, this.triggerBoxVertical, .5, 1, this.x, this.y - this.height/2);
+		}
+		else if(cursors.up.isDown) {
+			this.weapon.fireAngle = 270;
 		}
 		// If no button is being pressed, check which way the player is facing
 		else if(this.facingForward) {
@@ -497,14 +506,14 @@ Player.prototype.attack = function() {
 			this.weapon.fireAngle = 0;
 			
 			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
-			triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 0, .5, this.x + this.width/2, this.y - this.height/4);
+			//triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 0, .5, this.x + this.width/2, this.y - this.height/4);
 		}
 		else {
 			// Sets firing angle
 			this.weapon.fireAngle = 180;
 			
 			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
-			triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 1, .5, this.x - this.width/2 - this.attackDistance, this.y - this.height/4);
+			//triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 1, .5, this.x - this.width/2 - this.attackDistance, this.y - this.height/4);
 		}
 		
 		// If an enemy is in the hitbox, the weapon will target it

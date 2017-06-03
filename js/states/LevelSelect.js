@@ -1,5 +1,5 @@
-var MainMenu = function(game) {};
-MainMenu.prototype = {
+var LevelSelect = function(game) {};
+LevelSelect.prototype = {
 	
 	create: function() {
 		console.log('MainMenu: create');
@@ -13,14 +13,16 @@ MainMenu.prototype = {
 		this.buttons = this.game.add.group();
 		
 		// Create start this.game button
-		var button = this.game.add.button(this.game.world.centerX - 150, this.game.world.centerY, 'play_Button', this.playgame, this);
+		var button = this.game.add.button(this.game.world.centerX - 100, 10, 'lvlbutton', this.playgame, this);
+		var btext = this.game.add.text(this.game.world.centerX + 10, 90, "Level 1", {fontSize: '32px', fill: '#fff'});
 		this.buttons.create(button);
 	},
 	
 	playgame: function() {
-		console.log('MainMenu: playthis.game');
+		console.log('LevelSelect: playthis.game');
 		
 		// Start this.game state
+		//this.game.state.start('BossFight');
 		this.game.state.start('Game');
 	}
 }

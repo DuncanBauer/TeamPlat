@@ -1,6 +1,6 @@
-var Game = function(game) {
+var BossFight = function(game) {
 };
-Game.prototype = {	
+BossFight.prototype = {	
 	create: function() {
 		console.log('Game: create');
 
@@ -25,10 +25,10 @@ Game.prototype = {
 		this.game.world.setBounds(0, 0, 3600, 3600);
 
 		// Create world
-		this.world = new World(this.game);
+		this.world = new lvl2Map(this.game);
 		
-		this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2300, this.world);
-		//this.player = new Player(this.game, 'player_atlas', 'player_1', this.game.width/2 - 100, this.game.height/2, this.world);
+		//this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2300, this.world);
+		this.player = new Player(this.game, 'player_atlas', 'player_1', this.game.width/2 - 100, this.game.height/2, this.world);
 		this.game.add.existing(this.player);
 		this.world.retreivePlayer(this.player);
 
@@ -61,7 +61,7 @@ Game.prototype = {
 		this.game.debug.body(this.world.enemies.children[1]); 	
 		this.game.debug.body(this.world.enemies.children[1].box); 	
 		this.game.debug.body(this.world.enemies.children[1].killBox); 	
-		this.game.debug.body(this.player);
 		*/
+		this.game.debug.body(this.player);
 	}
 }
