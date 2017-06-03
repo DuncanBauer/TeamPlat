@@ -20,7 +20,6 @@ Portal.prototype.update = function() {
 		this.game.levelsComplete[this.currLevel] = true;
 		this.game.legs[this.currLevel] = this.player.legs;
 		this.game.times[this.currLevel] = this.game.time.now - this.player.runTime;
-		console.log(this.game.times);
 		this.game.state.start('LevelSelect');
 	}
 }
