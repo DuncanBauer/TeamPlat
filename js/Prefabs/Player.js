@@ -89,17 +89,17 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	this.myWorld = world;
 	this.legs = 0;
 	
-	this.emitter = this.game.add.emitter(this.x, this.y, 500);
-    this.emitter.makeParticles('vaporTrails');
-    this.emitter.setXSpeed(0, 0);
-    this.emitter.setYSpeed(0, 0);
-    this.emitter.setRotation(0, 0);
-    this.emitter.setAlpha(0.1, 1, 3000);
-    this.emitter.setScale(0.1, .3, 0.1, .3, 1000, Phaser.Easing.Quintic.Out);
-    this.emitter.gravity = -100;
+	this.emitter = this.game.add.emitter(this.x, this.y, 50);
+    	this.emitter.makeParticles('vaporTrails');
+    	this.emitter.setXSpeed(0, 0);
+    	this.emitter.setYSpeed(0, 0);
+    	this.emitter.setRotation(0, 0);
+   	this.emitter.setAlpha(0.1, 1, 500);
+   	this.emitter.setScale(0.1, .3, 0.1, .3, 1000, Phaser.Easing.Quintic.Out);
+    	this.emitter.gravity = -100;
 	//this.emitter.start(false, 4000, 20);
-    this.emitter.emitX = 64;
-    this.emitter.emitY = 500;
+    	this.emitter.emitX = 64;
+    	this.emitter.emitY = 500;
 }
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -112,12 +112,6 @@ Player.prototype.update = function() {
 		if(this.dashingDown){
 			this.dashCancel();
 		}
-	}
-	
-	if(this.game.physics.arcade.overlap(this, this.myWorld.legs.children, function(player, leg) {
-		leg.kill();
-	}, null, this)) {
-		this.legs++;
 	}
 
 	/* Initial wall collision handling (seems to work great so far)
@@ -197,7 +191,7 @@ Player.prototype.moveRight = function() {
 		this.body.acceleration.x = 400;
 		
 		if(!this.emitter.on) {
-			this.emitter.start(false, 2500, 100);
+		//	this.emitter.start(false, 2500, 100);
 		}
 	//}
 }
@@ -216,7 +210,7 @@ Player.prototype.moveLeft = function() {
 		this.body.acceleration.x = -400;
 		
 		if(!this.emitter.on) {
-			this.emitter.start(false, 2500, 100);
+		//	this.emitter.start(false, 2500, 100);
 		}
 	//}
 }

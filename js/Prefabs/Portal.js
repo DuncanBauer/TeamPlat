@@ -19,7 +19,6 @@ Portal.prototype.update = function() {
 	if(this.game.physics.arcade.overlap(this, this.player)){
 		this.game.levelsComplete[this.currLevel] = true;
 		this.game.legs[this.currLevel] = this.player.legs;
-		console.log(this.game.legs);
 		this.game.state.start('LevelSelect');
 	}
 }

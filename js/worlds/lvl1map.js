@@ -10,6 +10,7 @@ function World(game) {
 	this.legs = this.add(this.game.add.group());
 	
 	this.absBottom = null;
+	this.thePlayer = null;
 };
 
 World.prototype = Object.create(Phaser.Group.prototype);
@@ -32,7 +33,8 @@ World.prototype.init = function() {
 }
 
 World.prototype.loadLegs = function() {
-	this.legs.add(new Leg(this.game, 'player_atlas', 'player_1', 264, 2270));
+	this.legs.add(new Leg(this.game, 'player_atlas', 'player_1', 264, 2270, this.thePlayer));
+	this.legs.add(new Leg(this.game, 'player_atlas', 'player_1', 264, 2270, this.thePlayer));
 }
 
 World.prototype.loadChecks = function() {
