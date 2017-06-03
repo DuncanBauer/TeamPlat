@@ -26,15 +26,17 @@ World.prototype.init = function() {
 }
 
 World.prototype.loadChecks = function() {
-	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, this.thePlayer.x-100, this.thePlayer.y+100));
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, this.thePlayer.x-100, this.thePlayer.y+100));
 
-	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 1265, 2300));
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1265, 2300));
 
-	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 500, 1800));
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 500, 1800));
 
-	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 110, 900));
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 110, 900));
 
-	this.checkpoints.add(new Checkpoint(this.game, 'player_test', this.thePlayer, 1850, 1550));
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1850, 1550));
+	
+	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 1950, 1850));
 }
 
 World.prototype.loadFloor = function(atlas, frame) {

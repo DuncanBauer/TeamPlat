@@ -87,11 +87,3 @@ Mob.prototype.reinitialize = function() {
 	this.body.acceleration.x = 0;
 	this.body.acceleration.y = 0;
 }
-
-Mob.prototype.resetLoc = function(loc) {
-	console.log("now");
-	this.x = loc[0];
-	this.y = loc[1];
-	this.body.x = loc[0];
-	this.body.y = loc[1];
-}
