@@ -7,6 +7,7 @@ function World(game) {
 	this.obstacles = this.add(this.game.add.group());
 	this.enemies = this.add(this.game.add.group());
 	this.checkpoints = this.add(this.game.add.group());
+	this.legs = this.add(this.game.add.group());
 	
 	this.absBottom = null;
 };
@@ -25,8 +26,13 @@ World.prototype.init = function() {
 	this.loadChecks();
 	this.loadEnemies();
 	this.loadObstacles('platform_atlas', 'bigspike');
+	this.loadLegs();
 	
 	this.loadAbsBottom();
+}
+
+World.prototype.loadLegs = function() {
+	this.legs.add(new Leg(this.game, 'player_atlas', 'player_1', 264, 2270));
 }
 
 World.prototype.loadChecks = function() {
@@ -217,4 +223,8 @@ World.prototype.resetWorld = function() {
 	this.enemies.forEach(function(enemy) {
 		enemy.reinitialize();
 	}, Mob);
+
+	this.legs.forEach(function(leg) {
+		leg.reinitialize();
+	}, Leg);
 }

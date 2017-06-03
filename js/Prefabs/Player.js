@@ -87,6 +87,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	this.game.input.keyboard.addKey(Phaser.Keyboard.A).onDown.add(this.attack, this);
 
 	this.myWorld = world;
+	this.legs = 0;
 	
 	this.emitter = this.game.add.emitter(this.x, this.y, 500);
     this.emitter.makeParticles('vaporTrails');
@@ -111,6 +112,12 @@ Player.prototype.update = function() {
 		if(this.dashingDown){
 			this.dashCancel();
 		}
+	}
+	
+	if(this.game.physics.arcade.overlap(this, this.myWorld.legs.children, function(player, leg) {
+		leg.kill();
+	}, null, this)) {
+		this.legs++;
 	}
 
 	/* Initial wall collision handling (seems to work great so far)
@@ -592,6 +599,9 @@ Player.prototype.determineLoser = function(player, enemy) {
 
 Player.prototype.stupidPlayer = function(player, obstacle) {
 	if(this.myWorld.type != "boss") {
+		player.emitter.children.forEach(function(particle) {
+			particle.kill();
+		});
 		player.respawn();
 	}
 	else {
