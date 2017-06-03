@@ -10,6 +10,8 @@ Preloader.prototype = {
 		// Load Images
 		// Load MainMenu assets
 		this.game.load.image('background00', '/img/background01.png');
+		this.game.load.image('background01', '/img/background02.png');
+		this.game.load.image('background02', '/img/background03.png');
 		this.game.load.image('play_Button', '/img/play_button.png');
 		this.game.load.image('power_Button', '/img/power_Button.png');
 		this.game.load.image('lvlbutton', '/img/levelButton.png');
@@ -20,9 +22,8 @@ Preloader.prototype = {
 		// Load this.game assets
 		this.game.load.atlas('player_atlas', '/img/player.png', '/img/sprites.json');
 		this.game.load.atlas('robobitch_atlas', '/img/robobitch.png', '/img/robobitch.json');
+		this.game.load.atlas('bossbot_atlas', '/img/bossbot.png', '/img/bossbot.json');
 		this.game.load.atlas('tile_atlas', '/img/tiles.png', '/img/tiles.json');
-		this.game.load.atlas('coin_atlas', '/img/Coin.png', '/img/coin.json');
-		this.game.load.atlas('star_atlas', '/img/star.png', '/img/star.json');
 		this.game.load.atlas('platform_atlas', '/img/platforms.png', '/img/platforms.json');
 		this.game.load.image('lemon', '/img/lemon.png');
 		this.game.load.image('tileShade', '/img/tile_shadow.png');

@@ -61,7 +61,7 @@ BossRoom.prototype.loadFloor = function(atlas, frame) {
 }
 
 BossRoom.prototype.loadEnemies = function() {
-	this.boss.add(new Boss(this.game, 'robobitch_atlas', 'robobitch0', 1600, 2000, this, this.thePlayer));
+	this.boss.add(new Boss(this.game, 'bossbot_atlas', 'bossbot0', 1600, 2000, this, this.thePlayer));
 }
 
 BossRoom.prototype.callMinions = function() {
@@ -109,7 +109,6 @@ BossRoom.prototype.loadStartLine = function() {
 	this.startLine = this.game.add.sprite(1000, 0, null);
 	this.game.physics.enable(this.startLine, Phaser.Physics.ARCADE);
 	this.startLine.body.setSize(5, this.game.world.height);
-
 }
 
 BossRoom.prototype.resetWorld = function() {

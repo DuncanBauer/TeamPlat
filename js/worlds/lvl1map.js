@@ -8,7 +8,9 @@ function World(game) {
 	this.enemies = this.add(this.game.add.group());
 	this.checkpoints = this.add(this.game.add.group());
 	this.legs = this.add(this.game.add.group());
-	
+			
+	this.runTime = this.game.time.now;
+
 	this.absBottom = null;
 	this.thePlayer = null;
 };
@@ -40,11 +42,11 @@ World.prototype.loadLegs = function() {
 World.prototype.loadChecks = function() {
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, this.thePlayer.x-100, this.thePlayer.y+100));
 
-	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1265, 2300));
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1415, 2275));
 
-	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 500, 1800));
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 550, 1850));
 
-	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 110, 900));
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 110, 975));
 
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1850, 1550));
 	
@@ -181,8 +183,8 @@ World.prototype.loadWalls = function(atlas, frame) {
 }
 
 World.prototype.loadEnemies = function() {
-	/*this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 232, 2500, this, this.thePlayer, 0));
-	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 332, 2500, this, this.thePlayer, 90));
+	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 520, 974, this, this.thePlayer, 0));
+	/*this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 332, 2500, this, this.thePlayer, 90));
 	this.enemies.add(new Mob2(this.game, 'robobitch_atlas', 'robobitch0', 432, 2500, this, this.thePlayer, 180));
 	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 532, 2500, this, this.thePlayer, 270));
 */

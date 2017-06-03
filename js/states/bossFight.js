@@ -16,7 +16,7 @@ BossFight.prototype = {
 		
 		// BACKGROUND FIRST BECAUSE LAYERS AND SHIT
 		// Set Game background and adjust size
-		this.bkgd = this.add.sprite(0, 0, 'background00');
+		this.bkgd = this.add.sprite(0, 0, 'background01');
 		this.bkgd.height = 600;
 		this.bkgd.width = 1000;	
 		this.bkgd.fixedToCamera = true;
@@ -63,6 +63,7 @@ BossFight.prototype = {
 			if(this.game.camera.x >= 990) {
 				this.panning = false;
 				this.game.time.events.add(Phaser.Timer.SECOND*1, this.world.shakeCamera, this.world);
+				this.game.time.events.add(Phaser.Timer.SECOND*1, this.bobbleHead, this);
 				this.game.time.events.add(Phaser.Timer.SECOND*3.5, this.startPanBack, this);
 			}
 		}
@@ -71,7 +72,10 @@ BossFight.prototype = {
 			this.game.camera.x -= 5;
 			if(this.game.camera.x + this.camera.width / 2 <= this.player.x) {
 				this.panningBack = false;
-				this.game.time.events.add(Phaser.Timer.SECOND*.1, this.resetCamera, this);
+				this.game.time.events.add(Phaser.Timer.SECOND*0.1, this.resetCamera, this);
+				this.game.time.events.add(Phaser.Timer.SECOND*0.1, function() {
+					this.world.boss.children[0].animations.play('idle');
+				}, this);
 			}
 			
 			if(Math.abs(this.game.camera.y - this.player.y) > 5) {
@@ -83,6 +87,10 @@ BossFight.prototype = {
 				}
 			}
 		}
+	},
+
+	bobbleHead: function() {
+		this.world.boss.children[0].animations.play('bobble');
 	},
 	
 	startPanBack: function() {
@@ -109,6 +117,7 @@ BossFight.prototype = {
 	},
 	
 	render: function() {
+/*
 		this.game.debug.cameraInfo(this.game.camera, 32, 32);
 		this.game.debug.body(this.player);
 		this.game.debug.body(this.world.startLine);
@@ -119,7 +128,7 @@ BossFight.prototype = {
 			this.game.debug.body(this.world.minions.children[i].hitBox1);
 			this.game.debug.body(this.world.minions.children[i].hitBox2);
 		}
-	},
+*/	},
 	
 	// End the game and return to the main menu
 	endGame: function(end) {

@@ -8,7 +8,7 @@ Game.prototype = {
 		this.game.physics.startSystem(Phaser.Physics.ARCADE);
 		this.game.physics.setBoundsToWorld();
 		this.game.time.advancedTiming = true;
-		
+
 		// Start music
 		this.bg_music = this.game.add.audio('bg_music');
 		this.bg_music.loopFull();
@@ -90,7 +90,7 @@ Game.prototype = {
 	},
 	
 	render: function() {
-		this.game.debug.cameraInfo(this.game.camera, 32, 32);
+/*		this.game.debug.cameraInfo(this.game.camera, 32, 32);
 		this.game.debug.body(this.player);
 		
 		for(let i = 0; i < this.world.enemies.length; i++) {
@@ -100,6 +100,7 @@ Game.prototype = {
 		}
 		
 		this.game.debug.body(this.world.absBottom);
+*/
 	},
 	
 	update:function() {	

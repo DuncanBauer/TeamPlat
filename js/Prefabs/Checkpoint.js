@@ -1,8 +1,8 @@
 function Checkpoint(game, sprite_key, frame, player, x, y){
 	Phaser.Sprite.call(this, game, x, y, sprite_key, frame);
 
-	this.animations.add('port', [0,1,2,3], 10, true);
-	this.animations.add('portOn', [4,5,6,7], 10, true);
+	this.animations.add('port', [0,1,2], 10, true);
+	this.animations.add('portOn', [3,4,5], 10, true);
 	this.animations.play('port');
 	
 	this.portOn = false;

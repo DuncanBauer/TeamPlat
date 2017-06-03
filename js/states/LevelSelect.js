@@ -13,24 +13,29 @@ LevelSelect.prototype = {
 		// Create buttons for main menu
 		this.buttons = this.game.add.group();
 		this.legs = this.game.add.group();
+		this.times = this.game.add.group();
 		
 		// Create start this.game button
 		var button = this.game.add.button(this.game.world.centerX, 100, 'lvl1button', this.playLevel1, this);
 		button.anchor.set(.5);
 		this.buttons.create(button);
 		
+		var leg;
+		var time;
 		if(this.game.legs[0] != null && this.game.legs[0] != undefined) {
 			for(let i = 0; i < this.game.legs[0]; i++) {
-				var leg = this.legs.add(new Leg(this.game, 'player_atlas', 'player_1', this.game.world.centerX - button.width / 2 - 50 - (i * 64), 100));
+				leg = this.legs.add(new Leg(this.game, 'player_atlas', 'player_1', this.game.world.centerX - button.width / 2 - 50 - (i * 64), 100));
 				leg.anchor.set(.5);
 			}
+			time = this.times.add(this.game.add.text(this.game.world.centerX + button.width / 2 + 100, 100, (this.game.times[0]/1000)));
+			time.anchor.set(.5)
 		}
 		
-		if(this.game.levelsComplete[0]) {
+		//if(this.game.levelsComplete[0]) {
 			button = this.game.add.button(this.game.world.centerX, 210, 'bossFightButton', this.playBoss, this);
 			button.anchor.set(.5);
 			this.buttons.create(button);
-		}
+		//}
 	},
 	
 	playLevel1: function() {

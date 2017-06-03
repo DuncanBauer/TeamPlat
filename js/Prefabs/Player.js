@@ -5,7 +5,8 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	this.game.physics.arcade.enable(this);
 	this.animations.add('dash', [3],5, true);
 	this.animations.add('walk', [1,2,1,4], 5, true);
-	this.animations.add('stand', [1, 1], 5, false);
+	//this.animations.add('stand', [1], 5, false);
+	this.animations.add('stand', [10], 5, false);
 		
 	// Set scale and physics for character
 	this.body.collideWorldBounds = true;
@@ -88,6 +89,8 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 
 	this.myWorld = world;
 	this.legs = 0;
+	this.runTime = this.game.time.now;
+	console.log(this.runTime);
 	
 	this.emitter = this.game.add.emitter(this.x, this.y, 50);
     	this.emitter.makeParticles('vaporTrails');
@@ -593,10 +596,10 @@ Player.prototype.determineLoser = function(player, enemy) {
 
 Player.prototype.stupidPlayer = function(player, obstacle) {
 	if(this.myWorld.type != "boss") {
-		player.emitter.children.forEach(function(particle) {
+		this.emitter.children.forEach(function(particle) {
 			particle.kill();
 		});
-		player.respawn();
+		this.respawn();
 	}
 	else {
 		this.game.state.restart();
