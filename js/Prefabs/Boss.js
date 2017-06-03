@@ -20,14 +20,10 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	
 	this.body.onWorldBounds = new Phaser.Signal();
 	this.body.onWorldBounds.add(this.hitWorldBounds, this);
-	
-	this.box = this.game.add.sprite(this.x, this.y, null);
-	this.game.physics.enable(this.box, Phaser.Physics.ARCADE);
-	this.box.body.setSize(700, 700);
 
 	this.killBox = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.killBox, Phaser.Physics.ARCADE);
-	this.killBox.body.setSize(20, 20);
+	this.killBox.body.setSize(30, 30);
 
 	this.myWorld = world;
 	this.thePlayer = player;
@@ -62,10 +58,9 @@ Boss.prototype = Object.create(Phaser.Sprite.prototype);
 Boss.prototype.update = function() {
 	this.game.physics.arcade.collide(this, this.myWorld.ground.children);
 
-	if(!this.set) {
-		this.setup();
-	}
-	else if(this.charging) {
+	this.setup();
+	
+	if(this.charging) {
 		this.letsCharge();
 	}
 	else if(this.firing) {
@@ -85,14 +80,13 @@ Boss.prototype.determineMove = function() {
 	var nextAttack = 0;
 	var rand = Math.floor(Math.random() * 30);
 	
-	if(rand <= 11) {
+	if(rand <= 1) {
 		nextAttack = 0;
 	}
-	else if(rand > 11 && rand < 21) {
+	else if(rand > 1 && rand < 2) {
 		nextAttack = 1;
 	}
-	else 
-		if(rand >= 21) {
+	else if(rand >= 2) {
 		nextAttack = 2;
 	}
 	
@@ -111,7 +105,6 @@ Boss.prototype.determineMove = function() {
 Boss.prototype.idle = function() {
 	this.idling = true;
 	var x = Math.floor(Math.random() * 2);
-	console.log(x);
 	if(x) {
 		this.idleLeft = false;
 	}
@@ -121,6 +114,10 @@ Boss.prototype.idle = function() {
 }
 
 Boss.prototype.idleTime = function() {
+	if(this.animations.currentFrame.index == this.animations.frameTotal-1) {
+		this.animations.play('idle');
+	}
+	/*
 	var vel = this.body.velocity.x;
 	if(vel < 0) {		
 		this.body.acceleration.x = -1 * this.idleSpeed;
@@ -134,6 +131,7 @@ Boss.prototype.idleTime = function() {
 	else {
 		this.body.acceleration.x = this.idleSpeed;
 	}
+	*/
 }
 
 Boss.prototype.openFire = function() {
@@ -153,6 +151,7 @@ Boss.prototype.ceaseFire = function() {
 }
 
 Boss.prototype.charge = function() {
+	this.animations.play('flail');
 	this.charging = true;
 	this.idling = false;
 	
@@ -182,43 +181,20 @@ Boss.prototype.endCharge = function() {
 }
 
 Boss.prototype.hitWorldBounds = function () {
-	//this.endCharge();
+//	this.myWorld.shakeCameraLite();
 }
 
 Boss.prototype.setup = function() {
-	//this.game.time.events.add(Phaser.Timer.SECOND*3, this.determineMove, this);
-	this.set = true;
-	/*
-	console.log("this");
 	this.set = true;
 	var killBox = this.killBox;
-	this.killBox.anchor.setTo(0.5,0.5);
-	if(!this.upsideDown) {
-		killBox.body.x = this.x - killBox.width / 2 - 9;
-		killBox.body.y = this.y - killBox.height / 2 - 18;
-	}
-	else{
-		this.scale.y = this.scale.y * -1;
-		killBox.body.x = this.x - killBox.width / 2 - 9;
-		killBox.body.y = this.y - killBox.height / 2 - 10;
-	}
-	*/
-}
-
-/*
-Boss.prototype.detectPlayer = function() {
-	var box = this.box;
-	box.body.x = this.x - box.body.width / 2;
-	box.body.y = this.y - box.body.height / 2;
+	killBox.body.x = this.x - killBox.width / 2 - 15;
+	killBox.body.y = this.y - killBox.height / 2 - 20;
+	killBox.anchor.set(0.5);
 	
-	if(this.game.physics.arcade.overlap(box, this.thePlayer)) {
-		return true;
-	}
 }
 
-Boss.prototype.death = function() {
+Boss.prototype.kills = function() {
 	this.box.kill();
 	this.killBox.kill();
 	this.kill();
 }
-*/

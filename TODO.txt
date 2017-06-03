@@ -1,2 +1,8 @@
 - Set up pause camera view ( tentative )
-- Make player bounce back when mob is destroyed if within certain distance
+- setup hidden boss fight
+- add minion spawn notification (sprite anim)
+- setup boss sprites / animations / hitboxes
+- setup player and mob animations
+- fix player movement
+- create 2nd level
+- add proper particles for attacks/running/wall jumping

@@ -25,10 +25,12 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	this.hitBox1 = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.hitBox1, Phaser.Physics.ARCADE);
 	this.hitBox1.body.setSize(15, 15);
+	this.hitBox1.parent = this;
 	
 	this.hitBox2 = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.hitBox2, Phaser.Physics.ARCADE);
 	this.hitBox2.body.setSize(15, 15);
+	this.hitBox2.parent = this;
 	
 	this.flailing = false;
 	this.rotateAngle = rotateAngle;
@@ -53,8 +55,8 @@ Mob.prototype.update = function() {
 		this.animations.play('idle');
 	}
 	else if(this.flailing) {
-		//this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
-		//this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
+		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 	}
 }
 

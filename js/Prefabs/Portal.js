@@ -12,12 +12,10 @@ function Portal(game, sprite_key, frame, player, x, y, state, currLevel){
 	
 	this.scale.x *=.5;
 	this.scale.y *=.5;
-
-	this.game.input.keyboard.addKey(Phaser.Keyboard.D).onDown.add(this.port, this);
 }
 
 Portal.prototype = Object.create(Phaser.Sprite.prototype);
-Portal.prototype.port = function() {
+Portal.prototype.update = function() {
 	if(this.game.physics.arcade.overlap(this, this.player)){
 		this.game.levelsComplete[this.currLevel] = true;
 		this.game.state.start('LevelSelect');

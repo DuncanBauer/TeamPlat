@@ -15,6 +15,7 @@ Preloader.prototype = {
 		this.game.load.image('lvlbutton', '/img/levelButton.png');
 		this.game.load.image('lvl1button', '/img/levelOneButton.png');
 		this.game.load.image('bossFightButton', '/img/bossFightButton.png');
+		this.game.load.image('vaporTrails', '/img/cloud.png');
 		
 		// Load this.game assets
 		this.game.load.atlas('player_atlas', '/img/player.png', '/img/sprites.json');

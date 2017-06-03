@@ -25,10 +25,12 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	this.hitBox1 = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.hitBox1, Phaser.Physics.ARCADE);
 	this.hitBox1.body.setSize(15, 15);
+	this.hitBox1.parent = this;
 	
 	this.hitBox2 = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.hitBox2, Phaser.Physics.ARCADE);
 	this.hitBox2.body.setSize(15, 15);
+	this.hitBox2.parent = this;
 	
 	this.flailing = false;
 	this.rotateAngle = rotateAngle;
@@ -44,12 +46,17 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	this.weapon.bullets.setAll('scale.y', .5);
 	this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
 	this.weapon.fireAngle = 270; // In degrees
-	this.weapon.bulletSpeed = 1250;
+	this.weapon.bulletSpeed = 700;
 	//this.weapon.fireRate = 1000;  Using attackCooldown instead
 	this.weapon.trackSprite(this); // Has the weapon follow the player
 	
 	this.fireCooldown = 3500;
 	this.fireCheck = 0;
+	this.timer = this.game.time.create(false);
+	this.timer.start();
+	
+	this.playerX = 0;
+	this.playerY = 0;
 }
 
 Mob2.prototype = Object.create(Phaser.Sprite.prototype);
@@ -67,11 +74,14 @@ Mob2.prototype.update = function() {
 	else if(this.flailing) {
 		if(this.game.time.now - this.fireCheck > this.fireCooldown) {
 			this.fireCheck = this.game.time.now;
-			this.game.time.events.add(Phaser.Timer.SECOND * .5, this.openFire, this);
+			this.playerX = this.thePlayer.x;
+			this.playerY = this.thePlayer.y;
+			this.timer.add(Phaser.Timer.SECOND * .7, this.openFire, this);
 		}
 		
-		//this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
-		//this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+		//this.game.physics.arcade.overlap(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer, null, this.thePlayer);
+		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
+		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 	}
 }
 
@@ -271,7 +281,9 @@ Mob2.prototype.detectPlayer = function() {
 }
 
 Mob2.prototype.openFire = function() {
-	this.weapon.fireAtSprite(this.thePlayer);
+	if(this.weapon != null) {
+		this.weapon.fireAtXY(this.playerX, this.playerY);
+	}
 }
 
 Mob2.prototype.kills = function() {
@@ -296,6 +308,12 @@ Mob2.prototype.kills = function() {
 		this.game.physics.arcade.velocityFromAngle(angle, 300 * scale, this.thePlayer.body.velocity);
 	}
 	
+	//this.weapon.forEach(function(bullet) {
+	//	bullet.kill();
+	//});
+	
+	this.timer.stop();
+	this.timer.clearPendingEvents();
 	this.box.kill();
 	this.killBox.kill();
 	this.hitBox1.kill();

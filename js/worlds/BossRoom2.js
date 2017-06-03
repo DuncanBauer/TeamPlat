@@ -1,4 +1,4 @@
-function BossRoom(game) {
+function BossRoom2(game) {
 	Phaser.Group.call(this, game);
 	this.game = game;
 
@@ -18,15 +18,15 @@ function BossRoom(game) {
 	this.type = "boss";
 };
 
-BossRoom.prototype = Object.create(Phaser.Group.prototype);
-BossRoom.prototype.constructor = BossRoom;
+BossRoom2.prototype = Object.create(Phaser.Group.prototype);
+BossRoom2.prototype.constructor = BossRoom2;
 
-BossRoom.prototype.retreivePlayer = function(player) {
+BossRoom2.prototype.retreivePlayer = function(player) {
 	this.thePlayer = player;
 	this.init();
 }
 
-BossRoom.prototype.init = function() {
+BossRoom2.prototype.init = function() {
 	this.mobSpawnLocations.push([172,2327]);
 	this.mobSpawnLocations.push([525,2327]);
 	this.mobSpawnLocations.push([942,2327]);
@@ -50,7 +50,7 @@ BossRoom.prototype.init = function() {
 	this.loadStartLine();
 }
 
-BossRoom.prototype.loadFloor = function(atlas, frame) {
+BossRoom2.prototype.loadFloor = function(atlas, frame) {
 	let temp = this.ground.add(new PlatformA(this.game, atlas, frame, 63));
 	temp.x = -32;
 	temp.y = 1800;
@@ -60,11 +60,11 @@ BossRoom.prototype.loadFloor = function(atlas, frame) {
 	temp.y = 1400;
 }
 
-BossRoom.prototype.loadEnemies = function() {
+BossRoom2.prototype.loadEnemies = function() {
 	this.boss.add(new Boss(this.game, 'robobitch_atlas', 'robobitch0', 1600, 2000, this, this.thePlayer));
 }
 
-BossRoom.prototype.callMinions = function() {
+BossRoom2.prototype.callMinions = function() {
 	let temp = [];
 	let taken = [];
 	let rand = Math.floor(Math.random() * 10) + 5;
@@ -98,29 +98,29 @@ BossRoom.prototype.callMinions = function() {
 	}
 }
 
-BossRoom.prototype.killMinion = function() {
+BossRoom2.prototype.killMinion = function() {
 	this.minionCount--;
 	if(this.minionCount == 0) {
 		this.game.time.events.add(1, this.boss.children[0].determineMove, this.boss.children[0]);
 	}
 }
 
-BossRoom.prototype.loadStartLine = function() {
+BossRoom2.prototype.loadStartLine = function() {
 	this.startLine = this.game.add.sprite(1000, 0, null);
 	this.game.physics.enable(this.startLine, Phaser.Physics.ARCADE);
 	this.startLine.body.setSize(5, this.game.world.height);
 
 }
 
-BossRoom.prototype.resetWorld = function() {
+BossRoom2.prototype.resetWorld = function() {
 	this.game.state.restart();
 }
 
-BossRoom.prototype.shakeCamera = function() {
+BossRoom2.prototype.shakeCamera = function() {
 	this.game.camera.shake(.02, 1100);
 }
 	
-BossRoom.prototype.shakeCameraLite = function() {
+BossRoom2.prototype.shakeCameraLite = function() {
 	this.game.camera.shake(.005, 200);
 }
 	

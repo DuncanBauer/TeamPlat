@@ -1,6 +1,6 @@
-var BossFight = function(game) {
+var BossFight2 = function(game) {
 };
-BossFight.prototype = {	
+BossFight2.prototype = {	
 	create: function() {
 		console.log('Game: create');
 

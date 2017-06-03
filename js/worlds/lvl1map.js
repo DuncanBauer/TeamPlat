@@ -40,7 +40,7 @@ World.prototype.loadChecks = function() {
 
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1850, 1550));
 	
-	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 1950, 1850, 'LevelSelect', 0));
+	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 2000, 1800, 'LevelSelect', 0));
 }
 
 World.prototype.loadFloor = function(atlas, frame) {
@@ -173,10 +173,11 @@ World.prototype.loadWalls = function(atlas, frame) {
 }
 
 World.prototype.loadEnemies = function() {
-	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 232, 2500, this, this.thePlayer, 0));
+	/*this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 232, 2500, this, this.thePlayer, 0));
 	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 332, 2500, this, this.thePlayer, 90));
 	this.enemies.add(new Mob2(this.game, 'robobitch_atlas', 'robobitch0', 432, 2500, this, this.thePlayer, 180));
 	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 532, 2500, this, this.thePlayer, 270));
+*/
 }
 
 World.prototype.loadObstacles = function(atlas, frame) {
