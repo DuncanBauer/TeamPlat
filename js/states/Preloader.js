@@ -22,6 +22,7 @@ Preloader.prototype = {
 		// Load this.game assets
 		this.game.load.atlas('player_atlas', '/img/player.png', '/img/sprites.json');
 		this.game.load.atlas('robobitch_atlas', '/img/robobitch.png', '/img/robobitch.json');
+		this.game.load.atlas('robospawn_atlas', '/img/robospawn.png', '/img/robospawn.json');
 		this.game.load.atlas('bossbot_atlas', '/img/bossbot.png', '/img/bossbot.json');
 		this.game.load.atlas('tile_atlas', '/img/tiles.png', '/img/tiles.json');
 		this.game.load.atlas('platform_atlas', '/img/platforms.png', '/img/platforms.json');
