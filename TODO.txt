@@ -1,5 +1,8 @@
-- Make player able to continue movement after dashing without having to repress a directional key
-	| Movement may have to be added back into the update function while handling sprite logic in the keydown events
-- Add cooldown to dashing (Complete)
-- (Already implemented but up for more discussion) Disable gravity during dash, and potentially for a short amount of time after the dash
-- Set up camera
+- Set up pause camera view ( tentative )
+- setup hidden boss fight
+- add minion spawn notification (sprite anim)
+- setup boss sprites / animations / hitboxes
+- setup player and mob animations
+- fix player movement
+- create 2nd level
+- add proper particles for attacks/running/wall jumping

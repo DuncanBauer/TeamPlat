@@ -8,21 +8,45 @@ LevelSelect.prototype = {
 		this.bkgd = this.game.add.sprite(0, 0, 'background00');
 		this.bkgd.height = 600;
 		this.bkgd.width = 1000;
+		this.game.world.setBounds(0, 0,1000,600);
 		
 		// Create buttons for main menu
 		this.buttons = this.game.add.group();
+		this.legs = this.game.add.group();
+		this.times = this.game.add.group();
 		
 		// Create start this.game button
-		var button = this.game.add.button(this.game.world.centerX - 100, 10, 'lvlbutton', this.playgame, this);
-		var btext = this.game.add.text(this.game.world.centerX + 10, 90, "Level 1", {fontSize: '32px', fill: '#fff'});
+		var button = this.game.add.button(this.game.world.centerX, 100, 'lvl1button', this.playLevel1, this);
+		button.anchor.set(.5);
 		this.buttons.create(button);
+		
+		var leg;
+		var time;
+		if(this.game.legs[0] != null && this.game.legs[0] != undefined) {
+			for(let i = 0; i < this.game.legs[0]; i++) {
+				leg = this.legs.add(new Leg(this.game, 'player_atlas', 'player_1', this.game.world.centerX - button.width / 2 - 50 - (i * 64), 100));
+				leg.anchor.set(.5);
+			}
+			time = this.times.add(this.game.add.text(this.game.world.centerX + button.width / 2 + 100, 100, (this.game.times[0]/1000)));
+			time.anchor.set(.5)
+		}
+		
+		//if(this.game.levelsComplete[0]) {
+			button = this.game.add.button(this.game.world.centerX, 210, 'bossFightButton', this.playBoss, this);
+			button.anchor.set(.5);
+			this.buttons.create(button);
+		//}
 	},
 	
-	playgame: function() {
-		console.log('LevelSelect: playthis.game');
-		
-		// Start this.game state
-		//this.game.state.start('BossFight');
+	playLevel1: function() {
 		this.game.state.start('Game');
+	},
+	
+	render: function() {
+		this.game.debug.cameraInfo(this.game.camera, 32, 32);
+	},
+	
+	playBoss: function() {
+		this.game.state.start('BossFight');
 	}
 }

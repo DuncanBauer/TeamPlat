@@ -1,4 +1,4 @@
-function Mob(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
+function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	Phaser.Sprite.call(this, game, x, y, atlas_key, atlas_frame);
 
 	this.ogX = x;
@@ -16,7 +16,7 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	
 	this.box = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.box, Phaser.Physics.ARCADE);
-	this.box.body.setSize(350, 350);
+	this.box.body.setSize(600, 600);
 
 	this.killBox = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.killBox, Phaser.Physics.ARCADE);
@@ -40,12 +40,29 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	this.set = false;
 	
 	this.knockBack = 5;
+
+	this.weapon = this.game.add.weapon(100, 'lemon');
+	this.weapon.bullets.setAll('scale.x', .5);
+	this.weapon.bullets.setAll('scale.y', .5);
+	this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
+	this.weapon.fireAngle = 270; // In degrees
+	this.weapon.bulletSpeed = 700;
+	//this.weapon.fireRate = 1000;  Using attackCooldown instead
+	this.weapon.trackSprite(this); // Has the weapon follow the player
+	
+	this.fireCooldown = 3500;
+	this.fireCheck = 0;
+	this.timer = this.game.time.create(false);
+	this.timer.start();
+	
+	this.playerX = 0;
+	this.playerY = 0;
 }
 
-Mob.prototype = Object.create(Phaser.Sprite.prototype);
-Mob.prototype.update = function() {
+Mob2.prototype = Object.create(Phaser.Sprite.prototype);
+Mob2.prototype.update = function() {	
 	this.setup();
-	
+		
 	if(!this.flailing && this.detectPlayer()) {
 		this.flailing = true;
 		this.animations.play('flail');
@@ -55,12 +72,20 @@ Mob.prototype.update = function() {
 		this.animations.play('idle');
 	}
 	else if(this.flailing) {
+		if(this.game.time.now - this.fireCheck > this.fireCooldown) {
+			this.fireCheck = this.game.time.now;
+			this.playerX = this.thePlayer.x;
+			this.playerY = this.thePlayer.y;
+			this.timer.add(Phaser.Timer.SECOND * .7, this.openFire, this);
+		}
+		
+		//this.game.physics.arcade.overlap(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer, null, this.thePlayer);
 		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
 		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 	}
 }
 
-Mob.prototype.setup = function() {
+Mob2.prototype.setup = function() {
 	this.set = true;
 	
 	var killBox = this.killBox;
@@ -244,7 +269,7 @@ Mob.prototype.setup = function() {
 	}
 }
 
-Mob.prototype.detectPlayer = function() {
+Mob2.prototype.detectPlayer = function() {
 	var box = this.box;
 	box.body.x = this.x - box.body.width / 2;
 	box.body.y = this.y - box.body.height / 2;
@@ -255,7 +280,13 @@ Mob.prototype.detectPlayer = function() {
 	return false;
 }
 
-Mob.prototype.kills = function() {
+Mob2.prototype.openFire = function() {
+	if(this.weapon != null) {
+		this.weapon.fireAtXY(this.playerX, this.playerY);
+	}
+}
+
+Mob2.prototype.kills = function() {
 	var x = this.x - this.thePlayer.x;
 	var y = this.y - this.thePlayer.y;
 	
@@ -277,6 +308,12 @@ Mob.prototype.kills = function() {
 		this.game.physics.arcade.velocityFromAngle(angle, 300 * scale, this.thePlayer.body.velocity);
 	}
 	
+	//this.weapon.forEach(function(bullet) {
+	//	bullet.kill();
+	//});
+	
+	this.timer.stop();
+	this.timer.clearPendingEvents();
 	this.box.kill();
 	this.killBox.kill();
 	this.hitBox1.kill();
@@ -284,7 +321,7 @@ Mob.prototype.kills = function() {
 	this.kill();
 }
 
-Mob.prototype.reinitialize = function() {
+Mob2.prototype.reinitialize = function() {
 	this.revive();
 	this.box.revive();
 	this.killBox.revive();

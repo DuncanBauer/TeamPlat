@@ -1,13 +1,8 @@
 function Player(game, atlas_key, atlas_frame, x, y, world) {
-//function Player(game, sprite, x, y, world, enemies) {
 	Phaser.Sprite.call(this, game, x, y, atlas_key, atlas_frame);
-//	Phaser.Sprite.call(this, game, x, y, sprite);
 	
 	this.anchor.setTo(0.5,1);
-	this.game.physics.arcade.enable(this);	
-	//this.animations.add('walk', Phaser.Animation.generateFrameNames('WalkLeft_MouthOpen_Purple', 1, 3, '', 1), 23, true);
-	//this.animations.add('walk', Phaser.Animation.generateFrameNames('player_', 1, 2, '', 0), 10, true);
-	//this.animations.add('idle', ['WalkLeft_MouthOpen_Purple3'], 30, false);
+	this.game.physics.arcade.enable(this);
 	this.animations.add('dash', [3],5, true);
 	this.animations.add('walk', [1,2,1,4], 5, true);
 	this.animations.add('stand', [1, 1], 5, false);
@@ -18,7 +13,6 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	this.body.gravity.y = 1000;
 	this.body.drag.x = 450;
 	this.anchor.setTo(.5, .5);
-	this.scale.x = -1;
 	this.scale.x *= .25;
 	this.scale.y *= .25;
 	this.animations.play('walk');
@@ -93,6 +87,20 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	this.game.input.keyboard.addKey(Phaser.Keyboard.A).onDown.add(this.attack, this);
 
 	this.myWorld = world;
+	this.legs = 0;
+	this.runTime = this.game.time.now;
+	
+	this.emitter = this.game.add.emitter(this.x, this.y, 50);
+    	this.emitter.makeParticles('vaporTrails');
+    	this.emitter.setXSpeed(0, 0);
+    	this.emitter.setYSpeed(0, 0);
+    	this.emitter.setRotation(0, 0);
+   	this.emitter.setAlpha(0.1, 1, 500);
+   	this.emitter.setScale(0.1, .3, 0.1, .3, 1000, Phaser.Easing.Quintic.Out);
+    	this.emitter.gravity = -100;
+	//this.emitter.start(false, 4000, 20);
+    	this.emitter.emitX = 64;
+    	this.emitter.emitY = 500;
 }
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -106,7 +114,6 @@ Player.prototype.update = function() {
 			this.dashCancel();
 		}
 	}
-	
 
 	/* Initial wall collision handling (seems to work great so far)
 	**********************************/
@@ -121,22 +128,28 @@ Player.prototype.update = function() {
 	}
 	/*********************************/
 
-	var cursors = this.game.input.keyboard.createCursorKeys();
-	if(cursors.left.isDown){
-		this.moveLeft();
-		if(!this.jumping && !this.dashing){this.animations.play('walk');}
-	}else if(cursors.right.isDown){
-		this.moveRight();
-		if(!this.jumping && !this.dashing){this.animations.play('walk');}
-	}else if(this.body.velocity.x == 0){
-		this.animations.play('stand');	
+	if(this.game.input.keyboard.enabled) {
+		var cursors = this.game.input.keyboard.createCursorKeys();
+		if(cursors.left.isDown){
+			this.moveLeft();
+			if(!this.jumping && !this.dashing){this.animations.play('walk');}
+		}else if(cursors.right.isDown){
+			this.moveRight();
+			if(!this.jumping && !this.dashing){this.animations.play('walk');}
+		}else if(this.body.velocity.x == 0){
+			this.animations.play('stand');	
+		}
 	}
 	
-	//this.game.physics.arcade.overlap(this, this.myWorld.enemies.children, this.determineLoser, null, this)
-	
 	this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
-	
 	this.game.physics.arcade.overlap(this, this.myWorld.obstacles.children, this.stupidPlayer, null, this);
+	
+	this.moveEmitter();
+}
+
+Player.prototype.moveEmitter = function() {
+	this.emitter.x = this.x;
+	this.emitter.y = this.y + (this.height / 2);
 }
 
 Player.prototype.wallCollide = function (player, wall) {
@@ -177,6 +190,10 @@ Player.prototype.moveRight = function() {
 		this.facingForward = true;
 		this.scale.x = 1/3;
 		this.body.acceleration.x = 400;
+		
+		if(!this.emitter.on) {
+		//	this.emitter.start(false, 2500, 100);
+		}
 	//}
 }
 
@@ -192,6 +209,10 @@ Player.prototype.moveLeft = function() {
 		this.facingForward = false;
 		this.scale.x = -1/3;
 		this.body.acceleration.x = -400;
+		
+		if(!this.emitter.on) {
+		//	this.emitter.start(false, 2500, 100);
+		}
 	//}
 }
 
@@ -200,7 +221,11 @@ Player.prototype.moveLeft = function() {
  */
 Player.prototype.stopMovement = function() {
 	// Stops character movement when not jumping and not moving in another direction
-	this.body.acceleration.x = 0;	
+	this.body.acceleration.x = 0;
+	
+	if(this.emitter.on) {
+		this.emitter.on = false;
+	}
 }
 
 /*
@@ -560,13 +585,21 @@ Player.prototype.respawn = function() {
 
 Player.prototype.determineLoser = function(player, enemy) {
 	if(!this.dashing) {
-		player.respawn();
+		this.stupidPlayer();
 	}
 	else {
-		enemy.death();
+		enemy.parent.kills();
 	}
 }
 
 Player.prototype.stupidPlayer = function(player, obstacle) {
-	player.respawn();
+	if(this.myWorld.type != "boss") {
+		this.emitter.children.forEach(function(particle) {
+			particle.kill();
+		});
+		this.respawn();
+	}
+	else {
+		this.game.state.restart();
+	}
 }

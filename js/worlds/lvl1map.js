@@ -7,6 +7,12 @@ function World(game) {
 	this.obstacles = this.add(this.game.add.group());
 	this.enemies = this.add(this.game.add.group());
 	this.checkpoints = this.add(this.game.add.group());
+	this.legs = this.add(this.game.add.group());
+			
+	this.runTime = this.game.time.now;
+
+	this.absBottom = null;
+	this.thePlayer = null;
 };
 
 World.prototype = Object.create(Phaser.Group.prototype);
@@ -23,20 +29,28 @@ World.prototype.init = function() {
 	this.loadChecks();
 	this.loadEnemies();
 	this.loadObstacles('platform_atlas', 'bigspike');
+	this.loadLegs();
+	
+	this.loadAbsBottom();
+}
+
+World.prototype.loadLegs = function() {
+	this.legs.add(new Leg(this.game, 'player_atlas', 'player_1', 264, 2270, this.thePlayer));
+	this.legs.add(new Leg(this.game, 'player_atlas', 'player_1', 264, 2270, this.thePlayer));
 }
 
 World.prototype.loadChecks = function() {
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, this.thePlayer.x-100, this.thePlayer.y+100));
 
-	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1265, 2300));
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1415, 2275));
 
-	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 500, 1800));
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 550, 1850));
 
-	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 110, 900));
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 110, 975));
 
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1850, 1550));
 	
-	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 1950, 1850));
+	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 2000, 1800, 'LevelSelect', 0));
 }
 
 World.prototype.loadFloor = function(atlas, frame) {
@@ -169,8 +183,11 @@ World.prototype.loadWalls = function(atlas, frame) {
 }
 
 World.prototype.loadEnemies = function() {
-	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.game.width/2 + 100, this.game.height/2 + 600, this, this.thePlayer, true));
-	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', this.game.width/2, this.game.height/2 + 600, this, this.thePlayer, false));
+	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 520, 974, this, this.thePlayer, 0));
+	/*this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 332, 2500, this, this.thePlayer, 90));
+	this.enemies.add(new Mob2(this.game, 'robobitch_atlas', 'robobitch0', 432, 2500, this, this.thePlayer, 180));
+	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 532, 2500, this, this.thePlayer, 270));
+*/
 }
 
 World.prototype.loadObstacles = function(atlas, frame) {
@@ -199,8 +216,19 @@ World.prototype.loadObstacles = function(atlas, frame) {
 	temp.y = 1380;
 }
 
+World.prototype.loadAbsBottom = function() {
+	this.absBottom = this.game.add.sprite(0, 3000, null);
+	this.game.physics.enable(this.absBottom, Phaser.Physics.ARCADE);
+	this.absBottom.body.setSize(this.game.world.width, 5);
+
+}
+
 World.prototype.resetWorld = function() {
 	this.enemies.forEach(function(enemy) {
 		enemy.reinitialize();
 	}, Mob);
+
+	this.legs.forEach(function(leg) {
+		leg.reinitialize();
+	}, Leg);
 }
