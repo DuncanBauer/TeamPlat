@@ -68,7 +68,7 @@ BossRoom.prototype.callMinions = function() {
 	let temp = [];
 	let taken = [];
 	let rand = Math.floor(Math.random() * 10) + 5;
-	console.log(rand);
+	//console.log(rand);
 	
 	let tempConst = 5;
 	
@@ -100,7 +100,8 @@ BossRoom.prototype.callMinions = function() {
 
 BossRoom.prototype.killMinion = function() {
 	this.minionCount--;
-	if(this.minionCount == 0) {
+	if(this.minionCount == 0) {	
+		this.boss.children[0].inControl = false;
 		this.game.time.events.add(1, this.boss.children[0].determineMove, this.boss.children[0]);
 	}
 }

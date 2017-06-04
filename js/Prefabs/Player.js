@@ -584,6 +584,7 @@ Player.prototype.respawn = function() {
 }
 
 Player.prototype.determineLoser = function(player, enemy) {
+console.log("entered");
 	if(!this.dashing) {
 		this.stupidPlayer();
 	}
@@ -600,6 +601,16 @@ Player.prototype.stupidPlayer = function(player, obstacle) {
 		this.respawn();
 	}
 	else {
-		this.game.state.restart();
+		if(this.legs > 0) {
+			this.legs--;
+			console.log(this.legs);
+		}
+		else {
+			this.game.state.restart();
+		}
 	}
+}
+
+Player.prototype.setLegs = function(legs) {
+	this.legs = legs;
 }

@@ -12,6 +12,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.animations.add('idle', ['bossbot0'], 30, false);
 	this.animations.add('charge', ['bossbot2'], 30, false);	
 	this.animations.add('invincible', ['bossbot0'], 30, true);
+	this.animations.add('control', ['bossbot5'], 30, true);
 	this.animations.add('bobble', ['bossbot0','bossbot10','bossbot0','bossbot11'], 20, true);
 	this.animations.add('flail', ['bossbot0','bossbot1','bossbot2','bossbot3','bossbot4','bossbot5','bossbot6','bossbot7','bossbot8','bossbot9',
  'bossbot10','bossbot11','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17'], 3, true);
@@ -50,6 +51,8 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.minionCount = 0;
 	
 	this.disabled = true;
+
+	this.inControl = false;
 	
 	this.weapon = this.game.add.weapon(100, 'lemon');
 	this.weapon.bullets.setAll('scale.x', .5);
@@ -76,11 +79,11 @@ Boss.prototype.update = function() {
 	else if(this.idling) {
 		this.idleTime();
 	}
-	else if(this.disabled) {
+	else if(this.disabled || this.inControl) {
 	}
 }
 
-Boss.prototype.determineMove = function() {	
+Boss.prototype.determineMove = function() {
 	this.disabled = false;
 	this.idle(); 
 	
@@ -107,6 +110,8 @@ Boss.prototype.determineMove = function() {
 	}
 	else if(nextAttack == 2) {
 		this.idling = false;
+		this.inControl = true;
+		this.animations.play('control');
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.myWorld.callMinions, this.myWorld);
 	}
 }

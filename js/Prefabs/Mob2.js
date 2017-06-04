@@ -8,7 +8,8 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	
 	this.animations.add('flail', Phaser.Animation.generateFrameNames('robobitch', 0, 7, '', 1), 15, true);
 	this.animations.add('idle', ['robobitch0'], 30, false);
-	this.animations.play('idle');
+	this.animations.add('spawn', Phaser.Animation.generateFrameNames('robospawn', 1, 9, '', 1), 15, false);
+	this.animations.play('spawn');
 
 	this.anchor.set(.5);
 	this.scale.x = this.scale.x / 2;
@@ -34,12 +35,15 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	
 	this.flailing = false;
 	this.rotateAngle = rotateAngle;
+	this.angle = rotateAngle;
 	
 	this.myWorld = world;
 	this.thePlayer = player;
 	this.set = false;
 	
 	this.knockBack = 5;
+
+	this.spawning = true;
 
 	this.weapon = this.game.add.weapon(100, 'lemon');
 	this.weapon.bullets.setAll('scale.x', .5);
@@ -60,28 +64,36 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 }
 
 Mob2.prototype = Object.create(Phaser.Sprite.prototype);
-Mob2.prototype.update = function() {	
-	this.setup();
+Mob2.prototype.update = function() {
+	if(!this.spawning) {	
+		this.setup();
 		
-	if(!this.flailing && this.detectPlayer()) {
-		this.flailing = true;
-		this.animations.play('flail');
-	}
-	else if(this.flailing && !this.detectPlayer()) {
-		this.flailing = false;
-		this.animations.play('idle');
-	}
-	else if(this.flailing) {
-		if(this.game.time.now - this.fireCheck > this.fireCooldown) {
-			this.fireCheck = this.game.time.now;
-			this.playerX = this.thePlayer.x;
-			this.playerY = this.thePlayer.y;
-			this.timer.add(Phaser.Timer.SECOND * .7, this.openFire, this);
+		if(!this.flailing && this.detectPlayer()) {
+			this.flailing = true;
+			this.animations.play('flail');
 		}
+		else if(this.flailing && !this.detectPlayer()) {
+			this.flailing = false;
+			this.animations.play('idle');
+		}
+		else if(this.flailing) {
+			if(this.game.time.now - this.fireCheck > this.fireCooldown) {
+				this.fireCheck = this.game.time.now;
+				this.playerX = this.thePlayer.x;
+				this.playerY = this.thePlayer.y;
+				this.timer.add(Phaser.Timer.SECOND * .7, this.openFire, this);
+			}
 		
-		//this.game.physics.arcade.overlap(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer, null, this.thePlayer);
-		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
-		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+			this.game.physics.arcade.overlap(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer, null, this.thePlayer);
+			this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
+			this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+		}
+	}
+	else {
+		if(this.animations.currentFrame.index == 20) {
+			this.spawning = false;
+			this.animations.play('idle');
+		}
 	}
 }
 
