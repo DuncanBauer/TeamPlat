@@ -64,6 +64,7 @@ BossFight.prototype = {
 				this.panning = false;
 				this.game.time.events.add(Phaser.Timer.SECOND*1, this.world.shakeCamera, this.world);
 				this.game.time.events.add(Phaser.Timer.SECOND*1, this.bobbleHead, this);
+				this.game.time.events.add(Phaser.Timer.SECOND*2.3, this.stopHead, this);
 				this.game.time.events.add(Phaser.Timer.SECOND*3.5, this.startPanBack, this);
 			}
 		}
@@ -91,6 +92,10 @@ BossFight.prototype = {
 
 	bobbleHead: function() {
 		this.world.boss.children[0].animations.play('bobble');
+	},
+
+	stopHead: function() {
+		this.world.boss.children[0].animations.play('idle');
 	},
 	
 	startPanBack: function() {
