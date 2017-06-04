@@ -8,7 +8,8 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	
 	this.animations.add('flail', Phaser.Animation.generateFrameNames('robobitch', 0, 7, '', 1), 15, true);
 	this.animations.add('idle', ['robobitch0'], 30, false);
-	this.animations.play('idle');
+	this.animations.add('spawn', Phaser.Animation.generateFrameNames('robospawn', 1, 9, '', 1), 2, false);
+	this.animations.play('spawn');
 
 	this.anchor.set(.5);
 	this.scale.x = this.scale.x / 2;
