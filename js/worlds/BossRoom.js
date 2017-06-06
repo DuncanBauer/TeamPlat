@@ -16,6 +16,11 @@ function BossRoom(game) {
 	this.minionCount = 0;
 	
 	this.type = "boss";
+		
+	// Start music
+	this.bg_music = this.game.add.audio('bg_music');
+	this.bg_music.loop = true;
+	this.bg_music.volume = 0.3;
 };
 
 BossRoom.prototype = Object.create(Phaser.Group.prototype);
@@ -24,6 +29,15 @@ BossRoom.prototype.constructor = BossRoom;
 BossRoom.prototype.retreivePlayer = function(player) {
 	this.thePlayer = player;
 	this.init();
+}
+
+BossRoom.prototype.stopMusic = function() {
+	this.bg_music.stop();
+	this.minions.forEach(function(minion) {
+		minion.stopMusic();
+	}, Mob2);
+	console.log("called");
+	this.game.state.restart();
 }
 
 BossRoom.prototype.init = function() {
@@ -112,7 +126,7 @@ BossRoom.prototype.loadStartLine = function() {
 	this.startLine.body.setSize(5, this.game.world.height);
 }
 
-BossRoom.prototype.resetWorld = function() {
+BossRoom.prototype.resetWorld = function() {	
 	this.game.state.restart();
 }
 

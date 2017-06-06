@@ -13,6 +13,12 @@ function World(game) {
 
 	this.absBottom = null;
 	this.thePlayer = null;
+
+	// Start music
+	this.bg_music = this.game.add.audio('bg_music');
+	this.bg_music.loop = true;
+	this.bg_music.volume = 0.3;
+	this.bg_music.play();
 };
 
 World.prototype = Object.create(Phaser.Group.prototype);
@@ -21,6 +27,10 @@ World.prototype.constructor = World;
 World.prototype.retreivePlayer = function(player) {
 	this.thePlayer = player;
 	this.init();
+}
+
+World.prototype.stopMusic = function() {
+	this.bg_music.stop();
 }
 
 World.prototype.init = function() {
@@ -225,6 +235,7 @@ World.prototype.loadAbsBottom = function() {
 
 World.prototype.resetWorld = function() {
 	this.enemies.forEach(function(enemy) {
+		enemy.stopMusic();
 		enemy.reinitialize();
 	}, Mob);
 

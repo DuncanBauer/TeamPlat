@@ -8,7 +8,7 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	
 	this.animations.add('flail', Phaser.Animation.generateFrameNames('robobitch', 0, 7, '', 1), 15, true);
 	this.animations.add('idle', ['robobitch0'], 30, false);
-	this.animations.add('spawn', Phaser.Animation.generateFrameNames('robospawn', 1, 9, '', 1), 15, false);
+	this.animations.add('spawn', Phaser.Animation.generateFrameNames('robospawn', 1, 9, '', 1), 11, false);
 	this.animations.play('spawn');
 
 	this.anchor.set(.5);
@@ -340,6 +340,7 @@ Mob2.prototype.kills = function() {
 	
 	this.idle_music.stop();
 	this.death_sound.play();
+	
 	this.timer.stop();
 	this.timer.clearPendingEvents();
 	this.box.kill();
@@ -349,14 +350,15 @@ Mob2.prototype.kills = function() {
 	this.kill();
 }
 
+Mob2.prototype.stopMusic = function() {
+	this.idle_music.stop();
+}
+
 Mob2.prototype.reinitialize = function() {
 	this.revive();
+	this.idle_music.play();
 	this.box.revive();
 	this.killBox.revive();
 	this.hitBox1.revive();
 	this.hitBox2.revive();
-	this.body.velocity.x = 0;
-	this.body.velocity.y = 0;
-	this.body.acceleration.x = 0;
-	this.body.acceleration.y = 0;
 }

@@ -91,16 +91,16 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	this.runTime = this.game.time.now;
 	
 	this.emitter = this.game.add.emitter(this.x, this.y, 50);
-    	this.emitter.makeParticles('vaporTrails');
-    	this.emitter.setXSpeed(0, 0);
-    	this.emitter.setYSpeed(0, 0);
-    	this.emitter.setRotation(0, 0);
+	this.emitter.makeParticles('vaporTrails');
+	this.emitter.setXSpeed(0, 0);
+	this.emitter.setYSpeed(0, 0);
+	this.emitter.setRotation(0, 0);
    	this.emitter.setAlpha(0.1, 1, 500);
    	this.emitter.setScale(0.1, .3, 0.1, .3, 1000, Phaser.Easing.Quintic.Out);
-    	this.emitter.gravity = -100;
+	this.emitter.gravity = -100;
 	//this.emitter.start(false, 4000, 20);
-    	this.emitter.emitX = 64;
-    	this.emitter.emitY = 500;
+	this.emitter.emitX = 64;
+	this.emitter.emitY = 500;
 
 	// sounds
 	this.fire_sound = this.game.add.audio('player_shot');
@@ -602,7 +602,6 @@ Player.prototype.respawn = function() {
 }
 
 Player.prototype.determineLoser = function(player, enemy) {
-console.log("entered");
 	if(!this.dashing) {
 		this.stupidPlayer();
 	}
@@ -622,10 +621,9 @@ Player.prototype.stupidPlayer = function(player, obstacle) {
 	else {
 		if(this.legs > 0) {
 			this.legs--;
-			console.log(this.legs);
 		}
 		else {
-			this.game.state.restart();
+			this.game.time.events.add(Phaser.Timer.SECOND*0.1, this.myWorld.stopMusic, this.myWorld);
 		}
 	}
 }

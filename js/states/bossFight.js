@@ -9,11 +9,6 @@ BossFight.prototype = {
 		this.game.physics.setBoundsToWorld();
 		this.game.time.advancedTiming = true;
 		
-		// Start music
-		this.bg_music = this.game.add.audio('bg_music');
-		this.bg_music.loopFull();
-		this.game.sound.play(this.bg_music);
-		
 		// BACKGROUND FIRST BECAUSE LAYERS AND SHIT
 		// Set Game background and adjust size
 		this.bkgd = this.add.sprite(0, 0, 'background01');
@@ -46,6 +41,7 @@ BossFight.prototype = {
 		
 		if(!this.fightStarted) {
 			if(this.game.physics.arcade.overlap(this.player, this.world.startLine) && !this.panning) {
+				this.world.bg_music.play();
 				this.world.startLine.kill();
 				this.panning = true;
 				this.game.camera.unfollow();
