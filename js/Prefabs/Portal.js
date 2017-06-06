@@ -32,7 +32,7 @@ Portal.prototype.update = function() {
 		this.game.levelsComplete[this.currLevel] = true;
 		this.game.legs[this.currLevel] = this.player.legs;
 		this.game.times[this.currLevel] = this.game.time.now - this.player.runTime;
-		this.player.myWorld.bg_music.fadeOut(3000);
+		this.player.myWorld.bg_music.stop();
 		this.port_sound.stop();
 		this.game.state.start('LevelSelect');
 	}

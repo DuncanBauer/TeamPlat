@@ -37,7 +37,7 @@ BossFight.prototype = {
 	},
 	
 	update:function() {	
-		this.game.physics.arcade.overlap(this.player.weapon.bullets, this.world.minions, this.minionHit, null, this);
+		this.game.physics.arcade.collide(this.player.weapon.bullets, this.world.minions, this.minionHit, null, this);
 		
 		if(!this.fightStarted) {
 			if(this.game.physics.arcade.overlap(this.player, this.world.startLine) && !this.panning) {
