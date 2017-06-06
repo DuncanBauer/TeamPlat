@@ -61,6 +61,19 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	
 	this.playerX = 0;
 	this.playerY = 0;
+
+	this.idle_music = this.game.add.audio('robot_idle');
+	this.idle_music.loop = true;
+	this.idle_music.volume = 2;
+	this.idle_music.play();
+
+	this.death_sound = this.game.add.audio('robot_explode');
+	this.death_sound.loop = false;
+	this.death_sound.volume = 3;
+
+	this.fire_sound = this.game.add.audio('robot_fire');
+	this.fire_sound.loop = false;
+	this.fire_sound.volume = 3;
 }
 
 Mob2.prototype = Object.create(Phaser.Sprite.prototype);
@@ -294,6 +307,7 @@ Mob2.prototype.detectPlayer = function() {
 
 Mob2.prototype.openFire = function() {
 	if(this.weapon != null) {
+		this.fire_sound.play();
 		this.weapon.fireAtXY(this.playerX, this.playerY);
 	}
 }
@@ -324,6 +338,8 @@ Mob2.prototype.kills = function() {
 	//	bullet.kill();
 	//});
 	
+	this.idle_music.stop();
+	this.death_sound.play();
 	this.timer.stop();
 	this.timer.clearPendingEvents();
 	this.box.kill();

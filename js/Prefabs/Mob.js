@@ -41,12 +41,21 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	this.set = false;
 	
 	this.knockBack = 5;
+
+	this.idle_music = this.game.add.audio('robot_idle');
+	this.idle_music.loop = true;
+	this.idle_music.volume = 2;
+	this.idle_music.play();
+
+	this.death_sound = this.game.add.audio('robot_explode');
+	this.death_sound.loop = false;
+	this.death_sound.volume = 3;
 }
 
 Mob.prototype = Object.create(Phaser.Sprite.prototype);
 Mob.prototype.update = function() {
+
 	this.setup();
-	
 	if(!this.flailing && this.detectPlayer()) {
 		this.flailing = true;
 		this.animations.play('flail');
@@ -278,6 +287,9 @@ Mob.prototype.kills = function() {
 		this.game.physics.arcade.velocityFromAngle(angle, 300 * scale, this.thePlayer.body.velocity);
 	}
 	
+	this.idle_music.stop();
+	this.death_sound.play();
+
 	this.box.kill();
 	this.killBox.kill();
 	this.hitBox1.kill();

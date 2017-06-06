@@ -12,6 +12,11 @@ function Portal(game, sprite_key, frame, player, x, y, state, currLevel){
 	
 	this.scale.x *=.5;
 	this.scale.y *=.5;
+
+	this.port_sound = this.game.add.audio('portal');
+	this.port_sound.loop = true;
+	this.port_sound.volume = 6;
+	this.port_sound.play();
 }
 
 Portal.prototype = Object.create(Phaser.Sprite.prototype);
@@ -20,6 +25,7 @@ Portal.prototype.update = function() {
 		this.game.levelsComplete[this.currLevel] = true;
 		this.game.legs[this.currLevel] = this.player.legs;
 		this.game.times[this.currLevel] = this.game.time.now - this.player.runTime;
+		this.port_sound.stop();
 		this.game.state.start('LevelSelect');
 	}
 }

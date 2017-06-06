@@ -101,6 +101,23 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	//this.emitter.start(false, 4000, 20);
     	this.emitter.emitX = 64;
     	this.emitter.emitY = 500;
+
+	// sounds
+	this.fire_sound = this.game.add.audio('player_shot');
+	this.fire_sound.loop = false;
+	this.fire_sound.volume = 2;	
+
+	this.jump_sound = this.game.add.audio('player_jump');
+	this.jump_sound.loop = false;
+	this.jump_sound.volume = 4;
+
+	this.dash_sound = this.game.add.audio('player_dash');
+	this.dash_sound.loop = false;
+	this.dash_sound.volume = 4;	
+
+	this.death_sound = this.game.add.audio('player_death');
+	this.death_sound.loop = false;
+	this.death_sound.volume = 6;	
 }
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -242,7 +259,7 @@ Player.prototype.dash = function() {
 			
 			this.dashing = true;
 			this.animations.play('dash');
-			
+			this.dash_sound.play();
 			// Stops falling pre-dash
 			this.oldVelx = this.body.velocity.x;
 			this.oldVely = this.body.velocity.y;
@@ -320,7 +337,7 @@ Player.prototype.jump = function() {
 			this.jumping = true;
 		}
 		// Play jump sound
-		this.game.sound.play('player_jump');
+		this.jump_sound.play();
 		// Jumps
 		this.body.velocity.y = -500;	
 	}else if(this.onWall){
@@ -547,6 +564,7 @@ Player.prototype.attack = function() {
 		//}
 		//else {
 			// Else it fires at the intended angle
+			this.fire_sound.play();
 			this.weapon.fire();
 		//}			
 	}
@@ -594,6 +612,7 @@ console.log("entered");
 }
 
 Player.prototype.stupidPlayer = function(player, obstacle) {
+	this.death_sound.play();
 	if(this.myWorld.type != "boss") {
 		this.emitter.children.forEach(function(particle) {
 			particle.kill();
