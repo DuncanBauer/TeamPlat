@@ -33,17 +33,17 @@ Preloader.prototype = {
 		
 		// Load Sounds
 		this.game.load.audio('bg_music', '/audio/Run_bg.ogg');
-		this.game.load.audio('boss_explode', '/audio/bossexplode.ogg');
+		this.game.load.audio('boss_explode', '/audio/bossexplode.ogg');//
 		this.game.load.audio('player_dash', '/audio/dash.ogg');
 		this.game.load.audio('player_death', '/audio/death.ogg');
 		this.game.load.audio('robot_explode', '/audio/explode.ogg');
 		this.game.load.audio('player_jump', '/audio/jump.ogg');
 		this.game.load.audio('portal', '/audio/portal.ogg');
 		this.game.load.audio('robot_fire', '/audio/roboshot.ogg');
-		this.game.load.audio('boss_firing', '/audio/robospray.ogg');
+		this.game.load.audio('boss_firing', '/audio/robospray.ogg');//
 		this.game.load.audio('robot_idle', '/audio/robot.ogg');
 		this.game.load.audio('player_shot', '/audio/shot.ogg');
-		this.game.load.audio('player_slide', '/audio/slide.ogg');
+		this.game.load.audio('player_slide', '/audio/slide.ogg');//
 	},
 	
 	create: function() {

@@ -36,7 +36,6 @@ BossRoom.prototype.stopMusic = function() {
 	this.minions.forEach(function(minion) {
 		minion.stopMusic();
 	}, Mob2);
-	console.log("called");
 	this.game.state.restart();
 }
 
@@ -82,7 +81,6 @@ BossRoom.prototype.callMinions = function() {
 	let temp = [];
 	let taken = [];
 	let rand = Math.floor(Math.random() * 10) + 5;
-	//console.log(rand);
 	
 	let tempConst = 5;
 	

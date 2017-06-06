@@ -64,7 +64,7 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 
 	this.idle_music = this.game.add.audio('robot_idle');
 	this.idle_music.loop = true;
-	this.idle_music.volume = 2;
+	this.idle_music.volume = 0;
 	this.idle_music.play();
 
 	this.death_sound = this.game.add.audio('robot_explode');
@@ -107,6 +107,22 @@ Mob2.prototype.update = function() {
 			this.spawning = false;
 			this.animations.play('idle');
 		}
+	}
+	
+	var x = this.x - this.thePlayer.x;
+	var y = this.y - this.thePlayer.y;
+	var dist = Math.sqrt((x*x) + (y*y));
+	if(dist > 400 && dist < 600) {
+		this.idle_music.volume = 1;
+	}
+	else if(dist > 200 && dist < 400) {
+		this.idle_music.volume = 2;
+	}
+	else if(dist > 0 && dist < 200) {
+		this.idle_music.volume = 3;
+	}
+	else {
+		this.idle_music.volume = 0;
 	}
 }
 

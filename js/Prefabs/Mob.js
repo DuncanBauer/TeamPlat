@@ -17,7 +17,7 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	
 	this.box = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.box, Phaser.Physics.ARCADE);
-	this.box.body.setSize(350, 350);
+	this.box.body.setSize(600, 600);
 
 	this.killBox = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.killBox, Phaser.Physics.ARCADE);
@@ -44,7 +44,7 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 
 	this.idle_music = this.game.add.audio('robot_idle');
 	this.idle_music.loop = true;
-	this.idle_music.volume = 2;
+	this.idle_music.volume = 0;
 	this.idle_music.play();
 
 	this.death_sound = this.game.add.audio('robot_explode');
@@ -67,6 +67,22 @@ Mob.prototype.update = function() {
 	else if(this.flailing) {
 		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
 		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+	}
+	
+	var x = this.x - this.thePlayer.x;
+	var y = this.y - this.thePlayer.y;
+	var dist = Math.sqrt((x*x) + (y*y));
+	if(dist > 400 && dist < 600) {
+		this.idle_music.volume = 1;
+	}
+	else if(dist > 200 && dist < 400) {
+		this.idle_music.volume = 2;
+	}
+	else if(dist > 0 && dist < 200) {
+		this.idle_music.volume = 3;
+	}
+	else {
+		this.idle_music.volume = 0;
 	}
 }
 
