@@ -29,7 +29,7 @@ Preloader.prototype = {
 		this.game.load.image('lemon', '/img/lemon.png');
 		this.game.load.image('tileShade', '/img/tile_shadow.png');
 		this.game.load.atlas('checkpoint', '/img/portal.png', '/img/portal.json');
-		this.game.load.spritesheet('player_test', '/img/Player.png', 123, 164);
+		//this.game.load.spritesheet('player_test', '/img/Player.png', 123, 164);
 		
 		// Load Sounds
 		this.game.load.audio('bg_music', '/audio/Run_bg.ogg');

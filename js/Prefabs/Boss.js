@@ -13,7 +13,9 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.animations.add('charge', ['bossbot2'], 30, false);	
 	this.animations.add('invincible', ['bossbot0'], 30, true);
 	this.animations.add('control', ['bossbot5'], 30, true);
-//	this.animations.add('fire', )
+	this.animations.add('smash', ['bossbot6','bossbot7','bossbot8','bossbot9','bossbot5',], 30, false);
+	this.animations.add('fire', ['bossbot3', 'bossbot4'], 15, false)
+	this.animations.add('death', ['bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17'], 15, false);
 	this.animations.add('bobble', ['bossbot0','bossbot10','bossbot0','bossbot11'], 20, true);
 	this.animations.add('flail', ['bossbot0','bossbot1','bossbot2','bossbot3','bossbot4','bossbot5','bossbot6','bossbot7','bossbot8','bossbot9',
  'bossbot10','bossbot11','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17'], 3, true);
@@ -39,6 +41,11 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.game.physics.enable(this.chargeBox2, Phaser.Physics.ARCADE);
 	this.chargeBox2.body.setSize(50, 100);
 	this.chargeBox2.anchor.set(0.5);
+
+	this.chargeBox3 = this.game.add.sprite(this.x, this.y, null);
+	this.game.physics.enable(this.chargeBox3, Phaser.Physics.ARCADE);
+	this.chargeBox3.body.setSize(75, 40);
+	this.chargeBox3.anchor.set(0.5);
 	
 	this.myWorld = world;
 	this.thePlayer = player;
@@ -69,6 +76,15 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.weapon.bulletSpeed = 700;
 	//this.weapon.fireRate = 1000;  Using attackCooldown instead
 	this.weapon.trackSprite(this); // Has the weapon follow the player
+	
+	this.weapon1 = this.game.add.weapon(100, 'lemon');
+	this.weapon1.bullets.setAll('scale.x', .5);
+	this.weapon1.bullets.setAll('scale.y', .5);
+	this.weapon1.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
+	this.weapon1.fireAngle = 270; // In degrees
+	this.weapon1.bulletSpeed = 700;
+	//this.weapon.fireRate = 1000;  Using attackCooldown instead
+	this.weapon1.trackSprite(this); // Has the weapon follow the player
 }
 
 Boss.prototype = Object.create(Phaser.Sprite.prototype);
@@ -104,7 +120,7 @@ Boss.prototype.determineMove = function() {
 		nextAttack = 2;
 	}
 	
-	nextAttack = 0;
+	//nextAttack = 1;
 
 	if(nextAttack == 0){
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.charge, this);
@@ -146,11 +162,16 @@ Boss.prototype.openFire = function() {
 	this.firing = true;
 	this.idling = false;
 	this.body.acceleration.x = 0;
+	this.animations.play('fire');
 	this.game.time.events.add(Phaser.Timer.SECOND*1, this.ceaseFire, this);
 }
 
 Boss.prototype.fire = function() {
+	this.weapon.x = this.x + this.width/2;
 	this.weapon.fireAtSprite(this.thePlayer);
+
+	this.weapon1.x = this.x - this.width/2;
+	this.weapon1.fireAtSprite(this.thePlayer);
 }
 
 Boss.prototype.ceaseFire = function() {
@@ -203,7 +224,7 @@ Boss.prototype.repoChargeHitboxes = function() {
 		chargeBox = this.chargeBox1;
 		chargeBox.body.x = this.x - chargeBox.width / 2 - 100;
 		chargeBox.body.y = this.y - chargeBox.height / 2 + 10;
-		chargeBox.anchor.set(0.5);
+		chargeBox.anchor.set(0.5,);
 		
 		chargeBox = this.chargeBox2;
 		chargeBox.body.x = this.x - chargeBox.width / 2 + 60;

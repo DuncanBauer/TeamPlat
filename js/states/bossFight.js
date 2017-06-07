@@ -129,6 +129,7 @@ BossFight.prototype = {
 		//this.game.debug.body(this.player.weapon.bullets);
 		this.game.debug.body(this.world.boss.children[0].chargeBox1);
 		this.game.debug.body(this.world.boss.children[0].chargeBox2);
+		this.game.debug.body(this.world.boss.children[0].chargeBox3);
 		/*
 		this.game.debug.body(this.world.startLine);
 		
