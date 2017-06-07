@@ -1,5 +1,5 @@
-function Leg(game, atlas_key, atlas_frame, x, y, player) {
-	Phaser.Sprite.call(this, game, x, y, atlas_key, atlas_frame);
+function Leg(game, sprite, x, y, player) {
+	Phaser.Sprite.call(this, game, x, y, sprite);
 
 	this.ogX = x;
 	this.ogY = y;
@@ -11,6 +11,9 @@ function Leg(game, atlas_key, atlas_frame, x, y, player) {
 	this.scale.y *= .5;
 
 	this.player = player
+	
+	this.tween = this.game.add.tween(this);
+	this.tween.to({y: this.y - 10}, 1000, 'Linear', true, 200, false, true);
 }
 
 Leg.prototype = Object.create(Phaser.Sprite.prototype);

@@ -41,7 +41,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	// Cooldown Constants in milliseconds
 	this.dashCooldown = 330; 
 	this.gravityCooldown = 300;
-	this.attackCooldown = 450;
+	this.attackCooldown = 10;
 	
 	// Cooldown timers
 	this.dashTimeCheck = 0;
@@ -616,7 +616,7 @@ Player.prototype.determineLoser = function(player, enemy) {
 
 Player.prototype.determineLoser2 = function(player, enemy) {
 	if(!this.dashing) {
-		this.stupidPlayer();
+		this.stupidPlayer2();
 	}
 	else {
 		enemy.parent.kills();

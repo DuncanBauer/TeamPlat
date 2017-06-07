@@ -73,25 +73,43 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.weapon.bullets.setAll('scale.y', .5);
 	this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
 	this.weapon.fireAngle = 270; // In degrees
-	this.weapon.bulletSpeed = 700;
+	this.weapon.bulletSpeed = 900;
 	//this.weapon.fireRate = 1000;  Using attackCooldown instead
-	this.weapon.trackSprite(this); // Has the weapon follow the player
+	//this.weapon.trackSprite(this); // Has the weapon follow the player
 	
 	this.weapon1 = this.game.add.weapon(100, 'lemon');
 	this.weapon1.bullets.setAll('scale.x', .5);
 	this.weapon1.bullets.setAll('scale.y', .5);
 	this.weapon1.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
 	this.weapon1.fireAngle = 270; // In degrees
-	this.weapon1.bulletSpeed = 700;
-	//this.weapon.fireRate = 1000;  Using attackCooldown instead
-	this.weapon1.trackSprite(this); // Has the weapon follow the player
+	this.weapon1.bulletSpeed = 900;
+	//this.weapon1.fireRate = 1000;  Using attackCooldown instead
+	//this.weapon1.trackSprite(this); // Has the weapon follow the player
+	
+	this.fire_sound = this.game.add.audio('boss_firing');
+	this.fire_sound.loop = false;
+	this.fire_sound.volume = 2;	
+	
+	this.death_sound = this.game.add.audio('boss_explode');
+	this.death_sound.loop = false;
+	this.death_sound.volume = 2;	
 }
 
 Boss.prototype = Object.create(Phaser.Sprite.prototype);
 Boss.prototype.update = function() {
 	this.game.physics.arcade.collide(this, this.myWorld.ground.children);
-
+	
 	this.setup();
+
+	if(!this.thePlayer.invincible) {
+		this.game.physics.arcade.overlap(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
+		this.game.physics.arcade.overlap(this.thePlayer, this.weapon1.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
+		
+		if(this.charging) {
+			this.game.physics.arcade.collide(this.thePlayer, this.chargeBox1, this.thePlayer.determineLoser, null, this.thePlayer);
+			this.game.physics.arcade.collide(this.thePlayer, this.chargeBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+		}
+	}
 	
 	if(this.charging) {
 		this.letsCharge();
@@ -120,7 +138,7 @@ Boss.prototype.determineMove = function() {
 		nextAttack = 2;
 	}
 	
-	//nextAttack = 1;
+	nextAttack = 1;
 
 	if(nextAttack == 0){
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.charge, this);
@@ -163,15 +181,25 @@ Boss.prototype.openFire = function() {
 	this.idling = false;
 	this.body.acceleration.x = 0;
 	this.animations.play('fire');
-	this.game.time.events.add(Phaser.Timer.SECOND*1, this.ceaseFire, this);
+	
+	this.fireY = this.y - 600;
+	this.fireX1 = this.x - 800;
+	this.fireX2 = this.x + 800;
+	
+	this.weapon.x = this.x + this.width/2 - 8;
+	this.weapon.y = this.y - 25;
+	this.weapon1.x = this.x - this.width/2 + 8;
+	this.weapon1.y = this.y - 25;
+	
+	this.fire_sound.play();
+	this.game.time.events.add(Phaser.Timer.SECOND*1.3, this.ceaseFire, this);
 }
 
 Boss.prototype.fire = function() {
-	this.weapon.x = this.x + this.width/2;
-	this.weapon.fireAtSprite(this.thePlayer);
+	this.weapon.fireAtXY(this.fireX2, this.fireY);
 
-	this.weapon1.x = this.x - this.width/2;
-	this.weapon1.fireAtSprite(this.thePlayer);
+	this.weapon1.fireAtXY(this.fireX1, this.fireY);
+	this.fireY += 15;
 }
 
 Boss.prototype.ceaseFire = function() {

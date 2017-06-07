@@ -71,8 +71,10 @@ Mob.prototype.update = function() {
 		this.animations.play('idle');
 	}
 	else if(this.flailing) {
-		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
-		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+		if(!this.thePlayer.invincible) {
+			this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
+			this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+		}
 	}
 	
 	if(dist > 400 && dist < 600) {

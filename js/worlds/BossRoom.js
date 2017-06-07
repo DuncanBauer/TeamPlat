@@ -18,7 +18,7 @@ function BossRoom(game) {
 	this.type = "boss";
 		
 	// Start music
-	this.bg_music = this.game.add.audio('bg_music');
+	this.bg_music = this.game.add.audio('Armless_bg');
 	this.bg_music.loop = true;
 	this.bg_music.volume = 0.3;
 };

@@ -12,11 +12,11 @@ Preloader.prototype = {
 		this.game.load.image('background00', '/img/background01.png');
 		this.game.load.image('background01', '/img/background02.png');
 		this.game.load.image('background02', '/img/background03.png');
-		this.game.load.image('play_Button', '/img/play_button.png');
+		this.game.load.image('play_Button', '/img/playbutton.png');
 		this.game.load.image('power_Button', '/img/power_Button.png');
-		this.game.load.image('lvlbutton', '/img/levelButton.png');
-		this.game.load.image('lvl1button', '/img/levelOneButton.png');
-		this.game.load.image('bossFightButton', '/img/bossFightButton.png');
+		this.game.load.image('lvl1button', '/img/levelbutton1.png');
+		this.game.load.image('lvl2button', '/img/levelbutton2.png');
+		this.game.load.image('bossFightButton', '/img/boss_button.png');
 		this.game.load.image('vaporTrails', '/img/cloud.png');
 		
 		// Load this.game assets
@@ -27,12 +27,15 @@ Preloader.prototype = {
 		this.game.load.atlas('tile_atlas', '/img/tiles.png', '/img/tiles.json');
 		this.game.load.atlas('platform_atlas', '/img/platforms.png', '/img/platforms.json');
 		this.game.load.image('lemon', '/img/lemon.png');
+		this.game.load.image('leg', '/img/legpickup.png');
 		this.game.load.image('tileShade', '/img/tile_shadow.png');
 		this.game.load.atlas('checkpoint', '/img/portal.png', '/img/portal.json');
 		//this.game.load.spritesheet('player_test', '/img/Player.png', 123, 164);
 		
 		// Load Sounds
 		this.game.load.audio('bg_music', '/audio/Run_bg.ogg');
+		this.game.load.audio('Armless_bg', '/audio/Armless_bg.ogg');
+		this.game.load.audio('GearUp_bg', '/audio/GearUp_bg.ogg');
 		this.game.load.audio('boss_explode', '/audio/bossexplode.ogg');//
 		this.game.load.audio('player_dash', '/audio/dash.ogg');
 		this.game.load.audio('player_death', '/audio/death.ogg');

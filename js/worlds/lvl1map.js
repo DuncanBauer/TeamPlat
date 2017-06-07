@@ -18,7 +18,7 @@ function World(game) {
 	this.bg_music = this.game.add.audio('bg_music');
 	this.bg_music.loop = true;
 	this.bg_music.volume = 1;
-	this.bg_music.play();
+	this.bg_music.fadeIn(7000, true);
 };
 
 World.prototype = Object.create(Phaser.Group.prototype);
@@ -45,8 +45,8 @@ World.prototype.init = function() {
 }
 
 World.prototype.loadLegs = function() {
-	this.legs.add(new Leg(this.game, 'player_atlas', 'player_1', 264, 2270, this.thePlayer));
-	this.legs.add(new Leg(this.game, 'player_atlas', 'player_1', 264, 2270, this.thePlayer));
+	this.legs.add(new Leg(this.game, 'leg', 264, 2270, this.thePlayer));
+	this.legs.add(new Leg(this.game, 'leg', 464, 2270, this.thePlayer));
 }
 
 World.prototype.loadChecks = function() {
