@@ -13,6 +13,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.animations.add('charge', ['bossbot2'], 30, false);	
 	this.animations.add('invincible', ['bossbot0'], 30, true);
 	this.animations.add('control', ['bossbot5'], 30, true);
+//	this.animations.add('fire', )
 	this.animations.add('bobble', ['bossbot0','bossbot10','bossbot0','bossbot11'], 20, true);
 	this.animations.add('flail', ['bossbot0','bossbot1','bossbot2','bossbot3','bossbot4','bossbot5','bossbot6','bossbot7','bossbot8','bossbot9',
  'bossbot10','bossbot11','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17'], 3, true);
@@ -28,11 +29,17 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	
 	this.body.onWorldBounds = new Phaser.Signal();
 	this.body.onWorldBounds.add(this.hitWorldBounds, this);
-
-	this.killBox = this.game.add.sprite(this.x, this.y, null);
-	this.game.physics.enable(this.killBox, Phaser.Physics.ARCADE);
-	this.killBox.body.setSize(30, 30);
-
+	
+	this.chargeBox1 = this.game.add.sprite(this.x, this.y, null);
+	this.game.physics.enable(this.chargeBox1, Phaser.Physics.ARCADE);
+	this.chargeBox1.body.setSize(50, 100);
+	this.chargeBox1.anchor.set(0.5);
+	
+	this.chargeBox2 = this.game.add.sprite(this.x, this.y, null);
+	this.game.physics.enable(this.chargeBox2, Phaser.Physics.ARCADE);
+	this.chargeBox2.body.setSize(50, 100);
+	this.chargeBox2.anchor.set(0.5);
+	
 	this.myWorld = world;
 	this.thePlayer = player;
 	this.inAction = false;
@@ -40,7 +47,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	
 	this.charging = false;
 	this.chargeRight = true;
-	this.chargeSpeed = 500;
+	this.chargeSpeed = 600;
 	
 	this.firing = false;
 	
@@ -59,7 +66,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.weapon.bullets.setAll('scale.y', .5);
 	this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
 	this.weapon.fireAngle = 270; // In degrees
-	this.weapon.bulletSpeed = 1250;
+	this.weapon.bulletSpeed = 700;
 	//this.weapon.fireRate = 1000;  Using attackCooldown instead
 	this.weapon.trackSprite(this); // Has the weapon follow the player
 }
@@ -84,23 +91,20 @@ Boss.prototype.update = function() {
 }
 
 Boss.prototype.determineMove = function() {
-	this.disabled = false;
-	this.idle(); 
-	
 	var nextAttack = 0;
-	var rand = Math.floor(Math.random() * 30);
+	var rand = Math.floor(Math.random() * 3);
 	
-	if(rand <= 1) {
+	if(rand < 1) {
 		nextAttack = 0;
 	}
-	else if(rand > 1 && rand < 2) {
+	else if(rand >= 1 && rand < 2) {
 		nextAttack = 1;
 	}
 	else if(rand >= 2) {
 		nextAttack = 2;
 	}
 	
-	nextAttack = 2;
+	nextAttack = 0;
 
 	if(nextAttack == 0){
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.charge, this);
@@ -109,11 +113,16 @@ Boss.prototype.determineMove = function() {
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.openFire, this);
 	}
 	else if(nextAttack == 2) {
-		this.idling = false;
-		this.inControl = true;
-		this.animations.play('control');
-		this.game.time.events.add(Phaser.Timer.SECOND*2, this.myWorld.callMinions, this.myWorld);
+		this.game.time.events.add(Phaser.Timer.SECOND*1.4, this.control, this);
 	}
+}
+
+Boss.prototype.control = function() {
+	this.inControl = true;
+	//this.game.time.events.add(Phaser.Timer.SECOND*2, this.determineMove, this);
+	this.idling = false;
+	this.animations.play('control');
+	this.game.time.events.add(Phaser.Timer.SECOND*2, this.myWorld.callMinions, this.myWorld);
 }
 
 Boss.prototype.idle = function() {
@@ -137,7 +146,7 @@ Boss.prototype.openFire = function() {
 	this.firing = true;
 	this.idling = false;
 	this.body.acceleration.x = 0;
-	this.game.time.events.add(Phaser.Timer.SECOND*1.5, this.ceaseFire, this);
+	this.game.time.events.add(Phaser.Timer.SECOND*1, this.ceaseFire, this);
 }
 
 Boss.prototype.fire = function() {
@@ -146,7 +155,7 @@ Boss.prototype.fire = function() {
 
 Boss.prototype.ceaseFire = function() {
 	this.firing = false;
-	this.game.time.events.add(1, this.determineMove, this);
+	this.game.time.events.add(Phaser.Timer.SECOND*2, this.determineMove, this);
 }
 
 Boss.prototype.charge = function() {
@@ -171,19 +180,47 @@ Boss.prototype.charge = function() {
 }
 
 Boss.prototype.letsCharge = function() {
+	
 	if(this.chargeRight) {
 		this.body.acceleration.x = this.chargeSpeed;
 	}
 	else {
 		this.body.acceleration.x = -1 * this.chargeSpeed;
 	}
+	this.repoChargeHitboxes();
 }
 
 Boss.prototype.endCharge = function() {
 	this.animations.play('idle');
 	this.body.acceleration.x = 0;
 	this.charging = false;
-	this.game.time.events.add(1, this.determineMove, this);
+	this.game.time.events.add(Phaser.Timer.SECOND*2, this.determineMove, this);
+}
+
+Boss.prototype.repoChargeHitboxes = function() {
+	var chargeBox;
+	if(this.chargeRight) {
+		chargeBox = this.chargeBox1;
+		chargeBox.body.x = this.x - chargeBox.width / 2 - 100;
+		chargeBox.body.y = this.y - chargeBox.height / 2 + 10;
+		chargeBox.anchor.set(0.5);
+		
+		chargeBox = this.chargeBox2;
+		chargeBox.body.x = this.x - chargeBox.width / 2 + 60;
+		chargeBox.body.y = this.y - chargeBox.height / 2 + 40;
+		chargeBox.anchor.set(0.5);
+	}
+	else {
+		chargeBox = this.chargeBox1;
+		chargeBox.body.x = this.x - chargeBox.width / 2 - 100;
+		chargeBox.body.y = this.y - chargeBox.height / 2 + 40;
+		chargeBox.anchor.set(0.5);
+		
+		chargeBox = this.chargeBox2;
+		chargeBox.body.x = this.x - chargeBox.width / 2 + 40;
+		chargeBox.body.y = this.y - chargeBox.height / 2 + 10;
+		chargeBox.anchor.set(0.5);
+	}
 }
 
 Boss.prototype.hitWorldBounds = function () {
@@ -192,11 +229,7 @@ Boss.prototype.hitWorldBounds = function () {
 
 Boss.prototype.setup = function() {
 	this.set = true;
-	var killBox = this.killBox;
-	killBox.body.x = this.x - killBox.width / 2 - 15;
-	killBox.body.y = this.y - killBox.height / 2 - 20;
-	killBox.anchor.set(0.5);
-	
+	this.disabled = false;
 }
 
 Boss.prototype.kills = function() {

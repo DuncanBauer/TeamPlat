@@ -8,7 +8,8 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	
 	this.animations.add('flail', Phaser.Animation.generateFrameNames('robobitch', 0, 7, '', 1), 15, true);
 	this.animations.add('idle', ['robobitch0'], 30, false);
-	this.animations.add('spawn', Phaser.Animation.generateFrameNames('robospawn', 1, 9, '', 1), 11, false);
+	this.animations.add('spawn', Phaser.Animation.generateFrameNames('robospawn', 0, 9, '', 1), 11, false);
+	this.animations.add('death', ['robodeath0','robodeath1','robodeath2','robospawn9','robospawn8','robospawn7','robospawn6','robospawn5','robospawn4','robospawn3','robospawn2','robospawn1','robospawn0'], 11, false)
 	this.animations.play('spawn');
 
 	this.anchor.set(.5);
@@ -56,11 +57,16 @@ Mob.prototype = Object.create(Phaser.Sprite.prototype);
 Mob.prototype.update = function() {
 
 	this.setup();
-	if(!this.flailing && this.detectPlayer()) {
+	
+	var x = this.x - this.thePlayer.x;
+	var y = this.y - this.thePlayer.y;
+	var dist = Math.sqrt((x*x) + (y*y));
+	
+	if(!this.flailing && dist <= 600) {
 		this.flailing = true;
 		this.animations.play('flail');
 	}
-	else if(this.flailing && !this.detectPlayer()) {
+	else if(this.flailing && dist > 600) {
 		this.flailing = false;
 		this.animations.play('idle');
 	}
@@ -69,9 +75,6 @@ Mob.prototype.update = function() {
 		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 	}
 	
-	var x = this.x - this.thePlayer.x;
-	var y = this.y - this.thePlayer.y;
-	var dist = Math.sqrt((x*x) + (y*y));
 	if(dist > 400 && dist < 600) {
 		this.idle_music.volume = 1;
 	}
@@ -270,17 +273,6 @@ Mob.prototype.setup = function() {
 	}
 }
 
-Mob.prototype.detectPlayer = function() {
-	var box = this.box;
-	box.body.x = this.x - box.body.width / 2;
-	box.body.y = this.y - box.body.height / 2;
-	
-	if(this.game.physics.arcade.overlap(box, this.thePlayer)) {
-		return true;
-	}
-	return false;
-}
-
 Mob.prototype.kills = function() {
 	var x = this.x - this.thePlayer.x;
 	var y = this.y - this.thePlayer.y;
@@ -305,12 +297,12 @@ Mob.prototype.kills = function() {
 	
 	this.idle_music.stop();
 	this.death_sound.play();
-
+	this.animations.play('death');
 	this.box.kill();
 	this.killBox.kill();
 	this.hitBox1.kill();
 	this.hitBox2.kill();
-	this.kill();
+	this.game.time.events.add(Phaser.Timer.SECOND*1.4, this.kill, this);
 }
 
 Mob.prototype.stopMusic = function() {
@@ -320,6 +312,9 @@ Mob.prototype.stopMusic = function() {
 Mob.prototype.reinitialize = function() {
 	this.revive();
 	this.idle_music.play();
+	this.set = false;
+	this.animations.play('spawn');
+	this.flailing = false;
 	this.box.revive();
 	this.killBox.revive();
 	this.hitBox1.revive();

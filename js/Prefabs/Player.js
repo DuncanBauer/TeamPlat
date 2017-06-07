@@ -88,6 +88,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 
 	this.myWorld = world;
 	this.legs = 0;
+	this.invincible = false;
 	this.runTime = this.game.time.now;
 	
 	this.emitter = this.game.add.emitter(this.x, this.y, 50);
@@ -157,11 +158,13 @@ Player.prototype.update = function() {
 			this.animations.play('stand');	
 		}
 	}
+	if(!this.invincible) {
+		this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
+	}
 	
-	this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
 	this.game.physics.arcade.overlap(this, this.myWorld.obstacles.children, this.stupidPlayer, null, this);
 	
-	this.moveEmitter();
+	//this.moveEmitter();
 }
 
 Player.prototype.moveEmitter = function() {
@@ -258,8 +261,6 @@ Player.prototype.dash = function() {
 			var cursors = this.game.input.keyboard.createCursorKeys();	
 			
 			this.dashing = true;
-			this.animations.play('dash');
-			this.dash_sound.play();
 			// Stops falling pre-dash
 			this.oldVelx = this.body.velocity.x;
 			this.oldVely = this.body.velocity.y;
@@ -277,6 +278,9 @@ Player.prototype.dash = function() {
 				   cursors.up.isDown    || 
 				   cursors.down.isDown) {
 
+					this.animations.play('dash');
+					this.dash_sound.play();
+					
 					// Logs players pre-dash position
 					this.oldPosX = this.position.x;
 					this.oldPosY = this.position.y;
@@ -610,22 +614,84 @@ Player.prototype.determineLoser = function(player, enemy) {
 	}
 }
 
+Player.prototype.determineLoser2 = function(player, enemy) {
+	if(!this.dashing) {
+		this.stupidPlayer();
+	}
+	else {
+		enemy.parent.kills();
+	}
+}
+
 Player.prototype.stupidPlayer = function(player, obstacle) {
-	this.death_sound.play();
-	if(this.myWorld.type != "boss") {
+	if(this.myWorld.type == "boss") {
+		if(this.legs > 0) {
+			this.legs--;
+			this.invincible = true;
+			this.game.time.events.add(Phaser.Timer.SECOND*2.5, this.loseInvinc, this);
+			
+			if(this.body.touching.down) {
+				this.body.velocity.y = -200;
+			}
+			else if(this.body.touching.up) {
+				this.body.velocity.y = 200;
+			}
+			else if(this.body.touching.right) {
+				this.body.velocity.x = -200;
+			}
+			else if(this.body.touching.left) {
+				this.body.velocity.x = 200;
+			}
+		}
+		else {
+			this.game.time.events.add(Phaser.Timer.SECOND*0.1, this.myWorld.resetFight, this.myWorld);
+		}
+	}
+	else {
 		this.emitter.children.forEach(function(particle) {
 			particle.kill();
 		});
+		this.death_sound.play();
 		this.respawn();
 	}
-	else {
+}
+
+Player.prototype.stupidPlayer2 = function(player, bullet) {
+	bullet.kill();
+	if(this.myWorld.type == "boss") {
 		if(this.legs > 0) {
 			this.legs--;
+			this.invincible = true;
+			this.game.time.events.add(Phaser.Timer.SECOND*2.5, this.loseInvinc, this);
+			
+			if(this.body.touching.down) {
+				this.body.velocity.y = -200;
+			}
+			else if(this.body.touching.up) {
+				this.body.velocity.y = 200;
+			}
+			else if(this.body.touching.right) {
+				this.body.velocity.x = -200;
+			}
+			else if(this.body.touching.left) {
+				this.body.velocity.x = 200;
+			}
 		}
 		else {
-			this.game.time.events.add(Phaser.Timer.SECOND*0.1, this.myWorld.stopMusic, this.myWorld);
+			this.game.time.events.add(Phaser.Timer.SECOND*0.1, this.myWorld.resetFight, this.myWorld);
 		}
 	}
+	else {
+		this.emitter.children.forEach(function(particle) {
+			particle.kill();
+		});
+		this.death_sound.play();
+		this.respawn();
+	}
+}
+
+Player.prototype.loseInvinc = function() {
+	this.invincible = false;
 }
 
 Player.prototype.setLegs = function(legs) {

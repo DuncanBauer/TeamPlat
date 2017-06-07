@@ -31,7 +31,7 @@ BossRoom.prototype.retreivePlayer = function(player) {
 	this.init();
 }
 
-BossRoom.prototype.stopMusic = function() {
+BossRoom.prototype.resetFight = function() {
 	this.bg_music.stop();
 	this.minions.forEach(function(minion) {
 		minion.stopMusic();
@@ -114,6 +114,7 @@ BossRoom.prototype.killMinion = function() {
 	this.minionCount--;
 	if(this.minionCount == 0) {	
 		this.boss.children[0].inControl = false;
+		this.boss.children[0].animations.play('idle');
 		this.game.time.events.add(1, this.boss.children[0].determineMove, this.boss.children[0]);
 	}
 }

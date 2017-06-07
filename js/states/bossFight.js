@@ -23,7 +23,7 @@ BossFight.prototype = {
 		this.world = new BossRoom(this.game);
 		
 		this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2300, this.world);
-		this.player.setLegs(this.game.legs[0]);
+		this.player.setLegs(3);
 		this.game.add.existing(this.player);
 
 		this.world.retreivePlayer(this.player);
@@ -36,8 +36,8 @@ BossFight.prototype = {
 		this.panning = false;
 	},
 	
-	update:function() {	
-		this.game.physics.arcade.collide(this.player.weapon.bullets, this.world.minions, this.minionHit, null, this);
+	update:function() {
+		this.game.physics.arcade.overlap(this.player.weapon.bullets, this.world.minions, this.minionHit, null, this);
 		
 		if(!this.fightStarted) {
 			if(this.game.physics.arcade.overlap(this.player, this.world.startLine) && !this.panning) {
@@ -113,16 +113,23 @@ BossFight.prototype = {
 	
 	minionHit: function(bullet, minion) {
 		if(this.game.physics.arcade.overlap(bullet, minion.killBox)) {
-			this.world.killMinion();
-			minion.kills();
-			bullet.kill();
+			if(!minion.spawning){
+				this.world.killMinion();
+				minion.kills();
+				bullet.kill();
+			}
 		}
 	},
 	
 	render: function() {
 /*
 		this.game.debug.cameraInfo(this.game.camera, 32, 32);
-		this.game.debug.body(this.player);
+		*/
+		//this.game.debug.body(this.player);
+		//this.game.debug.body(this.player.weapon.bullets);
+		this.game.debug.body(this.world.boss.children[0].chargeBox1);
+		this.game.debug.body(this.world.boss.children[0].chargeBox2);
+		/*
 		this.game.debug.body(this.world.startLine);
 		
 		this.game.debug.body(this.world.boss.children[0].killBox);
