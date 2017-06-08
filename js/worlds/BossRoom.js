@@ -20,7 +20,6 @@ function BossRoom(game) {
 	// Start music
 	this.bg_music = this.game.add.audio('Armless_bg');
 	this.bg_music.loop = true;
-	this.bg_music.volume = 0.3;
 };
 
 BossRoom.prototype = Object.create(Phaser.Group.prototype);
@@ -59,8 +58,18 @@ BossRoom.prototype.init = function() {
 
 	this.loadFloor('platform_atlas', 'platform0');
 	this.loadEnemies();
+	this.loadPortal();
 	
 	this.loadStartLine();
+}
+
+BossRoom.prototype.loadPortal = function() {
+	let temp = this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 1800, 2110, 'LevelSelect', 2));
+	temp.kills();
+}
+
+BossRoom.prototype.revivePortal = function() {
+	this.checkpoints.children[0].revive();
 }
 
 BossRoom.prototype.loadFloor = function(atlas, frame) {

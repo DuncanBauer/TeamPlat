@@ -17,7 +17,6 @@ function Portal(game, sprite_key, frame, player, x, y, state, currLevel){
 
 	this.port_sound = this.game.add.audio('portal');
 	this.port_sound.loop = true;
-	this.port_sound.volume = 0;
 	this.port_sound.play();
 	
 	this.box = this.game.add.sprite(this.x, this.y, null);
@@ -27,29 +26,38 @@ function Portal(game, sprite_key, frame, player, x, y, state, currLevel){
 }
 
 Portal.prototype = Object.create(Phaser.Sprite.prototype);
-Portal.prototype.update = function() {
+Portal.prototype.update = function() {	
 	if(this.game.physics.arcade.overlap(this, this.player)){
 		this.game.levelsComplete[this.currLevel] = true;
 		this.game.legs[this.currLevel] = this.player.legs;
 		this.game.times[this.currLevel] = this.game.time.now - this.player.runTime;
-		this.player.myWorld.bg_music.stop();
-		this.port_sound.stop();
+		this.game.sound.stopAll();
 		this.game.state.start('LevelSelect');
 	}
 	
 	var x = this.x - this.player.x;
 	var y = this.y - this.player.y;
 	var dist = Math.sqrt((x*x) + (y*y));
-	if(dist > 400 && dist < 600) {
+	if(dist >= 400 && dist <= 600) {
 		this.port_sound.volume = 1;
 	}
-	else if(dist > 200 && dist < 400) {
+	else if(dist >= 200 && dist < 400) {
 		this.port_sound.volume = 2;
 	}
-	else if(dist > 0 && dist < 200) {
+	else if(dist >= 0 && dist < 200) {
 		this.port_sound.volume = 3;
 	}
 	else {
 		this.port_sound.volume = 0;
 	}
+}
+
+Portal.prototype.kills = function() {
+	this.port_sound.stop();
+	this.kill();
+}
+
+Portal.prototype.revives = function() {
+	this.port_sound.start();
+	this.revive();
 }

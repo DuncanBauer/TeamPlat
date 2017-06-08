@@ -40,7 +40,6 @@ LevelSelect.prototype = {
 	},
 	
 	spawnLeg: function() {
-		console.log("enetered");
 		var leg = this.legs.add(new Leg(this.game, 'leg', this.game.world.centerX - this.buttons.children[0].width / 2 - 180 - (this.temp * 64), 120));
 		leg.anchor.set(.5);
 		leg.scale.x *= 1.5;

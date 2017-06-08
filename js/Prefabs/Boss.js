@@ -317,6 +317,7 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 		this.timer.add(Phaser.Timer.SECOND*3, function() {
 			this.dmg_sound.play();
 		}, this);
+		this.myWorld.bg_music.fadeTo(4000, 2.5);
 		this.timer.add(Phaser.Timer.SECOND*4.1, this.toDie, this);
 		this.myWorld.shakeCameraLong();
 	}
@@ -328,11 +329,13 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 Boss.prototype.toDie = function() {
 	this.death_sound.play();
 	this.animations.play('death');
-	this.timer.add(Phaser.Timer.SECOND*1.8, this.deathEnd, this);
+	this.timer.add(Phaser.Timer.SECOND*2, this.deathEnd, this);
+	this.myWorld.bg_music.fadeTo()
 }
 
 Boss.prototype.deathEnd = function() {
 	this.animations.play('deathEnd');
+	this.timer.add(Phaser.Timer.SECOND*3, this.myWorld.revivePortal, this.myWorld);
 }
 
 Boss.prototype.setKillBoxesIdle = function() {
