@@ -16,6 +16,11 @@ function BossRoom(game) {
 	this.minionCount = 0;
 	
 	this.type = "boss";
+		
+	// Start music
+	this.bg_music = this.game.add.audio('Armless_bg');
+	this.bg_music.loop = true;
+	this.bg_music.volume = 0.3;
 };
 
 BossRoom.prototype = Object.create(Phaser.Group.prototype);
@@ -24,6 +29,14 @@ BossRoom.prototype.constructor = BossRoom;
 BossRoom.prototype.retreivePlayer = function(player) {
 	this.thePlayer = player;
 	this.init();
+}
+
+BossRoom.prototype.resetFight = function() {
+	this.bg_music.stop();
+	this.minions.forEach(function(minion) {
+		minion.stopMusic();
+	}, Mob2);
+	this.game.state.restart();
 }
 
 BossRoom.prototype.init = function() {
@@ -68,7 +81,6 @@ BossRoom.prototype.callMinions = function() {
 	let temp = [];
 	let taken = [];
 	let rand = Math.floor(Math.random() * 10) + 5;
-	console.log(rand);
 	
 	let tempConst = 5;
 	
@@ -100,7 +112,9 @@ BossRoom.prototype.callMinions = function() {
 
 BossRoom.prototype.killMinion = function() {
 	this.minionCount--;
-	if(this.minionCount == 0) {
+	if(this.minionCount == 0) {	
+		this.boss.children[0].inControl = false;
+		this.boss.children[0].animations.play('idle');
 		this.game.time.events.add(1, this.boss.children[0].determineMove, this.boss.children[0]);
 	}
 }
@@ -111,7 +125,7 @@ BossRoom.prototype.loadStartLine = function() {
 	this.startLine.body.setSize(5, this.game.world.height);
 }
 
-BossRoom.prototype.resetWorld = function() {
+BossRoom.prototype.resetWorld = function() {	
 	this.game.state.restart();
 }
 
@@ -121,5 +135,9 @@ BossRoom.prototype.shakeCamera = function() {
 	
 BossRoom.prototype.shakeCameraLite = function() {
 	this.game.camera.shake(.005, 200);
+}
+	
+BossRoom.prototype.shakeCameraMed = function() {
+	this.game.camera.shake(.01, 500);
 }
 	

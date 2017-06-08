@@ -41,7 +41,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	// Cooldown Constants in milliseconds
 	this.dashCooldown = 330; 
 	this.gravityCooldown = 300;
-	this.attackCooldown = 450;
+	this.attackCooldown = 10;
 	
 	// Cooldown timers
 	this.dashTimeCheck = 0;
@@ -82,25 +82,46 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	//this.leftKey.onDown.add(this.moveLeft, this);
 	this.leftKey.onUp.add(this.stopMovement, this);
 	
-	this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.add(this.jump, this);
-	this.game.input.keyboard.addKey(Phaser.Keyboard.D).onDown.add(this.dash, this);
-	this.game.input.keyboard.addKey(Phaser.Keyboard.A).onDown.add(this.attack, this);
+	this.jumpKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+	this.jumpKey.onDown.add(this.jump, this);
+	this.dashKey = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+	this.dashKey.onDown.add(this.dash, this);
+	this.attackKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+	this.attackKey.onDown.add(this.attack, this);
 
 	this.myWorld = world;
 	this.legs = 0;
+	this.invincible = false;
 	this.runTime = this.game.time.now;
 	
 	this.emitter = this.game.add.emitter(this.x, this.y, 50);
-    	this.emitter.makeParticles('vaporTrails');
-    	this.emitter.setXSpeed(0, 0);
-    	this.emitter.setYSpeed(0, 0);
-    	this.emitter.setRotation(0, 0);
+	this.emitter.makeParticles('vaporTrails');
+	this.emitter.setXSpeed(0, 0);
+	this.emitter.setYSpeed(0, 0);
+	this.emitter.setRotation(0, 0);
    	this.emitter.setAlpha(0.1, 1, 500);
    	this.emitter.setScale(0.1, .3, 0.1, .3, 1000, Phaser.Easing.Quintic.Out);
-    	this.emitter.gravity = -100;
+	this.emitter.gravity = -100;
 	//this.emitter.start(false, 4000, 20);
-    	this.emitter.emitX = 64;
-    	this.emitter.emitY = 500;
+	this.emitter.emitX = 64;
+	this.emitter.emitY = 500;
+
+	// sounds
+	this.fire_sound = this.game.add.audio('player_shot');
+	this.fire_sound.loop = false;
+	this.fire_sound.volume = 2;	
+
+	this.jump_sound = this.game.add.audio('player_jump');
+	this.jump_sound.loop = false;
+	this.jump_sound.volume = 4;
+
+	this.dash_sound = this.game.add.audio('player_dash');
+	this.dash_sound.loop = false;
+	this.dash_sound.volume = 4;	
+
+	this.death_sound = this.game.add.audio('player_death');
+	this.death_sound.loop = false;
+	this.death_sound.volume = 6;	
 }
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -140,11 +161,13 @@ Player.prototype.update = function() {
 			this.animations.play('stand');	
 		}
 	}
+	if(!this.invincible) {
+		this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
+	}
 	
-	this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
 	this.game.physics.arcade.overlap(this, this.myWorld.obstacles.children, this.stupidPlayer, null, this);
 	
-	this.moveEmitter();
+	//this.moveEmitter();
 }
 
 Player.prototype.moveEmitter = function() {
@@ -241,8 +264,6 @@ Player.prototype.dash = function() {
 			var cursors = this.game.input.keyboard.createCursorKeys();	
 			
 			this.dashing = true;
-			this.animations.play('dash');
-			
 			// Stops falling pre-dash
 			this.oldVelx = this.body.velocity.x;
 			this.oldVely = this.body.velocity.y;
@@ -260,6 +281,9 @@ Player.prototype.dash = function() {
 				   cursors.up.isDown    || 
 				   cursors.down.isDown) {
 
+					this.animations.play('dash');
+					this.dash_sound.play();
+					
 					// Logs players pre-dash position
 					this.oldPosX = this.position.x;
 					this.oldPosY = this.position.y;
@@ -320,7 +344,7 @@ Player.prototype.jump = function() {
 			this.jumping = true;
 		}
 		// Play jump sound
-		this.game.sound.play('player_jump');
+		this.jump_sound.play();
 		// Jumps
 		this.body.velocity.y = -500;	
 	}else if(this.onWall){
@@ -547,6 +571,7 @@ Player.prototype.attack = function() {
 		//}
 		//else {
 			// Else it fires at the intended angle
+			this.fire_sound.play();
 			this.weapon.fire();
 		//}			
 	}
@@ -584,22 +609,98 @@ Player.prototype.respawn = function() {
 }
 
 Player.prototype.determineLoser = function(player, enemy) {
-	if(!this.dashing) {
-		this.stupidPlayer();
+	if(this.myWorld.type != "boss") {
+		if(!this.dashing) {
+			this.stupidPlayer();
+		}
+		else {
+			enemy.parent.kills();
+		}
 	}
 	else {
-		enemy.parent.kills();
+		if(!this.dashing) {
+			this.stupidPlayer();
+		}
+		else if(enemy.type != "boss"){
+			enemy.parent.kills();
+			this.myWorld.killMinion();
+		}
 	}
 }
 
 Player.prototype.stupidPlayer = function(player, obstacle) {
-	if(this.myWorld.type != "boss") {
+	if(this.myWorld.type == "boss") {
+		if(this.legs > 0) {
+			this.legs--;
+			console.log(this.legs);
+			this.invincible = true;
+			this.game.time.events.add(Phaser.Timer.SECOND*2.5, this.loseInvinc, this);
+			
+			if(this.body.touching.down) {
+				this.body.velocity.y = -200;
+			}
+			else if(this.body.touching.up) {
+				this.body.velocity.y = 200;
+			}
+			else if(this.body.touching.right) {
+				this.body.velocity.x = -200;
+			}
+			else if(this.body.touching.left) {
+				this.body.velocity.x = 200;
+			}
+		}
+		else {
+			this.game.time.events.add(Phaser.Timer.SECOND*0.1, this.myWorld.resetFight, this.myWorld);
+		}
+	}
+	else {
 		this.emitter.children.forEach(function(particle) {
 			particle.kill();
 		});
+		this.death_sound.play();
 		this.respawn();
 	}
-	else {
-		this.game.state.restart();
+}
+
+Player.prototype.stupidPlayer2 = function(player, bullet) {
+	bullet.kill();
+	if(this.myWorld.type == "boss") {
+		if(this.legs > 0) {
+			this.legs--;
+			console.log(this.legs);
+			this.invincible = true;
+			this.game.time.events.add(Phaser.Timer.SECOND*2.5, this.loseInvinc, this);
+			
+			if(this.body.touching.down) {
+				this.body.velocity.y = -200;
+			}
+			else if(this.body.touching.up) {
+				this.body.velocity.y = 200;
+			}
+			else if(this.body.touching.right) {
+				this.body.velocity.x = -200;
+			}
+			else if(this.body.touching.left) {
+				this.body.velocity.x = 200;
+			}
+		}
+		else {
+			this.game.time.events.add(Phaser.Timer.SECOND*0.1, this.myWorld.resetFight, this.myWorld);
+		}
 	}
+	else {
+		this.emitter.children.forEach(function(particle) {
+			particle.kill();
+		});
+		this.death_sound.play();
+		this.respawn();
+	}
+}
+
+Player.prototype.loseInvinc = function() {
+	this.invincible = false;
+}
+
+Player.prototype.setLegs = function(legs) {
+	this.legs = legs;
 }

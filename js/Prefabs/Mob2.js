@@ -8,7 +8,9 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	
 	this.animations.add('flail', Phaser.Animation.generateFrameNames('robobitch', 0, 7, '', 1), 15, true);
 	this.animations.add('idle', ['robobitch0'], 30, false);
-	this.animations.play('idle');
+	this.animations.add('spawn', Phaser.Animation.generateFrameNames('robospawn', 1, 9, '', 1), 11, false);
+	this.animations.add('death', ['robodeath0','robodeath1','robodeath2','robospawn9','robospawn8','robospawn7','robospawn6','robospawn5','robospawn4','robospawn3','robospawn2','robospawn1','robospawn0'], 11, false)
+	this.animations.play('spawn');
 
 	this.anchor.set(.5);
 	this.scale.x = this.scale.x / 2;
@@ -34,6 +36,7 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	
 	this.flailing = false;
 	this.rotateAngle = rotateAngle;
+	this.angle = rotateAngle;
 	
 	this.myWorld = world;
 	this.thePlayer = player;
@@ -41,12 +44,14 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	
 	this.knockBack = 5;
 
-	this.weapon = this.game.add.weapon(100, 'lemon');
+	this.spawning = true;
+
+	this.weapon = this.game.add.weapon(100, 'evil_lemon');
 	this.weapon.bullets.setAll('scale.x', .5);
 	this.weapon.bullets.setAll('scale.y', .5);
 	this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
 	this.weapon.fireAngle = 270; // In degrees
-	this.weapon.bulletSpeed = 700;
+	this.weapon.bulletSpeed = 500;
 	//this.weapon.fireRate = 1000;  Using attackCooldown instead
 	this.weapon.trackSprite(this); // Has the weapon follow the player
 	
@@ -57,31 +62,72 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	
 	this.playerX = 0;
 	this.playerY = 0;
+
+	this.idle_music = this.game.add.audio('robot_idle');
+	this.idle_music.loop = true;
+	this.idle_music.volume = 0;
+	this.idle_music.play();
+
+	this.death_sound = this.game.add.audio('robot_explode');
+	this.death_sound.loop = false;
+	this.death_sound.volume = 3;
+
+	this.fire_sound = this.game.add.audio('robot_fire');
+	this.fire_sound.loop = false;
+	this.fire_sound.volume = 3;
 }
 
 Mob2.prototype = Object.create(Phaser.Sprite.prototype);
-Mob2.prototype.update = function() {	
-	this.setup();
+Mob2.prototype.update = function() {
+	if(!this.spawning) {	
+		this.setup();
 		
-	if(!this.flailing && this.detectPlayer()) {
-		this.flailing = true;
-		this.animations.play('flail');
-	}
-	else if(this.flailing && !this.detectPlayer()) {
-		this.flailing = false;
-		this.animations.play('idle');
-	}
-	else if(this.flailing) {
-		if(this.game.time.now - this.fireCheck > this.fireCooldown) {
-			this.fireCheck = this.game.time.now;
-			this.playerX = this.thePlayer.x;
-			this.playerY = this.thePlayer.y;
-			this.timer.add(Phaser.Timer.SECOND * .7, this.openFire, this);
+		var x = this.x - this.thePlayer.x;
+		var y = this.y - this.thePlayer.y;
+		var dist = Math.sqrt((x*x) + (y*y));
+	
+		if(!this.flailing && dist <= 600) {
+			this.flailing = true;
+			this.animations.play('flail');
 		}
+		else if(this.flailing && dist > 600) {
+			this.flailing = false;
+			this.animations.play('idle');
+		}
+		else if(this.flailing) {
+			if(this.game.time.now - this.fireCheck > this.fireCooldown) {
+				this.fireCheck = this.game.time.now;
+				this.playerX = this.thePlayer.x;
+				this.playerY = this.thePlayer.y;
+				this.timer.add(Phaser.Timer.SECOND * .7, this.openFire, this);
+			}
 		
-		//this.game.physics.arcade.overlap(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer, null, this.thePlayer);
-		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
-		this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+		
+			if(!this.thePlayer.invincible) {
+				this.game.physics.arcade.collide(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
+				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
+				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+			}
+		}
+	}
+	else {
+		if(this.animations.currentFrame.index == 20) {
+			this.spawning = false;
+			this.animations.play('idle');
+		}
+	}
+	
+	if(dist > 400 && dist < 600) {
+		this.idle_music.volume = 1;
+	}
+	else if(dist > 200 && dist < 400) {
+		this.idle_music.volume = 2;
+	}
+	else if(dist > 0 && dist < 200) {
+		this.idle_music.volume = 3;
+	}
+	else {
+		this.idle_music.volume = 0;
 	}
 }
 
@@ -269,19 +315,9 @@ Mob2.prototype.setup = function() {
 	}
 }
 
-Mob2.prototype.detectPlayer = function() {
-	var box = this.box;
-	box.body.x = this.x - box.body.width / 2;
-	box.body.y = this.y - box.body.height / 2;
-	
-	if(this.game.physics.arcade.overlap(box, this.thePlayer)) {
-		return true;
-	}
-	return false;
-}
-
 Mob2.prototype.openFire = function() {
 	if(this.weapon != null) {
+		this.fire_sound.play();
 		this.weapon.fireAtXY(this.playerX, this.playerY);
 	}
 }
@@ -308,27 +344,31 @@ Mob2.prototype.kills = function() {
 		this.game.physics.arcade.velocityFromAngle(angle, 300 * scale, this.thePlayer.body.velocity);
 	}
 	
-	//this.weapon.forEach(function(bullet) {
-	//	bullet.kill();
-	//});
+	this.idle_music.stop();
+	this.death_sound.play();
 	
 	this.timer.stop();
 	this.timer.clearPendingEvents();
+	this.animations.play('death');
 	this.box.kill();
 	this.killBox.kill();
 	this.hitBox1.kill();
 	this.hitBox2.kill();
-	this.kill();
+	this.game.time.events.add(Phaser.Timer.SECOND*1.4, this.kill, this);
+}
+
+Mob2.prototype.stopMusic = function() {
+	this.idle_music.stop();
 }
 
 Mob2.prototype.reinitialize = function() {
 	this.revive();
+	this.idle_music.play();
+	this.set = false;
+	this.animations.play('spawn');
+	this.flailing = false;
 	this.box.revive();
 	this.killBox.revive();
 	this.hitBox1.revive();
 	this.hitBox2.revive();
-	this.body.velocity.x = 0;
-	this.body.velocity.y = 0;
-	this.body.acceleration.x = 0;
-	this.body.acceleration.y = 0;
 }
