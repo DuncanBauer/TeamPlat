@@ -83,8 +83,8 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.minionCount = 0;
 	this.disabled = true;
 	this.inControl = false;
-	this.health = 20;
-	//this.health = 130;
+	//this.health = 20;
+	this.health = 130;
 	this.recovering = false;	
 	this.invuln = true;
 	this.firePrep = false;
