@@ -82,9 +82,12 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	//this.leftKey.onDown.add(this.moveLeft, this);
 	this.leftKey.onUp.add(this.stopMovement, this);
 	
-	this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.add(this.jump, this);
-	this.game.input.keyboard.addKey(Phaser.Keyboard.D).onDown.add(this.dash, this);
-	this.game.input.keyboard.addKey(Phaser.Keyboard.A).onDown.add(this.attack, this);
+	this.jumpKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+	this.jumpKey.onDown.add(this.jump, this);
+	this.dashKey = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+	this.dashKey.onDown.add(this.dash, this);
+	this.attackKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+	this.attackKey.onDown.add(this.attack, this);
 
 	this.myWorld = world;
 	this.legs = 0;

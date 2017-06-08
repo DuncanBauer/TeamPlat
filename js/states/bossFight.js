@@ -55,6 +55,9 @@ BossFight.prototype = {
 				this.game.input.keyboard.enabled = false;
 				this.player.leftKey.reset(false);
 				this.player.rightKey.reset(false);
+				this.player.jumpKey.reset(false);
+				this.player.dashKey.reset(false);
+				this.player.attackKey.reset(false);
 				this.game.input.keyboard.stop();
 			}
 		}
