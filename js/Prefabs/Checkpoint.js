@@ -13,6 +13,10 @@ function Checkpoint(game, sprite_key, frame, player, x, y){
 	
 	this.scale.x *=.5;
 	this.scale.y *=.5;
+	
+	this.port_sound = this.game.add.audio('portal');
+	this.port_sound.loop = false;
+	this.port_sound.volume = 3;
 }
 
 Checkpoint.prototype = Object.create(Phaser.Sprite.prototype);
@@ -21,6 +25,7 @@ Checkpoint.prototype.update = function() {
 	if(this.game.physics.arcade.overlap(this, this.player)){
 		if(this.id != this.player.checkpointID){
 			if(!this.portOn){
+				this.port_sound.play();
 				this.portOn = true;
 				this.animations.play('portOn');
 			}
