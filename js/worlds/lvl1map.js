@@ -17,7 +17,7 @@ function World(game) {
 	// Start music
 	this.bg_music = this.game.add.audio('bg_music');
 	this.bg_music.loop = true;
-	this.bg_music.volume = 2;
+	this.bg_music.volume = 1;
 	this.bg_music.play();
 };
 

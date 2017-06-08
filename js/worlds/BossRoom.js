@@ -129,7 +129,7 @@ BossRoom.prototype.resetWorld = function() {
 }
 
 BossRoom.prototype.shakeCamera = function() {
-	this.game.camera.shake(.02, 1100);
+	this.game.camera.shake(.02, 4100);
 }
 	
 BossRoom.prototype.shakeCameraLite = function() {

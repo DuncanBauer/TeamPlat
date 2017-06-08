@@ -67,9 +67,10 @@ BossFight.prototype = {
 			if(this.game.camera.x >= 990) {
 				this.panning = false;
 				this.game.time.events.add(Phaser.Timer.SECOND*1, this.world.shakeCamera, this.world);
-				//this.game.time.events.add(Phaser.Timer.SECOND*1, this.bobbleHead, this);
-				//this.game.time.events.add(Phaser.Timer.SECOND*2.3, this.stopHead, this);
-				this.game.time.events.add(Phaser.Timer.SECOND*3.5, this.startPanBack, this);
+				this.game.time.events.add(Phaser.Timer.SECOND*1, this.world.boss.children[0].scream, this.world.boss.children[0]);
+				this.game.time.events.add(Phaser.Timer.SECOND*1, this.bobbleHead, this);
+				this.game.time.events.add(Phaser.Timer.SECOND*4.5, this.stopHead, this);
+				this.game.time.events.add(Phaser.Timer.SECOND*6.5, this.startPanBack, this);
 			}
 		}
 		
@@ -144,14 +145,15 @@ BossFight.prototype = {
 		
 		this.game.debug.body(this.player);
 		this.game.debug.body(this.player.weapon.bullets);
-		*/
+		
+		
 		this.game.debug.body(this.world.boss.children[0].chargeBox1);
 		this.game.debug.body(this.world.boss.children[0].chargeBox2);
-		
 		this.game.debug.body(this.world.boss.children[0].killBox1);
 		this.game.debug.body(this.world.boss.children[0].killBox2);
 		this.game.debug.body(this.world.boss.children[0].killBox3);
-		/*
+		
+		
 		this.game.debug.body(this.world.startLine);
 		
 		this.game.debug.body(this.world.boss.children[0].killBox);

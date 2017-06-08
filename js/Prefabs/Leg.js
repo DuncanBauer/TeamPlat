@@ -12,6 +12,10 @@ function Leg(game, sprite, x, y, player) {
 
 	this.player = player
 	
+	this.pickup_sound = this.game.add.audio('pickup');
+	this.pickup_sound.loop = false;
+	this.pickup_sound.volume = 3;
+	
 	this.tween = this.game.add.tween(this);
 	this.tween.to({y: this.y - 10}, 1000, 'Linear', true, 200, false, true);
 }
@@ -22,6 +26,7 @@ Leg.prototype.update = function() {
 	if(this.game.physics.arcade.overlap(this, this.player)) {
 		this.kill();
 		this.player.legs++;
+		this.pickup_sound.play();
 	}
 }
 

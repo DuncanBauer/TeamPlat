@@ -1,5 +1,8 @@
 var MainMenu = function(game) {};
 MainMenu.prototype = {
+	init: function() {
+		this.game.sound.boot();
+	},
 	
 	create: function() {
 		console.log('MainMenu: create');
