@@ -611,6 +611,8 @@ Boss.prototype.charge = function() {
 	this.charging = true;
 	this.idling = false;
 	
+	this.fly_sound.play();
+	
 	var x = this.thePlayer.x;
 	if(x > this.x) {
 		this.animations.play('charge1');
@@ -640,6 +642,7 @@ Boss.prototype.letsCharge = function() {
 }
 
 Boss.prototype.endCharge = function() {
+	this.fly_sound.stop();
 	this.animations.play('idle');
 	this.idling = true;
 	this.body.acceleration.x = 0;

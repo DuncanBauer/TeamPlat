@@ -116,8 +116,8 @@ BossFight.prototype = {
 		this.fightStarted = true;
 		this.game.input.keyboard.start();
 		this.game.input.keyboard.enabled = true;
-		this.game.time.events.add(Phaser.Timer.SECOND*1, this.world.boss.children[0].deathAnim, this.world.boss.children[0]);
-		//this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.world.boss.children[0].charge, this.world.boss.children[0]);
+		//this.game.time.events.add(Phaser.Timer.SECOND*1, this.world.boss.children[0].deathAnim, this.world.boss.children[0]);
+		this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.world.boss.children[0].charge, this.world.boss.children[0]);
 	},
 	
 	minionHit: function(bullet, minion) {
