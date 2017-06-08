@@ -18,7 +18,7 @@ MainMenu.prototype = {
 		
 		this.bg_music = this.game.add.audio('GearUp_bg');
 		this.bg_music.loop = true;
-		this.bg_music.fadeIn(7000, true);
+		this.bg_music.play();
 	},
 	
 	playgame: function() {

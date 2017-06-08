@@ -17,8 +17,8 @@ function World(game) {
 	// Start music
 	this.bg_music = this.game.add.audio('bg_music');
 	this.bg_music.loop = true;
-	this.bg_music.volume = 1;
-	this.bg_music.fadeIn(7000, true);
+	this.bg_music.volume = 2;
+	this.bg_music.play();
 };
 
 World.prototype = Object.create(Phaser.Group.prototype);
@@ -51,15 +51,10 @@ World.prototype.loadLegs = function() {
 
 World.prototype.loadChecks = function() {
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, this.thePlayer.x-100, this.thePlayer.y+100));
-
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1415, 2275));
-
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 550, 1850));
-
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 110, 975));
-
-	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1850, 1550));
-	
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1850, 1550));	
 	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 2050, 1850, 'LevelSelect', 0));
 }
 
