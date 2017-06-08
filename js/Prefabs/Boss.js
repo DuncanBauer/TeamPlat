@@ -19,7 +19,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.animations.add('smash', ['bossbot6','bossbot7','bossbot8','bossbot9'], 11, false);
 	this.animations.add('fire', ['bossbot3', 'bossbot4'], 11, false);
 	this.animations.add('unfire', ['bossbot4', 'bossbot3','bossbot0'], 11, false);
-	this.animations.add('death', ['bossbot12','bossbot13','bossbot12','bossbot13','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17','bossbot18','bossbot19','bossbot20','bossbot21','bossbot22','bossbot21'], 5, true);
+	this.animations.add('death', ['bossbot12','bossbot13','bossbot12','bossbot13','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17','bossbot18','bossbot19','bossbot20','bossbot21','bossbot22','bossbot21'], 9, false);
 	this.animations.add('bobble', ['bossbot0','bossbot10','bossbot0','bossbot11'], 20, true);
 	this.animations.add('flail', ['bossbot0','bossbot1','bossbot2','bossbot3','bossbot4','bossbot5','bossbot6','bossbot7','bossbot8','bossbot9',
 'bossbot10','bossbot11','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17'], 3, true);
@@ -135,53 +135,56 @@ Boss.prototype.update = function() {
 		this.game.physics.arcade.collide(this, this.myWorld.ground.children);
 	}
 	
-	if(!this.invuln) {
-		this.game.physics.arcade.overlap(this.killBox1, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
-		this.game.physics.arcade.overlap(this.killBox2, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
-		this.game.physics.arcade.overlap(this.killBox3, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
-	}
 	
-	if(!this.set) {
-		this.setup();
-	}
-	
-	if(!this.thePlayer.invincible) {
-		this.game.physics.arcade.overlap(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
-		this.game.physics.arcade.overlap(this.thePlayer, this.weapon1.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
-		
-		if(this.charging) {
-			this.game.physics.arcade.overlap(this.thePlayer, this.chargeBox1, this.thePlayer.determineLoser, null, this.thePlayer);
-			this.game.physics.arcade.overlap(this.thePlayer, this.chargeBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+	if(!this.dying) {
+		if(!this.invuln) {
+			this.game.physics.arcade.overlap(this.killBox1, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
+			this.game.physics.arcade.overlap(this.killBox2, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
+			this.game.physics.arcade.overlap(this.killBox3, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
 		}
-	}
-	
-	//console.log(this.animations.currentFrame.index);
 		
-	if(this.charging) {
-		this.repoChargeHitboxes();
-		this.letsCharge();
-	}
-	else if(this.firePrep) {
-		this.setKillBoxesFirePrep();
-	}
-	else if(this.firing) {
-		this.setKillBoxesFire();
-		this.fire();
-	}
-	else if(this.jumping) {
-		this.setKillBoxesJump();
-	}
-	else if(this.recovering) {
-		this.setKillBoxesRecovery();
-	}
-	else if(this.idling) {
-		this.setKillBoxesIdle();
-		this.idleTime();
-	}
-	else if(this.disabled || this.inControl) {
-	}
-	else{
-		this.setKillBoxesIdle();
+		if(!this.set) {
+			this.setup();
+		}
+		
+		if(!this.thePlayer.invincible) {
+			this.game.physics.arcade.overlap(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
+			this.game.physics.arcade.overlap(this.thePlayer, this.weapon1.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
+			
+			if(this.charging) {
+				this.game.physics.arcade.overlap(this.thePlayer, this.chargeBox1, this.thePlayer.determineLoser, null, this.thePlayer);
+				this.game.physics.arcade.overlap(this.thePlayer, this.chargeBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+			}
+		}
+		
+		//console.log(this.animations.currentFrame.index);
+			
+		if(this.charging) {
+			this.repoChargeHitboxes();
+			this.letsCharge();
+		}
+		else if(this.firePrep) {
+			this.setKillBoxesFirePrep();
+		}
+		else if(this.firing) {
+			this.setKillBoxesFire();
+			this.fire();
+		}
+		else if(this.jumping) {
+			this.setKillBoxesJump();
+		}
+		else if(this.recovering) {
+			this.setKillBoxesRecovery();
+		}
+		else if(this.idling) {
+			this.setKillBoxesIdle();
+			this.idleTime();
+		}
+		else if(this.disabled || this.inControl) {
+		}
+		else{
+			this.setKillBoxesIdle();
+		}
 	}
 }
 
@@ -191,6 +194,7 @@ Boss.prototype.scream = function() {
 
 Boss.prototype.deathAnim = function() {
 	this.animations.play('death');
+	this.dying = true;
 }
 
 Boss.prototype.takeBulletDmg = function(killBox, bullet) {
