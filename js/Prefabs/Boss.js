@@ -19,7 +19,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.animations.add('smash', ['bossbot6','bossbot7','bossbot8','bossbot9'], 11, false);
 	this.animations.add('fire', ['bossbot3', 'bossbot4'], 11, false);
 	this.animations.add('unfire', ['bossbot4', 'bossbot3','bossbot0'], 11, false);
-	this.animations.add('death', ['bossbot12','bossbot13','bossbot12','bossbot13','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17','bossbot18','bossbot19','bossbot20','bossbot21','bossbot22'], 9, false);
+	this.animations.add('death', ['bossbot12','bossbot13','bossbot12','bossbot13','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17','bossbot18','bossbot19','bossbot20','bossbot21','bossbot22'], 7, false);
 	this.animations.add('deathEnd', ['bossbot21'], 1, true);
 	this.animations.add('bobble', ['bossbot0','bossbot10','bossbot0','bossbot11'], 20, true);
 	this.animations.add('flail', ['bossbot0','bossbot1','bossbot2','bossbot3','bossbot4','bossbot5','bossbot6','bossbot7','bossbot8','bossbot9',
@@ -83,7 +83,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.disabled = true;
 	this.inControl = false;
 	//this.health = 20;
-	this.health = 100;
+	this.health = 130;
 	this.recovering = false;	
 	this.invuln = true;
 	this.firePrep = false;
@@ -170,12 +170,9 @@ Boss.prototype.update = function() {
 				this.game.physics.arcade.overlap(this.thePlayer, this.chargeBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 			}
 		}
-		
-		//console.log(this.animations.currentFrame.index);
 			
 		if(this.takingDmg) {
 			if(this.timer.events.length > 0 && !this.removed) {
-				console.log("called");
 				this.timer.removeAll();
 				this.removed = true;
 				this.timer.add(Phaser.Timer.SECOND*0.7, function() {
@@ -202,7 +199,12 @@ Boss.prototype.update = function() {
 			this.setKillBoxesRecovery();
 		}
 		else if(this.idling) {
-			this.setKillBoxesIdle();
+			if(this.animations.currentFrame.index == 9) {
+				this.setKillBoxesRecovery();
+			}
+			else {
+				this.setKillBoxesIdle();
+			}
 			this.idleTime();
 		}
 		else if(this.disabled || this.inControl) {
@@ -227,7 +229,7 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 	this.health--;
 	
 	console.log(this.health);
-	if(this.health == 75 || this.health == 50 || this.health == 25) {
+	if(this.health == 100 || this.health == 75 || this.health == 50 || this.health == 25) {
 		if(this.timer.events.length > 0) {
 			this.timer.removeAll();
 		}
@@ -267,12 +269,14 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 		
 		this.dmg_sound.play();
 		this.animations.play('bobble');
+		this.invuln = true;
 		this.myWorld.shakeCameraMed2();
 		
 		this.timer.add(Phaser.Timer.SECOND*1.5, function() {
 			this.animations.play('idle');
 			this.takingDmg = false;
 			this.recFromDmg = false;
+			this.invuln = false;
 			this.determineMove();
 		},this);
 	}
@@ -298,7 +302,7 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 		
 		this.death_sound.play();
 		this.animations.play('death');
-		this.timer.add(Phaser.Timer.SECOND*1.7, function() {
+		this.timer.add(Phaser.Timer.SECOND*1.8, function() {
 			this.animations.play('deathEnd');
 		}, this);
 		this.myWorld.shakeCameraMed2();
@@ -330,29 +334,31 @@ Boss.prototype.setKillBoxesIdle = function() {
 }
 
 Boss.prototype.setKillBoxesRecovery = function() {
-	var killBox = this.killBox1;
-	killBox.body.x = this.x - killBox.width / 2 - 105;
-	killBox.body.y = this.y - killBox.height / 2 + 30;
-	killBox.anchor.set(0.5);
-	killBox.body.width = 50;
-	killBox.body.height = 100;
-	
-	killBox = this.killBox2;
-	killBox.body.x = this.x - killBox.width / 2 + 55;
-	killBox.body.y = this.y - killBox.height / 2 + 30;
-	killBox.anchor.set(0.5);
-	killBox.body.width = 50;
-	killBox.body.height = 100;
-	
-	killBox = this.killBox3;
-	killBox.body.x = this.x - this.body.width/5 + 8;
-	killBox.body.y = this.y - killBox.height / 2 - 100;
-	killBox.anchor.set(0.5);
+	if(this.animations.currentFrame.index == 9) {
+		var killBox = this.killBox1;
+		killBox.body.x = this.x - killBox.width / 2 - 145;
+		killBox.body.y = this.y - killBox.height / 2 + 50;
+		killBox.anchor.set(0.5);
+		killBox.body.width = 50;
+		killBox.body.height = 100;
+		
+		killBox = this.killBox2;
+		killBox.body.x = this.x - killBox.width / 2 + 95;
+		killBox.body.y = this.y - killBox.height / 2 + 60;
+		killBox.anchor.set(0.5);
+		killBox.body.width = 50;
+		killBox.body.height = 100;
+		
+		killBox = this.killBox3;
+		killBox.body.x = this.x - this.body.width/5 + 8;
+		killBox.body.y = this.y - killBox.height / 2 - 50;
+		killBox.anchor.set(0.5);	
+	}
 }
 
 Boss.prototype.setKillBoxesJump = function() {
 	var killBox;
-	if(this.animations.currentFrame.index == 6) {
+	if(this.animations.currentFrame.index == 10) {
 		killBox = this.killBox1;
 		killBox.body.x = this.x - killBox.width / 2 - 155;
 		killBox.body.y = this.y;
@@ -372,7 +378,7 @@ Boss.prototype.setKillBoxesJump = function() {
 		killBox.body.y = this.y - killBox.height / 2 - 75;
 		killBox.anchor.set(0.5);
 	}
-	else if(this.animations.currentFrame.index == 7) {
+	else if(this.animations.currentFrame.index == 11) {
 		killBox = this.killBox1;
 		killBox.body.x = this.x - killBox.width / 2 - 170;
 		killBox.body.y = this.y + 50;
@@ -392,7 +398,7 @@ Boss.prototype.setKillBoxesJump = function() {
 		killBox.body.y = this.y - killBox.height / 2 - 77;
 		killBox.anchor.set(0.5);
 	}
-	else if(this.animations.currentFrame.index == 8) {
+	else if(this.animations.currentFrame.index == 12) {
 		killBox = this.killBox1;
 		killBox.body.x = this.x - killBox.width / 2 - 187;
 		killBox.body.y = this.y;
@@ -412,27 +418,7 @@ Boss.prototype.setKillBoxesJump = function() {
 		killBox.body.y = this.y - killBox.height / 2 - 77;
 		killBox.anchor.set(0.5);
 	}
-	else if(this.animations.currentFrame.index == 9) {
-		killBox = this.killBox1;
-		killBox.body.x = this.x - killBox.width / 2 - 105;
-		killBox.body.y = this.y - 150;
-		killBox.anchor.set(0.5);
-		killBox.body.width = 50;
-		killBox.body.height = 100;
-		
-		killBox = this.killBox2;
-		killBox.body.x = this.x - killBox.width / 2 + 55;
-		killBox.body.y = this.y - 150;
-		killBox.anchor.set(0.5);
-		killBox.body.width = 50;
-		killBox.body.height = 100;
-		
-		killBox = this.killBox3;
-		killBox.body.x = this.x - this.body.width/5 + 8;
-		killBox.body.y = this.y - killBox.height / 2 - 77;
-		killBox.anchor.set(0.5);
-	}
-	else if(this.animations.currentFrame.index == 1) {
+	else if(this.animations.currentFrame.index == 13) {
 		killBox = this.killBox1;
 		killBox.body.x = this.x - killBox.width / 2 - 105;
 		killBox.body.y = this.y - 150;
@@ -602,30 +588,26 @@ Boss.prototype.determineMove = function() {
 	if(!this.takingDmg && !this.charging && !this.firing && !this.inControl && !this.jumping && !this.dying && !this.firePrep) {
 		this.idle();
 		var nextAttack = 0;
-		var rand = Math.floor(Math.random() * 4);
+		var rand = Math.floor(Math.random() * 6);
 		
-		if(rand < 1) {
+		if(rand >= 0 && rand < 2) {
 			nextAttack = 0;
 		}
-		else if(rand >= 1 && rand < 2) {
+		else if(rand >= 2 && rand < 4) {
 			nextAttack = 1;
 		}
-		else if(rand >= 2 && rand < 3) {
-			nextAttack = 3;
-		}
-		else if(rand >= 3) {
+		else if(rand >= 4 && rand < 6) {
 			nextAttack = 3;
 		}
 		
-		//nextAttack = 2;
+		//nextAttack = 3;
 
 		if(!this.takingDmg && !this.dying) {
 			if(nextAttack == 0){
 				this.timer.add(Phaser.Timer.SECOND*2, this.charge, this);
 			}
 			else if(nextAttack == 1) {
-				this.timer.add(Phaser.Timer.SECOND*0.9, this.startFireAnim, this);
-				this.timer.add(Phaser.Timer.SECOND*1.7, this.openFire, this);
+				this.readjust();
 			}
 			else if(nextAttack == 2) {
 				this.timer.add(Phaser.Timer.SECOND*.9, this.control, this);
@@ -649,16 +631,20 @@ Boss.prototype.jump = function() {
 Boss.prototype.endJump = function() {
 	this.jumping = false;
 	this.recovering = true;
+	this.idling = true;
 	this.pound_sound.play();
 	this.animations.play('control');
 	this.myWorld.shakeCameraMed();
 	
-	if(this.health < 75 && Math.floor(Math.random() * 4) < 2) {
+	if(this.health < 50 && Math.floor(Math.random() * 10) < 5) {
 		this.timer.add(Phaser.Timer.SECOND*1.5, this.control, this);
 	}
-	else if(this.health < 50 && Math.floor(Math.random() * 4) < 3) {
+	else if(this.health < 75 && Math.floor(Math.random() * 10) < 3) {
 		this.timer.add(Phaser.Timer.SECOND*1.5, this.control, this);
-	}
+	} 
+	else if(this.health < 115 && Math.floor(Math.random() * 10) < 2) {
+		this.timer.add(Phaser.Timer.SECOND*1.5, this.control, this);
+	} 
 	else{
 		this.timer.add(Phaser.Timer.SECOND*.9, this.determineMove, this);
 	}
@@ -740,16 +726,10 @@ Boss.prototype.charge = function() {
 	if(x > this.x) {
 		this.animations.play('charge1');
 		this.chargeRight = true;
-		if(this.scale.x > 0) {
-			//this.scale.x *= -1;
-		}
 	}
 	else {
 		this.animations.play('charge');
 		this.chargeRight = false;
-		if(this.scale.x < 0) {
-			//this.scale.x *= -1;
-		}
 	}
 	this.timer.add(Phaser.Timer.SECOND*2, this.endCharge, this);
 }
@@ -770,8 +750,11 @@ Boss.prototype.endCharge = function() {
 	this.idling = true;
 	this.body.acceleration.x = 0;
 	this.charging = false;
-	
-	if(Math.floor(Math.random() * 4) < 3) {
+	let rand = Math.floor(Math.random() * 4);
+	if(rand >= 2 && rand <= 3) {
+		this.timer.add(Phaser.Timer.SECOND*1.2, this.readjust2, this);
+	}
+	else if(rand >= 0 && rand < 2) {
 		this.timer.add(Phaser.Timer.SECOND*1.2, this.readjust, this);
 	}
 	else {
@@ -795,6 +778,22 @@ Boss.prototype.readjust = function() {
 	else {
 		this.timer.add(Phaser.Timer.SECOND*0.9, this.startFireAnim, this);
 		this.timer.add(Phaser.Timer.SECOND*1.7, this.openFire, this);
+	}
+}
+
+Boss.prototype.readjust2 = function() {
+	if(this.x < 0 + this.width/2 + 40) {
+		this.body.acceleration.x = 400;
+		this.timer.add(Phaser.Timer.SECOND*.9, this.dropAccel, this);
+		this.timer.add(Phaser.Timer.SECOND*2.9, this.jump, this);
+	}
+	else if(this.x > this.game.world.width - this.width/2 - 40) {
+		this.body.acceleration.x = -400;
+		this.timer.add(Phaser.Timer.SECOND*.9, this.dropAccel, this);
+		this.timer.add(Phaser.Timer.SECOND*2.9, this.jump, this);
+	}
+	else {
+		this.timer.add(Phaser.Timer.SECOND*0.9, this.jump, this);
 	}
 }
 

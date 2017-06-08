@@ -372,6 +372,7 @@ Player.prototype.jump = function() {
 		this.jump_sound.play();
 		// Jumps
 		this.body.velocity.y = -500;	
+		this.body.gravity.y = 1000;
 	}else if(this.onWall){
 		this.body.velocity.y = -500;
 		this.body.velocity.x = -300*Math.sign(this.scale.x);
@@ -665,16 +666,16 @@ Player.prototype.stupidPlayer = function(player, obstacle) {
 			this.game.time.events.add(Phaser.Timer.SECOND*2.5, this.loseInvinc, this);
 			
 			if(this.body.touching.down) {
-				this.body.velocity.y = -200;
+				this.body.velocity.y = -300;
 			}
 			else if(this.body.touching.up) {
-				this.body.velocity.y = 200;
+				this.body.velocity.y = 300;
 			}
 			else if(this.body.touching.right) {
-				this.body.velocity.x = -200;
+				this.body.velocity.x = -300;
 			}
 			else if(this.body.touching.left) {
-				this.body.velocity.x = 200;
+				this.body.velocity.x = 300;
 			}
 		}
 		else {
@@ -716,16 +717,16 @@ Player.prototype.stupidPlayer2 = function(player, bullet) {
 			this.game.time.events.add(Phaser.Timer.SECOND*2.5, this.loseInvinc, this);
 			
 			if(this.body.touching.down) {
-				this.body.velocity.y = -200;
+				this.body.velocity.y = -300;
 			}
 			else if(this.body.touching.up) {
-				this.body.velocity.y = 200;
+				this.body.velocity.y = 300;
 			}
 			else if(this.body.touching.right) {
-				this.body.velocity.x = -200;
+				this.body.velocity.x = -300;
 			}
 			else if(this.body.touching.left) {
-				this.body.velocity.x = 200;
+				this.body.velocity.x = 300;
 			}
 		}
 		else {
