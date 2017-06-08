@@ -3,9 +3,11 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	
 	this.anchor.setTo(0.5,1);
 	this.game.physics.arcade.enable(this);
-	this.animations.add('dash', [3],5, true);
+	this.animations.add('dash', [3], 5, true);
 	this.animations.add('walk', [1,2,1,4], 5, true);
+	this.animations.add('jump', [2], 5, true);
 	this.animations.add('stand', [1, 1], 5, false);
+	this.animations.add('wall_slide', [5], 5, false);
 	this.animations.add('idle', [0], 5, false);
 		
 	// Set scale and physics for character
@@ -126,7 +128,11 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 
 	this.walk_sound = this.game.add.audio('player_walk');
 	this.walk_sound.loop = true;
-	this.walk_sound.volume = 1;	
+	this.walk_sound.volume = 2;	
+
+	this.slide_sound = this.game.add.audio('player_slide');
+	this.slide_sound.loop = true;
+	this.slide_sound.volume = 2;	
 	
 	this.dying = false;
 }
@@ -190,6 +196,9 @@ Player.prototype.moveEmitter = function() {
 Player.prototype.wallCollide = function (player, wall) {
 	if(this.body.drag.y == 0){
 		if(this.dashing){this.dashCancel();}
+		this.animations.play('wall_slide');
+		this.slide_sound.play();
+		
 		this.body.drag.y = 700;
 		this.body.velocity.y = 0;
 		if(this.wallX == null){this.wallX = this.x;}
@@ -238,7 +247,6 @@ Player.prototype.moveRight = function() {
 }
 
 Player.prototype.moveLeft = function() {
-	
 	// Lets player move left when they're grounded
 	// Must be editted for movement in air
 	//if(this.body.touching.down) {		
@@ -371,12 +379,19 @@ Player.prototype.jump = function() {
 		}else{
 			this.jumping = true;
 		}
+		
+		if(this.walk_sound.isPlaying) {
+			this.walk_sound.stop();
+		}
+		this.animations.play('jump');
 		// Play jump sound
 		this.jump_sound.play();
 		// Jumps
 		this.body.velocity.y = -500;	
 		this.body.gravity.y = 1000;
 	}else if(this.onWall){
+		this.animations.play('jump');
+		this.slide_sound.stop();
 		this.body.velocity.y = -500;
 		this.body.velocity.x = -300*Math.sign(this.scale.x);
 		console.log(this.body.velocity.x);
@@ -388,6 +403,7 @@ Player.prototype.jump = function() {
  */
 Player.prototype.touchDown = function() {
 	if(this.jumping) {
+		this.animations.play('stand');
 		this.jumping = false;
 		this.doubleJumpd = false;
 		this.upDjump = false;
@@ -535,34 +551,50 @@ Player.prototype.attack = function() {
 		if(cursors.right.isDown) {
 			// Sets firing angle
 			this.weapon.fireAngle = 0;
+			this.angle = 270;
 			
 			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
 			//triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 0, .5, this.x + this.width/2, this.y - this.height/4);
 			
 			// To fire at an angle downward while in the air
 			if(cursors.down.isDown && this.jumping) {
+				this.body.velocity.y = -230;
+				this.body.velocity.x = -170;
 				// Sets firing angle
 				this.weapon.fireAngle = 45;
+				this.angle = 315;
 			}
 			else if(cursors.up.isDown) {
+				if(!this.jumping && !this.doubleJumpd) {
+					this.jump();
+				}
 				this.weapon.fireAngle = 315;
+				this.angle = 45 + 180;
 			}
 		}
 		// If player is aiming left
 		else if(cursors.left.isDown) {
 			// Sets firing angle
 			this.weapon.fireAngle = 180;
+			this.angle = 90;
 			
 			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
 			//triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 1, .5, this.x - this.width/2 - this.attackDistance, this.y - this.height/4);
 			
 			// To fire at an angle downward while in the air
 			if(cursors.down.isDown && this.jumping) {
+				this.body.velocity.y = -230;
+				this.body.velocity.x = 170;
 				// Sets firing angle
 				this.weapon.fireAngle = 135;
+				this.angle = 45;
 			}
 			else if(cursors.up.isDown) {
+				if(!this.jumping && !this.doubleJumpd) {
+					this.jump();
+				}
 				this.weapon.fireAngle = 225;
+				this.angle = 135;
 			}
 		}
 		// If player is aiming down
@@ -571,17 +603,23 @@ Player.prototype.attack = function() {
 			this.body.velocity.y = -325;
 			// Sets firing angle
 			this.weapon.fireAngle = 90;
+			this.angle = 0;
 			
 			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
 			//triggerBox = this.setHitbox(triggerBox, this.triggerBoxVertical, .5, 1, this.x, this.y - this.height/2);
 		}
 		else if(cursors.up.isDown) {
+			if(!this.jumping && !this.doubleJumpd) {
+				this.jump();
+			}
 			this.weapon.fireAngle = 270;
+			this.angle = 180;
 		}
 		// If no button is being pressed, check which way the player is facing
 		else if(this.facingForward) {
 			// Sets firing angle
 			this.weapon.fireAngle = 0;
+			this.angle = 0;
 			
 			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
 			//triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 0, .5, this.x + this.width/2, this.y - this.height/4);
@@ -589,6 +627,7 @@ Player.prototype.attack = function() {
 		else {
 			// Sets firing angle
 			this.weapon.fireAngle = 180;
+			this.angle = 180;
 			
 			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
 			//triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 1, .5, this.x - this.width/2 - this.attackDistance, this.y - this.height/4);
@@ -600,8 +639,12 @@ Player.prototype.attack = function() {
 		//}
 		//else {
 			// Else it fires at the intended angle
-			this.fire_sound.play();
-			this.weapon.fire();
+		this.animations.play('stand');
+		this.fire_sound.play();
+		this.weapon.fire();
+		this.game.time.events.add(Phaser.Timer.SECOND*.25, function() {
+			this.angle = 0;
+		}, this);
 		//}			
 	}
 }
@@ -631,6 +674,12 @@ Player.prototype.respawn = function() {
 	if(this.dashingBack || this.dashingDown || this.dashingUp || this.dashingForward) {
 		this.dashCancel();
 	}
+	this.leftKey.reset(false);
+	this.rightKey.reset(false);
+	this.jumpKey.reset(false);
+	this.dashKey.reset(false);
+	this.attackKey.reset(false);
+	
 	this.x = this.checkpointX;
 	this.y = this.checkpointY;
 	this.body.velocity.x = 0;

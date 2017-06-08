@@ -37,7 +37,7 @@ Preloader.prototype = {
 		this.game.load.audio('bg_music', '/audio/Run_bg.ogg');
 		this.game.load.audio('Armless_bg', '/audio/Armless_bg.ogg');
 		this.game.load.audio('GearUp_bg', '/audio/GearUp_bg.ogg');
-		this.game.load.audio('boss_explode', '/audio/bossexplode.ogg');//
+		this.game.load.audio('boss_explode', '/audio/bossexplode.ogg');
 		this.game.load.audio('player_dash', '/audio/dash.ogg');
 		this.game.load.audio('player_death', '/audio/death.ogg');
 		this.game.load.audio('robot_explode', '/audio/explode.ogg');
