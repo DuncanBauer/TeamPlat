@@ -177,6 +177,9 @@ Player.prototype.update = function() {
 		
 		//this.moveEmitter();
 	}
+	else {
+		this.body.velocity.x = 0;
+	}
 }
 
 Player.prototype.moveEmitter = function() {

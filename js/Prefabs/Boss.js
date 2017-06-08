@@ -19,6 +19,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.animations.add('smash', ['bossbot6','bossbot7','bossbot8','bossbot9'], 11, false);
 	this.animations.add('fire', ['bossbot3', 'bossbot4'], 11, false);
 	this.animations.add('unfire', ['bossbot4', 'bossbot3','bossbot0'], 11, false);
+	this.animations.add('almost', ['bossbot12','bossbot13'], 12, true);
 	this.animations.add('death', ['bossbot12','bossbot13','bossbot12','bossbot13','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17','bossbot18','bossbot19','bossbot20','bossbot21','bossbot22'], 7, false);
 	this.animations.add('deathEnd', ['bossbot21'], 1, true);
 	this.animations.add('bobble', ['bossbot0','bossbot10','bossbot0','bossbot11'], 20, true);
@@ -82,8 +83,8 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.minionCount = 0;
 	this.disabled = true;
 	this.inControl = false;
-	//this.health = 20;
-	this.health = 130;
+	this.health = 20;
+	//this.health = 130;
 	this.recovering = false;	
 	this.invuln = true;
 	this.firePrep = false;
@@ -251,6 +252,9 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 		if(this.laugh_sound.isPlaying) {
 			this.laugh_sound.stop();
 		}
+		if(this.dmg_sound.isPlaying) {
+			this.dmg_sound.stop();
+		}
 		if(this.fly_sound.isPlaying) {
 			this.fly_sound.stop();
 		}
@@ -291,7 +295,7 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 		this.body.velocity.y = 0;
 		
 		this.dying = true;
-		this.takingDmg = true;
+		this.takingDmg = false;
 		this.idling = false;
 		this.inControl = false;
 		this.charging = false;
@@ -300,16 +304,35 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 		this.firePrep = false;
 		this.recovering = false;
 		
-		this.death_sound.play();
-		this.animations.play('death');
-		this.timer.add(Phaser.Timer.SECOND*1.8, function() {
-			this.animations.play('deathEnd');
+		this.animations.play('almost');
+		this.timer.add(Phaser.Timer.SECOND*.1, function() {
+			this.dmg_sound.play();
 		}, this);
+		this.timer.add(Phaser.Timer.SECOND*1, function() {
+			this.dmg_sound.play();
+		}, this);
+		this.timer.add(Phaser.Timer.SECOND*2, function() {
+			this.dmg_sound.play();
+		}, this);
+		this.timer.add(Phaser.Timer.SECOND*3, function() {
+			this.dmg_sound.play();
+		}, this);
+		this.timer.add(Phaser.Timer.SECOND*4.1, this.toDie, this);
 		this.myWorld.shakeCameraMed2();
 	}
 	else {
 		this.myWorld.shakeCameraLite();
 	}
+}
+
+Boss.prototype.toDie = function() {
+	this.death_sound.play();
+	this.animations.play('death');
+	this.timer.add(Phaser.Timer.SECOND*1.8, this.deathEnd, this);
+}
+
+Boss.prototype.deathEnd = function() {
+	this.animations.play('deathEnd');
 }
 
 Boss.prototype.setKillBoxesIdle = function() {
