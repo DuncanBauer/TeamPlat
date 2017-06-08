@@ -56,7 +56,8 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	//this.weapon.fireRate = 1000;  Using attackCooldown instead
 	this.weapon.trackSprite(this); // Has the weapon follow the player
 	
-	this.fireCooldown = 3500;
+	this.fireCooldown = Math.floor(Math.random() * 2000) + 3500;
+	console.log(this.fireCooldown);
 	this.fireCheck = 0;
 	this.timer = this.game.time.create(false);
 	this.timer.start();

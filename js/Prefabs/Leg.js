@@ -15,9 +15,6 @@ function Leg(game, sprite, x, y, player) {
 	this.pickup_sound = this.game.add.audio('pickup');
 	this.pickup_sound.loop = false;
 	this.pickup_sound.volume = 3;
-	
-	this.tween = this.game.add.tween(this);
-	this.tween.to({y: this.y - 10}, 1000, 'Linear', true, 200, false, true);
 }
 
 Leg.prototype = Object.create(Phaser.Sprite.prototype);

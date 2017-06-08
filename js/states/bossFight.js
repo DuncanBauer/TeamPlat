@@ -23,7 +23,7 @@ BossFight.prototype = {
 		this.world = new BossRoom(this.game);
 		
 		this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2300, this.world);
-		this.player.setLegs(3);
+		this.player.setLegs(5);
 		this.game.add.existing(this.player);
 
 		this.world.retreivePlayer(this.player);
@@ -34,9 +34,25 @@ BossFight.prototype = {
 		
 		this.fightStarted = false;
 		this.panning = false;
+		
+		this.stocks = this.game.add.button(this.game.camera.x + 32, this.game.camera.y + 32, 'leg', null, this);
+		this.stocks.anchor.set(.5,.5);
+		this.stocks.fixedToCamera = true;
+		this.stocks.scale.x *= .5;
+		this.stocks.scale.y *= .5;
+		
+		this.stockText = this.game.add.text(this.game.camera.x + 64, this.game.camera.y + 45, 'x');
+		this.stockText.anchor.set(.5,.5);
+		this.stockText.fixedToCamera = true;
+		
+		this.stockNum = this.game.add.text(this.game.camera.x + 80, this.game.camera.y + 45, this.player.legs);
+		this.stockNum.anchor.set(.5,.5);
+		this.stockNum.fixedToCamera = true;
 	},
 	
 	update:function() {
+		this.stockNum.text = this.player.legs;
+		
 		this.game.physics.arcade.overlap(this.player.weapon.bullets, this.world.minions, this.minionHit, null, this);
 		//this.game.physics.arcade.overlap(this.player, this.world.minions, this.contest, null, this);	
 		
@@ -148,13 +164,13 @@ BossFight.prototype = {
 		this.game.debug.body(this.player);
 		this.game.debug.body(this.player.weapon.bullets);
 		
-		
+		*/
 		this.game.debug.body(this.world.boss.children[0].chargeBox1);
 		this.game.debug.body(this.world.boss.children[0].chargeBox2);
 		this.game.debug.body(this.world.boss.children[0].killBox1);
 		this.game.debug.body(this.world.boss.children[0].killBox2);
 		this.game.debug.body(this.world.boss.children[0].killBox3);
-		
+		/*
 		
 		this.game.debug.body(this.world.startLine);
 		

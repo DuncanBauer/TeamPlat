@@ -46,7 +46,7 @@ BossRoom.prototype.init = function() {
 	this.mobSpawnLocations.push([1328,2327]);
 	this.mobSpawnLocations.push([1738,2327]);
 	this.mobSpawnLocations.push([1438,2327]);
-	this.mobSpawnLocations.push([238,2327]);
+	this.mobSpawnLocations.push([338,2327]);
 	this.mobSpawnLocations.push([738,2327]);
 	
 	this.mobSpawnLocations.push([372,2008]);
@@ -83,6 +83,12 @@ BossRoom.prototype.callMinions = function() {
 	let rand = Math.floor(Math.random() * 10) + 5;
 	
 	let tempConst = 5;
+	if(this.boss.children[0].health <= 75 && this.boss.children[0].health > 50) {
+		tempConst = 7;
+	}
+	else if(this.boss.children[0].health <= 50) {
+		tempConst = 9;
+	}
 	
 	let i = 0
 	while(i < tempConst) {
@@ -114,7 +120,7 @@ BossRoom.prototype.killMinion = function() {
 	this.minionCount--;
 	if(this.minionCount == 0) {	
 		this.boss.children[0].inControl = false;
-		this.game.time.events.add(Phaser.Timer.SECOND*.9, this.boss.children[0].jump, this.boss.children[0]);
+		this.boss.children[0].timer.add(Phaser.Timer.SECOND*.9, this.boss.children[0].determineMove, this.boss.children[0]);
 	}
 }
 

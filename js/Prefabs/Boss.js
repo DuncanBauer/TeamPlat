@@ -82,8 +82,8 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.minionCount = 0;
 	this.disabled = true;
 	this.inControl = false;
-	this.health = 20;
-	//this.health = 100;
+	//this.health = 20;
+	this.health = 100;
 	this.recovering = false;	
 	this.invuln = true;
 	this.firePrep = false;
@@ -174,10 +174,15 @@ Boss.prototype.update = function() {
 		//console.log(this.animations.currentFrame.index);
 			
 		if(this.takingDmg) {
-			if(!this.recFromDmg) {
-				this.timer.add(Phaser.Timer.SECOND*1.5, this.determineMove, this);
+			if(this.timer.events.length > 0 && !this.removed) {
+				console.log("called");
+				this.timer.removeAll();
+				this.removed = true;
+				this.timer.add(Phaser.Timer.SECOND*0.7, function() {
+					this.takingDmg = false;
+				}, this);
+				this.timer.add(Phaser.Timer.SECOND*0.9, this.determineMove, this);
 			}
-			this.recFromDmg = true;
 		}
 		else if(this.charging) {
 			this.repoChargeHitboxes();
@@ -223,10 +228,9 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 	
 	console.log(this.health);
 	if(this.health == 75 || this.health == 50 || this.health == 25) {
-		this.timer.removeAll();
-		this.timer.stop();
-		this.timer.clearPendingEvents();
-		this.timer.start();
+		if(this.timer.events.length > 0) {
+			this.timer.removeAll();
+		}
 		
 		this.body.acceleration.x = 0;
 		this.body.acceleration.y = 0;
@@ -238,6 +242,7 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 		this.inControl = false;
 		this.charging = false;
 		this.jumping = false;
+		this.firing = false;
 		this.firePrep = false;
 		this.recovering = false;
 		
@@ -267,14 +272,14 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 		this.timer.add(Phaser.Timer.SECOND*1.5, function() {
 			this.animations.play('idle');
 			this.takingDmg = false;
+			this.recFromDmg = false;
 			this.determineMove();
 		},this);
 	}
 	else if(this.health == 0) {
-		this.timer.removeAll();
-		this.timer.stop();
-		this.timer.clearPendingEvents();
-		this.timer.start();
+		if(this.timer.events.length > 0) {
+			this.timer.removeAll();
+		}
 		
 		this.body.acceleration.x = 0;
 		this.body.acceleration.y = 0;
@@ -286,13 +291,14 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 		this.idling = false;
 		this.inControl = false;
 		this.charging = false;
+		this.firing = false;
 		this.jumping = false;
 		this.firePrep = false;
 		this.recovering = false;
 		
 		this.death_sound.play();
 		this.animations.play('death');
-		this.timer.add(Phaser.Timer.SECOND*1.8, function() {
+		this.timer.add(Phaser.Timer.SECOND*1.7, function() {
 			this.animations.play('deathEnd');
 		}, this);
 		this.myWorld.shakeCameraMed2();
@@ -592,11 +598,11 @@ Boss.prototype.repoChargeHitboxes = function() {
 }
 
 Boss.prototype.determineMove = function() {
-	if(!this.takingDmg) {
+	this.invuln = false;
+	if(!this.takingDmg && !this.charging && !this.firing && !this.inControl && !this.jumping && !this.dying && !this.firePrep) {
 		this.idle();
-		this.recFromDmg = false;
 		var nextAttack = 0;
-		var rand = Math.floor(Math.random() * 3);
+		var rand = Math.floor(Math.random() * 4);
 		
 		if(rand < 1) {
 			nextAttack = 0;
@@ -605,13 +611,13 @@ Boss.prototype.determineMove = function() {
 			nextAttack = 1;
 		}
 		else if(rand >= 2 && rand < 3) {
-			nextAttack = 2;
+			nextAttack = 3;
 		}
 		else if(rand >= 3) {
 			nextAttack = 3;
 		}
 		
-		nextAttack = 0;
+		//nextAttack = 2;
 
 		if(!this.takingDmg && !this.dying) {
 			if(nextAttack == 0){
@@ -622,7 +628,6 @@ Boss.prototype.determineMove = function() {
 				this.timer.add(Phaser.Timer.SECOND*1.7, this.openFire, this);
 			}
 			else if(nextAttack == 2) {
-				this.invuln = true;
 				this.timer.add(Phaser.Timer.SECOND*.9, this.control, this);
 			}
 			else if(nextAttack == 3) {
@@ -635,7 +640,6 @@ Boss.prototype.determineMove = function() {
 Boss.prototype.jump = function() {
 	this.jumping = true;
 	this.idling = false;
-	this.invuln = false;
 	
 	this.animations.play('smash');
 	this.body.velocity.y = -700;
@@ -648,16 +652,27 @@ Boss.prototype.endJump = function() {
 	this.pound_sound.play();
 	this.animations.play('control');
 	this.myWorld.shakeCameraMed();
-	this.timer.add(Phaser.Timer.SECOND*1.5, this.determineMove, this);
+	
+	if(this.health < 75 && Math.floor(Math.random() * 4) < 2) {
+		this.timer.add(Phaser.Timer.SECOND*1.5, this.control, this);
+	}
+	else if(this.health < 50 && Math.floor(Math.random() * 4) < 3) {
+		this.timer.add(Phaser.Timer.SECOND*1.5, this.control, this);
+	}
+	else{
+		this.timer.add(Phaser.Timer.SECOND*.9, this.determineMove, this);
+	}
 }
 
 Boss.prototype.control = function() {
 	this.inControl = true;
 	this.idling = false;
+	this.invuln = true;
 	this.animations.play('control');
 	this.spawn_sound.play();
 	this.laugh_sound.play();
-	this.timer.add(Phaser.Timer.SECOND*2, this.myWorld.callMinions, this.myWorld);
+	
+	this.timer.add(Phaser.Timer.SECOND*.9, this.myWorld.callMinions, this.myWorld);
 }
 
 Boss.prototype.idle = function() {

@@ -42,7 +42,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	// Cooldown Constants in milliseconds
 	this.dashCooldown = 330; 
 	this.gravityCooldown = 300;
-	this.attackCooldown = 10;
+	this.attackCooldown = 100;
 	
 	// Cooldown timers
 	this.dashTimeCheck = 0;
