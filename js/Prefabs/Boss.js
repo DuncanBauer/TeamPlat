@@ -123,6 +123,10 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.spawn_sound = this.game.add.audio('robot_idle');
 	this.spawn_sound.loop = false;
 	this.spawn_sound.volume = 3;
+	
+	this.spawn_sound = this.game.add.audio('');
+	this.spawn_sound.loop = false;
+	this.spawn_sound.volume = 3;
 }
 
 Boss.prototype = Object.create(Phaser.Sprite.prototype);
