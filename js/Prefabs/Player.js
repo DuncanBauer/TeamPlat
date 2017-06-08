@@ -7,6 +7,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	this.animations.add('walk', [1,2,1,4], 5, true);
 	this.animations.add('jump', [2], 5, true);
 	this.animations.add('stand', [1, 1], 5, false);
+	this.animations.add('invinc', [1, null], 5, true);
 	this.animations.add('wall_slide', [5], 5, false);
 	this.animations.add('idle', [0], 5, false);
 		
@@ -18,7 +19,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	this.anchor.setTo(.5, .5);
 	this.scale.x *= .25;
 	this.scale.y *= .25;
-	this.animations.play('walk');
+	this.animations.play('stand');
 	
 	// Character attributes
 	this.jumping = false;
@@ -159,6 +160,7 @@ Player.prototype.update = function() {
 			this.body.drag.y = 0;
 			this.wallX = null;
 			this.onWall = false;
+			this.animations.play('jump');
 			console.log("drag "+this.body.drag.y);
 		}
 		/*********************************/
@@ -167,14 +169,18 @@ Player.prototype.update = function() {
 			var cursors = this.game.input.keyboard.createCursorKeys();
 			if(cursors.left.isDown){
 				this.moveLeft();
-				if(!this.jumping && !this.dashing){this.animations.play('walk');}
-			}else if(cursors.right.isDown){
+				if(!this.jumping && !this.dashing && !this.onWall) {
+					this.animations.play('walk');
+				}
+			}
+			else if(cursors.right.isDown) {
 				this.moveRight();
-				if(!this.jumping && !this.dashing){this.animations.play('walk');}
-			}else if(this.body.velocity.x == 0){
-				this.animations.play('stand');	
+				if(!this.jumping && !this.dashing && !this.onWall) {
+					this.animations.play('walk');
+				}
 			}
 		}
+		
 		if(!this.invincible) {
 			this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
 		}
@@ -275,6 +281,8 @@ Player.prototype.moveLeft = function() {
  */
 Player.prototype.stopMovement = function() {
 	this.walk_sound.stop();
+	this.animations.play('stand');
+	this.walking = false;
 	// Stops character movement when not jumping and not moving in another direction
 	this.body.acceleration.x = 0;
 	
@@ -399,11 +407,40 @@ Player.prototype.jump = function() {
 }
 
 /*
+ * IS CALLED WHEN THE SPACEBAR IS PRESSED - JUMPS PLAYER
+ */
+Player.prototype.jumpLite = function() {
+	// Executes if the player is not jumping
+	if((!this.jumping || !this.doubleJumpd) && !this.onWall) {
+		if(this.jumping){
+			this.doubleJumpd = true;
+		}else{
+			this.jumping = true;
+		}
+		
+		if(this.walk_sound.isPlaying) {
+			this.walk_sound.stop();
+		}
+		this.animations.play('jump');
+		// Play jump sound
+		this.jump_sound.play();
+		// Jumps
+		this.body.velocity.y = -200;	
+		this.body.gravity.y = 1000;
+	}else if(this.onWall){
+		this.animations.play('jump');
+		this.slide_sound.stop();
+		this.body.velocity.y = -500;
+		this.body.velocity.x = -300*Math.sign(this.scale.x);
+		console.log(this.body.velocity.x);
+	}
+}
+
+/*
  * IS CALLED ON COLLISION WITH THE FLOOR - ENDS JUMP IF NOT JUMPING
  */
 Player.prototype.touchDown = function() {
-	if(this.jumping) {
-		this.animations.play('stand');
+	if(this.jumping && !this.dashing) {
 		this.jumping = false;
 		this.doubleJumpd = false;
 		this.upDjump = false;
@@ -571,6 +608,11 @@ Player.prototype.attack = function() {
 				this.weapon.fireAngle = 315;
 				this.angle = 45 + 180;
 			}
+			else {
+				if(!this.jumping && !this.doubleJumpd) {
+					this.jumpLite();
+				}
+			}
 		}
 		// If player is aiming left
 		else if(cursors.left.isDown) {
@@ -595,6 +637,11 @@ Player.prototype.attack = function() {
 				}
 				this.weapon.fireAngle = 225;
 				this.angle = 135;
+			}
+			else {
+				if(!this.jumping && !this.doubleJumpd) {
+					this.jumpLite();
+				}
 			}
 		}
 		// If player is aiming down
@@ -715,6 +762,7 @@ Player.prototype.stupidPlayer = function(player, obstacle) {
 			this.legs--;
 			console.log(this.legs);
 			this.invincible = true;
+			this.animations.play('invinc');
 			this.game.time.events.add(Phaser.Timer.SECOND*2.5, this.loseInvinc, this);
 			
 			if(this.body.touching.down) {
@@ -766,6 +814,7 @@ Player.prototype.stupidPlayer2 = function(player, bullet) {
 			this.legs--;
 			console.log(this.legs);
 			this.invincible = true;
+			this.animations.play('invinc');
 			this.game.time.events.add(Phaser.Timer.SECOND*2.5, this.loseInvinc, this);
 			
 			if(this.body.touching.down) {
