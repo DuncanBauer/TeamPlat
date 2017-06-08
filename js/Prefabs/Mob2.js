@@ -103,8 +103,7 @@ Mob2.prototype.update = function() {
 				this.timer.add(Phaser.Timer.SECOND * .7, this.openFire, this);
 			}
 		
-		
-			if(!this.thePlayer.invincible) {
+			if(!this.thePlayer.invincible && !this.thePlayer.dying) {
 				this.game.physics.arcade.collide(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
 				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
 				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
@@ -349,8 +348,9 @@ Mob2.prototype.kills = function() {
 	this.idle_music.stop();
 	this.death_sound.play();
 	
-	this.timer.stop();
 	this.timer.clearPendingEvents();
+	this.timer.removeAll();
+	
 	this.animations.play('death');
 	this.box.kill();
 	this.killBox.kill();

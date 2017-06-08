@@ -58,7 +58,7 @@ LevelSelect.prototype = {
 	},
 	
 	render: function() {
-		this.game.debug.cameraInfo(this.game.camera, 32, 32);
+		//this.game.debug.cameraInfo(this.game.camera, 32, 32);
 	},
 	
 	playBoss: function() {

@@ -125,11 +125,13 @@ BossRoom.prototype.loadStartLine = function() {
 }
 
 BossRoom.prototype.resetWorld = function() {	
+	this.game.input.keyboard.start();
+	this.game.sound.stopAll();
 	this.game.state.restart();
 }
 
 BossRoom.prototype.shakeCamera = function() {
-	this.game.camera.shake(.02, 4100);
+	this.game.camera.shake(.02, 3600);
 }
 	
 BossRoom.prototype.shakeCameraLite = function() {
@@ -138,5 +140,9 @@ BossRoom.prototype.shakeCameraLite = function() {
 	
 BossRoom.prototype.shakeCameraMed = function() {
 	this.game.camera.shake(.01, 500);
+}
+	
+BossRoom.prototype.shakeCameraMed2 = function() {
+	this.game.camera.shake(.015, 1500);
 }
 	

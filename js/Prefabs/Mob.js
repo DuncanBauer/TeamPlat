@@ -73,7 +73,7 @@ Mob.prototype.update = function() {
 			this.animations.play('idle');
 		}
 		else if(this.flailing) {
-			if(!this.thePlayer.invincible) {
+			if(!this.thePlayer.invincible && !this.thePlayer.dying) {
 				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
 				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 			}

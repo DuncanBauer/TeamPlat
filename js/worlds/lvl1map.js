@@ -234,7 +234,7 @@ World.prototype.resetWorld = function() {
 		enemy.reinitialize();
 	}, Mob);
 
-	this.legs.forEach(function(leg) {
-		leg.reinitialize();
-	}, Leg);
+	//this.legs.forEach(function(leg) {
+	//	leg.reinitialize();
+	//}, Leg);
 }

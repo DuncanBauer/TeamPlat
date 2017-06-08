@@ -6,6 +6,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	this.animations.add('dash', [3],5, true);
 	this.animations.add('walk', [1,2,1,4], 5, true);
 	this.animations.add('stand', [1, 1], 5, false);
+	this.animations.add('idle', [0], 5, false);
 		
 	// Set scale and physics for character
 	this.body.collideWorldBounds = true;
@@ -122,52 +123,60 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	this.death_sound = this.game.add.audio('player_death');
 	this.death_sound.loop = false;
 	this.death_sound.volume = 6;	
+
+	this.walk_sound = this.game.add.audio('player_walk');
+	this.walk_sound.loop = true;
+	this.walk_sound.volume = 1;	
+	
+	this.dying = false;
 }
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
 Player.prototype.update = function() {
-	this.dashChecking();
-	
-	if(this.game.physics.arcade.collide(this, this.myWorld.ground.children)) {
-		this.touchDown();
-		// cancel dash when hitting floor
-		if(this.dashingDown){
-			this.dashCancel();
-		}
-	}
+	if(!this.dying) {
+		this.dashChecking();
 
-	/* Initial wall collision handling (seems to work great so far)
-	**********************************/
-	this.game.physics.arcade.collide(this, this.myWorld.walls.children, this.wallCollide, null, this);
-	// have to call this if statement outside collide function otherwise
-	// the logic will never call it
-	if(this.body.drag.y == 700 && (!this.body.touching.right && !this.body.touching.left)){
-		this.body.drag.y = 0;
-		this.wallX = null;
-		this.onWall = false;
-		console.log("drag "+this.body.drag.y);
-	}
-	/*********************************/
-
-	if(this.game.input.keyboard.enabled) {
-		var cursors = this.game.input.keyboard.createCursorKeys();
-		if(cursors.left.isDown){
-			this.moveLeft();
-			if(!this.jumping && !this.dashing){this.animations.play('walk');}
-		}else if(cursors.right.isDown){
-			this.moveRight();
-			if(!this.jumping && !this.dashing){this.animations.play('walk');}
-		}else if(this.body.velocity.x == 0){
-			this.animations.play('stand');	
+		if(this.game.physics.arcade.collide(this, this.myWorld.ground.children)) {
+			this.touchDown();
+			// cancel dash when hitting floor
+			if(this.dashingDown){
+				this.dashCancel();
+			}
 		}
+
+		/* Initial wall collision handling (seems to work great so far)
+		**********************************/
+		this.game.physics.arcade.collide(this, this.myWorld.walls.children, this.wallCollide, null, this);
+		// have to call this if statement outside collide function otherwise
+		// the logic will never call it
+		if(this.body.drag.y == 700 && (!this.body.touching.right && !this.body.touching.left)){
+			this.body.drag.y = 0;
+			this.wallX = null;
+			this.onWall = false;
+			console.log("drag "+this.body.drag.y);
+		}
+		/*********************************/
+
+		if(this.game.input.keyboard.enabled) {
+			var cursors = this.game.input.keyboard.createCursorKeys();
+			if(cursors.left.isDown){
+				this.moveLeft();
+				if(!this.jumping && !this.dashing){this.animations.play('walk');}
+			}else if(cursors.right.isDown){
+				this.moveRight();
+				if(!this.jumping && !this.dashing){this.animations.play('walk');}
+			}else if(this.body.velocity.x == 0){
+				this.animations.play('stand');	
+			}
+		}
+		if(!this.invincible) {
+			this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
+		}
+		
+		this.game.physics.arcade.overlap(this, this.myWorld.obstacles.children, this.stupidPlayer, null, this);
+		
+		//this.moveEmitter();
 	}
-	if(!this.invincible) {
-		this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
-	}
-	
-	this.game.physics.arcade.overlap(this, this.myWorld.obstacles.children, this.stupidPlayer, null, this);
-	
-	//this.moveEmitter();
 }
 
 Player.prototype.moveEmitter = function() {
@@ -206,25 +215,36 @@ Player.prototype.moveRight = function() {
 	// Must be editted for movement in air
 	//if(this.body.touching.down) {		
 	//  Move to the right
-		if(this.body.velocity.x < -200){
-			// tiny pull back when quick turning
-			this.body.velocity.x = -150;
-		}
-		this.facingForward = true;
-		this.scale.x = 1/3;
-		this.body.acceleration.x = 400;
-		
-		if(!this.emitter.on) {
-		//	this.emitter.start(false, 2500, 100);
-		}
+	
+	if(!this.walk_sound.isPlaying && !this.dashing) {
+		this.walk_sound.play();
+	}
+	
+	if(this.body.velocity.x < -200){
+		// tiny pull back when quick turning
+		this.body.velocity.x = -150;
+	}
+	this.facingForward = true;
+	this.scale.x = 1/3;
+	this.body.acceleration.x = 400;
+	
+	if(!this.emitter.on) {
+	//	this.emitter.start(false, 2500, 100);
+	}
 	//}
 }
 
 Player.prototype.moveLeft = function() {
+	
 	// Lets player move left when they're grounded
 	// Must be editted for movement in air
 	//if(this.body.touching.down) {		
-		//  Move to the left
+		//  Move to the left		
+		
+	if(!this.walk_sound.isPlaying && !this.dashing) {
+		this.walk_sound.play();
+	}
+	
 		if(this.body.velocity.x > 200){
 			// tiny pull back when quick turning
 			this.body.velocity.x = 150;
@@ -243,6 +263,7 @@ Player.prototype.moveLeft = function() {
  * IS CALLED WHEN THE LEFT AND RIGHT ARROW KEYS ARE RELEASED
  */
 Player.prototype.stopMovement = function() {
+	this.walk_sound.stop();
 	// Stops character movement when not jumping and not moving in another direction
 	this.body.acceleration.x = 0;
 	
@@ -280,6 +301,10 @@ Player.prototype.dash = function() {
 				   cursors.left.isDown  || 
 				   cursors.up.isDown    || 
 				   cursors.down.isDown) {
+					   
+					if(this.walk_sound.isPlaying) {
+						this.walk_sound.stop();
+					}
 
 					this.animations.play('dash');
 					this.dash_sound.play();
@@ -596,6 +621,9 @@ Player.prototype.targeting = function(triggerBox, enemy) {
 }
 
 Player.prototype.respawn = function() {
+	this.game.input.keyboard.start();
+	this.dying = false;
+	this.game.camera.follow(this);
 	if(this.dashingBack || this.dashingDown || this.dashingUp || this.dashingForward) {
 		this.dashCancel();
 	}
@@ -650,7 +678,15 @@ Player.prototype.stupidPlayer = function(player, obstacle) {
 			}
 		}
 		else {
-			this.game.time.events.add(Phaser.Timer.SECOND*0.1, this.myWorld.resetFight, this.myWorld);
+			this.dying = true;
+			this.death_sound.play();
+			this.game.input.keyboard.stop();
+			this.body.velocity.x = 0;
+			this.body.velocity.y = -500;
+			this.animations.play('idle');
+			this.game.camera.unfollow();
+			
+			this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.myWorld.resetWorld, this.myWorld);
 		}
 	}
 	else {
@@ -658,7 +694,15 @@ Player.prototype.stupidPlayer = function(player, obstacle) {
 			particle.kill();
 		});
 		this.death_sound.play();
-		this.respawn();
+		
+		this.dying = true;
+		this.game.input.keyboard.stop();
+		this.body.velocity.x = 0;
+		this.body.velocity.y = -500;
+		this.animations.play('idle');
+		this.game.camera.unfollow();
+		
+		this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.respawn, this);
 	}
 }
 
@@ -685,7 +729,15 @@ Player.prototype.stupidPlayer2 = function(player, bullet) {
 			}
 		}
 		else {
-			this.game.time.events.add(Phaser.Timer.SECOND*0.1, this.myWorld.resetFight, this.myWorld);
+			this.dying = true;
+			this.death_sound.play();
+			this.game.input.keyboard.stop();
+			this.body.velocity.x = 0;
+			this.body.velocity.y = -500;
+			this.animations.play('idle');
+			this.game.camera.unfollow();
+			
+			this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.myWorld.resetWorld, this.myWorld);
 		}
 	}
 	else {
@@ -693,7 +745,15 @@ Player.prototype.stupidPlayer2 = function(player, bullet) {
 			particle.kill();
 		});
 		this.death_sound.play();
-		this.respawn();
+		
+		this.dying = true;
+		this.game.input.keyboard.stop();
+		this.body.velocity.x = 0;
+		this.body.velocity.y = -500;
+		this.animations.play('idle');
+		this.game.camera.unfollow();
+		
+		this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.respawn, this);
 	}
 }
 

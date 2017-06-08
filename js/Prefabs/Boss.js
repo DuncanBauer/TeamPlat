@@ -19,7 +19,8 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.animations.add('smash', ['bossbot6','bossbot7','bossbot8','bossbot9'], 11, false);
 	this.animations.add('fire', ['bossbot3', 'bossbot4'], 11, false);
 	this.animations.add('unfire', ['bossbot4', 'bossbot3','bossbot0'], 11, false);
-	this.animations.add('death', ['bossbot12','bossbot13','bossbot12','bossbot13','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17','bossbot18','bossbot19','bossbot20','bossbot21','bossbot22','bossbot21'], 9, false);
+	this.animations.add('death', ['bossbot12','bossbot13','bossbot12','bossbot13','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17','bossbot18','bossbot19','bossbot20','bossbot21','bossbot22'], 9, false);
+	this.animations.add('deathEnd', ['bossbot21'], 1, true);
 	this.animations.add('bobble', ['bossbot0','bossbot10','bossbot0','bossbot11'], 20, true);
 	this.animations.add('flail', ['bossbot0','bossbot1','bossbot2','bossbot3','bossbot4','bossbot5','bossbot6','bossbot7','bossbot8','bossbot9',
 'bossbot10','bossbot11','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17'], 3, true);
@@ -81,10 +82,13 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.minionCount = 0;
 	this.disabled = true;
 	this.inControl = false;
-	this.health = 100;
+	this.health = 20;
+	//this.health = 100;
 	this.recovering = false;	
 	this.invuln = true;
 	this.firePrep = false;
+	this.takingDmg = false;
+	this.recFromDmg = false;
 	
 	this.weapon = this.game.add.weapon(100, 'evil_lemon');
 	this.weapon.bullets.setAll('scale.x', .5);
@@ -110,7 +114,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	
 	this.death_sound = this.game.add.audio('boss_explode');
 	this.death_sound.loop = false;
-	this.death_sound.volume = 2;
+	this.death_sound.volume = 4;
 	
 	this.scream_sound = this.game.add.audio('boss_scream');
 	this.scream_sound.loop = false;
@@ -127,6 +131,17 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.fly_sound = this.game.add.audio('bossFly');
 	this.fly_sound.loop = false;
 	this.fly_sound.volume = 3;
+	
+	this.laugh_sound = this.game.add.audio('boss_laugh');
+	this.laugh_sound.loop = false;
+	this.laugh_sound.volume = 3;
+	
+	this.dmg_sound = this.game.add.audio('boss_take_dmg');
+	this.dmg_sound.loop = false;
+	this.dmg_sound.volume = 3;
+	
+	this.timer = this.game.time.create(false);
+	this.timer.start();
 }
 
 Boss.prototype = Object.create(Phaser.Sprite.prototype);
@@ -134,20 +149,19 @@ Boss.prototype.update = function() {
 	if(!this.jumping){
 		this.game.physics.arcade.collide(this, this.myWorld.ground.children);
 	}
-	
+		
+	if(!this.set) {
+		this.setup();
+	}
 	
 	if(!this.dying) {
-		if(!this.invuln) {
+		if(!this.invuln && !this.disabled) {
 			this.game.physics.arcade.overlap(this.killBox1, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
 			this.game.physics.arcade.overlap(this.killBox2, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
 			this.game.physics.arcade.overlap(this.killBox3, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
 		}
 		
-		if(!this.set) {
-			this.setup();
-		}
-		
-		if(!this.thePlayer.invincible) {
+		if(!this.thePlayer.invincible && !this.thePlayer.dying) {
 			this.game.physics.arcade.overlap(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
 			this.game.physics.arcade.overlap(this.thePlayer, this.weapon1.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
 			
@@ -159,7 +173,13 @@ Boss.prototype.update = function() {
 		
 		//console.log(this.animations.currentFrame.index);
 			
-		if(this.charging) {
+		if(this.takingDmg) {
+			if(!this.recFromDmg) {
+				this.timer.add(Phaser.Timer.SECOND*1.5, this.determineMove, this);
+			}
+			this.recFromDmg = true;
+		}
+		else if(this.charging) {
 			this.repoChargeHitboxes();
 			this.letsCharge();
 		}
@@ -200,8 +220,86 @@ Boss.prototype.deathAnim = function() {
 Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 	bullet.kill();
 	this.health--;
+	
 	console.log(this.health);
-	this.myWorld.shakeCameraLite();
+	if(this.health == 75 || this.health == 50 || this.health == 25) {
+		this.timer.removeAll();
+		this.timer.stop();
+		this.timer.clearPendingEvents();
+		this.timer.start();
+		
+		this.body.acceleration.x = 0;
+		this.body.acceleration.y = 0;
+		this.body.velocity.x = 0;
+		this.body.velocity.y = 0;
+		
+		this.takingDmg = true;
+		this.idling = false;
+		this.inControl = false;
+		this.charging = false;
+		this.jumping = false;
+		this.firePrep = false;
+		this.recovering = false;
+		
+		if(this.laugh_sound.isPlaying) {
+			this.laugh_sound.stop();
+		}
+		if(this.fly_sound.isPlaying) {
+			this.fly_sound.stop();
+		}
+		if(this.spawn_sound.isPlaying) {
+			this.spawn_sound.stop();
+		}
+		if(this.fire_sound.isPlaying) {
+			this.fire_sound.stop();
+		}
+		if(this.death_sound.isPlaying) {
+			this.death_sound.stop();
+		}
+		if(this.scream_sound.isPlaying) {
+			this.scream_sound.stop();
+		}
+		
+		this.dmg_sound.play();
+		this.animations.play('bobble');
+		this.myWorld.shakeCameraMed2();
+		
+		this.timer.add(Phaser.Timer.SECOND*1.5, function() {
+			this.animations.play('idle');
+			this.takingDmg = false;
+			this.determineMove();
+		},this);
+	}
+	else if(this.health == 0) {
+		this.timer.removeAll();
+		this.timer.stop();
+		this.timer.clearPendingEvents();
+		this.timer.start();
+		
+		this.body.acceleration.x = 0;
+		this.body.acceleration.y = 0;
+		this.body.velocity.x = 0;
+		this.body.velocity.y = 0;
+		
+		this.dying = true;
+		this.takingDmg = true;
+		this.idling = false;
+		this.inControl = false;
+		this.charging = false;
+		this.jumping = false;
+		this.firePrep = false;
+		this.recovering = false;
+		
+		this.death_sound.play();
+		this.animations.play('death');
+		this.timer.add(Phaser.Timer.SECOND*1.8, function() {
+			this.animations.play('deathEnd');
+		}, this);
+		this.myWorld.shakeCameraMed2();
+	}
+	else {
+		this.myWorld.shakeCameraLite();
+	}
 }
 
 Boss.prototype.setKillBoxesIdle = function() {
@@ -494,38 +592,43 @@ Boss.prototype.repoChargeHitboxes = function() {
 }
 
 Boss.prototype.determineMove = function() {
-	this.idle();
-	var nextAttack = 0;
-	var rand = Math.floor(Math.random() * 3);
-	
-	if(rand < 1) {
+	if(!this.takingDmg) {
+		this.idle();
+		this.recFromDmg = false;
+		var nextAttack = 0;
+		var rand = Math.floor(Math.random() * 3);
+		
+		if(rand < 1) {
+			nextAttack = 0;
+		}
+		else if(rand >= 1 && rand < 2) {
+			nextAttack = 1;
+		}
+		else if(rand >= 2 && rand < 3) {
+			nextAttack = 2;
+		}
+		else if(rand >= 3) {
+			nextAttack = 3;
+		}
+		
 		nextAttack = 0;
-	}
-	else if(rand >= 1 && rand < 2) {
-		nextAttack = 1;
-	}
-	else if(rand >= 2 && rand < 3) {
-		nextAttack = 2;
-	}
-	else if(rand >= 3) {
-		nextAttack = 3;
-	}
-	
-	//nextAttack = 3;
 
-	if(nextAttack == 0){
-		this.game.time.events.add(Phaser.Timer.SECOND*2, this.charge, this);
-	}
-	else if(nextAttack == 1) {
-		this.game.time.events.add(Phaser.Timer.SECOND*0.9, this.startFireAnim, this);
-		this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.openFire, this);
-	}
-	else if(nextAttack == 2) {
-		this.invuln = true;
-		this.game.time.events.add(Phaser.Timer.SECOND*.9, this.control, this);
-	}
-	else if(nextAttack == 3) {
-		this.game.time.events.add(Phaser.Timer.SECOND*.9, this.jump, this);
+		if(!this.takingDmg && !this.dying) {
+			if(nextAttack == 0){
+				this.timer.add(Phaser.Timer.SECOND*2, this.charge, this);
+			}
+			else if(nextAttack == 1) {
+				this.timer.add(Phaser.Timer.SECOND*0.9, this.startFireAnim, this);
+				this.timer.add(Phaser.Timer.SECOND*1.7, this.openFire, this);
+			}
+			else if(nextAttack == 2) {
+				this.invuln = true;
+				this.timer.add(Phaser.Timer.SECOND*.9, this.control, this);
+			}
+			else if(nextAttack == 3) {
+				this.timer.add(Phaser.Timer.SECOND*.9, this.jump, this);
+			}
+		}
 	}
 }
 
@@ -536,7 +639,7 @@ Boss.prototype.jump = function() {
 	
 	this.animations.play('smash');
 	this.body.velocity.y = -700;
-	this.game.time.events.add(Phaser.Timer.SECOND*1.35, this.endJump, this);
+	this.timer.add(Phaser.Timer.SECOND*1.35, this.endJump, this);
 }
 
 Boss.prototype.endJump = function() {
@@ -545,7 +648,7 @@ Boss.prototype.endJump = function() {
 	this.pound_sound.play();
 	this.animations.play('control');
 	this.myWorld.shakeCameraMed();
-	this.game.time.events.add(Phaser.Timer.SECOND*1.5, this.determineMove, this);
+	this.timer.add(Phaser.Timer.SECOND*1.5, this.determineMove, this);
 }
 
 Boss.prototype.control = function() {
@@ -553,7 +656,8 @@ Boss.prototype.control = function() {
 	this.idling = false;
 	this.animations.play('control');
 	this.spawn_sound.play();
-	this.game.time.events.add(Phaser.Timer.SECOND*2, this.myWorld.callMinions, this.myWorld);
+	this.laugh_sound.play();
+	this.timer.add(Phaser.Timer.SECOND*2, this.myWorld.callMinions, this.myWorld);
 }
 
 Boss.prototype.idle = function() {
@@ -595,7 +699,7 @@ Boss.prototype.openFire = function() {
 	this.weapon1.y = this.y - 30;
 	
 	this.fire_sound.play();
-	this.game.time.events.add(Phaser.Timer.SECOND*1.3, this.ceaseFire, this);
+	this.timer.add(Phaser.Timer.SECOND*1.3, this.ceaseFire, this);
 }
 
 Boss.prototype.fire = function() {
@@ -608,7 +712,7 @@ Boss.prototype.ceaseFire = function() {
 	this.firing = false;
 	this.idling = true;
 	this.animations.play('unfire');
-	this.game.time.events.add(Phaser.Timer.SECOND*1, this.determineMove, this);
+	this.timer.add(Phaser.Timer.SECOND*1, this.determineMove, this);
 }
 
 Boss.prototype.charge = function() {
@@ -632,7 +736,7 @@ Boss.prototype.charge = function() {
 			//this.scale.x *= -1;
 		}
 	}
-	this.game.time.events.add(Phaser.Timer.SECOND*2, this.endCharge, this);
+	this.timer.add(Phaser.Timer.SECOND*2, this.endCharge, this);
 }
 
 Boss.prototype.letsCharge = function() {
@@ -653,27 +757,29 @@ Boss.prototype.endCharge = function() {
 	this.charging = false;
 	
 	if(Math.floor(Math.random() * 4) < 3) {
-		if(this.x < 0 + this.width/2 + 40) {
-			console.log("enteredleft");
-			this.body.acceleration.x = 100;
-			this.game.time.events.add(Phaser.Timer.SECOND*.9, this.dropAccel, this);
-			this.game.time.events.add(Phaser.Timer.SECOND*2.9, this.startFireAnim, this);
-			this.game.time.events.add(Phaser.Timer.SECOND*3.7, this.openFire, this);
-		}
-		else if(this.x > this.game.world.width - this.width/2 - 40) {
-			console.log("enteredright");
-			this.body.acceleration.x = -100;
-			this.game.time.events.add(Phaser.Timer.SECOND*.9, this.dropAccel, this);
-			this.game.time.events.add(Phaser.Timer.SECOND*2.9, this.startFireAnim, this);
-			this.game.time.events.add(Phaser.Timer.SECOND*3.7, this.openFire, this);
-		}
-		else {
-			this.game.time.events.add(Phaser.Timer.SECOND*0.9, this.startFireAnim, this);
-			this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.openFire, this);
-		}
+		this.timer.add(Phaser.Timer.SECOND*1.2, this.readjust, this);
 	}
 	else {
-		this.game.time.events.add(Phaser.Timer.SECOND*1, this.determineMove, this);
+		this.timer.add(Phaser.Timer.SECOND*1, this.determineMove, this);
+	}
+}
+
+Boss.prototype.readjust = function() {
+	if(this.x < 0 + this.width/2 + 40) {
+		this.body.acceleration.x = 400;
+		this.timer.add(Phaser.Timer.SECOND*.9, this.dropAccel, this);
+		this.timer.add(Phaser.Timer.SECOND*2.9, this.startFireAnim, this);
+		this.timer.add(Phaser.Timer.SECOND*3.7, this.openFire, this);
+	}
+	else if(this.x > this.game.world.width - this.width/2 - 40) {
+		this.body.acceleration.x = -400;
+		this.timer.add(Phaser.Timer.SECOND*.9, this.dropAccel, this);
+		this.timer.add(Phaser.Timer.SECOND*2.9, this.startFireAnim, this);
+		this.timer.add(Phaser.Timer.SECOND*3.7, this.openFire, this);
+	}
+	else {
+		this.timer.add(Phaser.Timer.SECOND*0.9, this.startFireAnim, this);
+		this.timer.add(Phaser.Timer.SECOND*1.7, this.openFire, this);
 	}
 }
 
@@ -688,8 +794,11 @@ Boss.prototype.hitWorldBounds = function () {
 
 Boss.prototype.setup = function() {
 	this.set = true;
-	this.disabled = false;
 	this.invuln = false;
+}
+
+Boss.prototype.enable = function() {
+	this.disabled = false;
 }
 
 Boss.prototype.kills = function() {

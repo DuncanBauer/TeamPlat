@@ -99,7 +99,9 @@ Game.prototype = {
 	},
 	
 	update:function() {	
-		this.game.physics.arcade.overlap(this.player, this.world.absBottom, null, this.player.respawn, this.player);
+		if(!this.player.dying) {
+			this.game.physics.arcade.overlap(this.player, this.world.absBottom, null, this.player.respawn, this.player);
+		}
 	},
 	
 	// End the game and return to the main menu

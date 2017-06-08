@@ -37,7 +37,6 @@ BossFight.prototype = {
 	},
 	
 	update:function() {
-		
 		this.game.physics.arcade.overlap(this.player.weapon.bullets, this.world.minions, this.minionHit, null, this);
 		//this.game.physics.arcade.overlap(this.player, this.world.minions, this.contest, null, this);	
 		
@@ -48,7 +47,6 @@ BossFight.prototype = {
 				this.panning = true;
 				this.game.camera.unfollow();
 				
-				this.player.animations.play('idle');
 				this.player.stopMovement();
 				this.player.dashCancel();
 				this.game.input.keyboard.enabled = false;
@@ -58,6 +56,8 @@ BossFight.prototype = {
 				this.player.dashKey.reset(false);
 				this.player.attackKey.reset(false);
 				this.game.input.keyboard.stop();
+				
+				this.player.animations.play('stand');
 			}
 		}
 		
@@ -68,8 +68,8 @@ BossFight.prototype = {
 				this.game.time.events.add(Phaser.Timer.SECOND*1, this.world.shakeCamera, this.world);
 				this.game.time.events.add(Phaser.Timer.SECOND*1, this.world.boss.children[0].scream, this.world.boss.children[0]);
 				this.game.time.events.add(Phaser.Timer.SECOND*1, this.bobbleHead, this);
-				this.game.time.events.add(Phaser.Timer.SECOND*4.5, this.stopHead, this);
-				this.game.time.events.add(Phaser.Timer.SECOND*6.5, this.startPanBack, this);
+				this.game.time.events.add(Phaser.Timer.SECOND*4, this.stopHead, this);
+				this.game.time.events.add(Phaser.Timer.SECOND*6, this.startPanBack, this);
 			}
 		}
 		
@@ -79,8 +79,10 @@ BossFight.prototype = {
 				this.panningBack = false;
 				this.game.time.events.add(Phaser.Timer.SECOND*0.1, this.resetCamera, this);
 				this.game.time.events.add(Phaser.Timer.SECOND*0.1, function() {
-					this.world.boss.children[0].animations.play('idle');
+					this.world.boss.children[0].animations.play('stand');
 				}, this);
+				this.game.time.events.add(Phaser.Timer.SECOND*1, this.world.boss.children[0].enable, this.world.boss.children[0]);
+				
 			}
 			
 			/*
