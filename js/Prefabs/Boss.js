@@ -124,8 +124,10 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 
 Boss.prototype = Object.create(Phaser.Sprite.prototype);
 Boss.prototype.update = function() {
-	this.game.physics.arcade.collide(this, this.myWorld.ground.children);
-
+	if(!this.jumping){
+		this.game.physics.arcade.collide(this, this.myWorld.ground.children);
+	}
+	
 	if(!this.invuln) {
 		this.game.physics.arcade.overlap(this.killBox1, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
 		this.game.physics.arcade.overlap(this.killBox2, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
@@ -195,7 +197,7 @@ Boss.prototype.setKillBoxesIdle = function() {
 Boss.prototype.determineMove = function() {
 	this.idle();
 	var nextAttack = 0;
-	var rand = Math.floor(Math.random() * 4);
+	var rand = Math.floor(Math.random() * 3);
 	
 	if(rand < 1) {
 		nextAttack = 0;
@@ -210,7 +212,7 @@ Boss.prototype.determineMove = function() {
 		nextAttack = 3;
 	}
 	
-	nextAttack = 3;
+	nextAttack = 2;
 
 	if(nextAttack == 0){
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.charge, this);

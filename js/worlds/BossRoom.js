@@ -114,8 +114,7 @@ BossRoom.prototype.killMinion = function() {
 	this.minionCount--;
 	if(this.minionCount == 0) {	
 		this.boss.children[0].inControl = false;
-		this.boss.children[0].animations.play('idle');
-		this.game.time.events.add(1, this.boss.children[0].determineMove, this.boss.children[0]);
+		this.game.time.events.add(Phaser.Timer.SECOND*.9, this.boss.children[0].jump, this.boss.children[0]);
 	}
 }
 
