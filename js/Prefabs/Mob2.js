@@ -45,6 +45,7 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	this.knockBack = 5;
 
 	this.spawning = true;
+	this.dying = false;
 
 	this.weapon = this.game.add.weapon(100, 'evil_lemon');
 	this.weapon.bullets.setAll('scale.x', .5);
@@ -79,14 +80,14 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 
 Mob2.prototype = Object.create(Phaser.Sprite.prototype);
 Mob2.prototype.update = function() {
-	if(!this.spawning) {	
+	if(!this.spawning && !this.dying) {	
 		this.setup();
 		
 		var x = this.x - this.thePlayer.x;
 		var y = this.y - this.thePlayer.y;
 		var dist = Math.sqrt((x*x) + (y*y));
 	
-		if(!this.flailing && dist <= 600) {
+		if(!this.flailing && dist <= 600 ) {
 			this.flailing = true;
 			this.animations.play('flail');
 		}
@@ -110,7 +111,7 @@ Mob2.prototype.update = function() {
 			}
 		}
 	}
-	else {
+	else if(!this.dying) {
 		if(this.animations.currentFrame.index == 20) {
 			this.spawning = false;
 			this.animations.play('idle');
@@ -323,6 +324,7 @@ Mob2.prototype.openFire = function() {
 }
 
 Mob2.prototype.kills = function() {
+	this.dying = true;
 	var x = this.x - this.thePlayer.x;
 	var y = this.y - this.thePlayer.y;
 	

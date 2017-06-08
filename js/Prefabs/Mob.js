@@ -51,43 +51,46 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 	this.death_sound = this.game.add.audio('robot_explode');
 	this.death_sound.loop = false;
 	this.death_sound.volume = 3;
+	
+	this.dying = false;
 }
 
 Mob.prototype = Object.create(Phaser.Sprite.prototype);
 Mob.prototype.update = function() {
-
-	this.setup();
-	
-	var x = this.x - this.thePlayer.x;
-	var y = this.y - this.thePlayer.y;
-	var dist = Math.sqrt((x*x) + (y*y));
-	
-	if(!this.flailing && dist <= 600) {
-		this.flailing = true;
-		this.animations.play('flail');
-	}
-	else if(this.flailing && dist > 600) {
-		this.flailing = false;
-		this.animations.play('idle');
-	}
-	else if(this.flailing) {
-		if(!this.thePlayer.invincible) {
-			this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
-			this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+	if(!this.dying) {
+		this.setup();
+		
+		var x = this.x - this.thePlayer.x;
+		var y = this.y - this.thePlayer.y;
+		var dist = Math.sqrt((x*x) + (y*y));
+		
+		if(!this.flailing && dist <= 600) {
+			this.flailing = true;
+			this.animations.play('flail');
 		}
-	}
-	
-	if(dist > 400 && dist < 600) {
-		this.idle_music.volume = 1;
-	}
-	else if(dist > 200 && dist < 400) {
-		this.idle_music.volume = 2;
-	}
-	else if(dist > 0 && dist < 200) {
-		this.idle_music.volume = 3;
-	}
-	else {
-		this.idle_music.volume = 0;
+		else if(this.flailing && dist > 600) {
+			this.flailing = false;
+			this.animations.play('idle');
+		}
+		else if(this.flailing) {
+			if(!this.thePlayer.invincible) {
+				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
+				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+			}
+		}
+		
+		if(dist > 400 && dist < 600) {
+			this.idle_music.volume = 1;
+		}
+		else if(dist > 200 && dist < 400) {
+			this.idle_music.volume = 2;
+		}
+		else if(dist > 0 && dist < 200) {
+			this.idle_music.volume = 3;
+		}
+		else {
+			this.idle_music.volume = 0;
+		}
 	}
 }
 
@@ -276,6 +279,7 @@ Mob.prototype.setup = function() {
 }
 
 Mob.prototype.kills = function() {
+	this.dying = true;
 	var x = this.x - this.thePlayer.x;
 	var y = this.y - this.thePlayer.y;
 	
