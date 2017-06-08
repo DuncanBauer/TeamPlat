@@ -17,12 +17,12 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.animations.add('invincible', ['bossbot0'], 30, true);
 	this.animations.add('control', ['bossbot5'], 30, false);
 	this.animations.add('smash', ['bossbot6','bossbot7','bossbot8','bossbot9'], 11, false);
-	this.animations.add('fire', ['bossbot3', 'bossbot4'], 2, false);
+	this.animations.add('fire', ['bossbot3', 'bossbot4'], 11, false);
 	this.animations.add('unfire', ['bossbot4', 'bossbot3','bossbot0'], 11, false);
-	this.animations.add('death', ['bossbot11','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17'], 10, true);
+	this.animations.add('death', ['bossbot12','bossbot13','bossbot12','bossbot13','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17','bossbot18','bossbot19','bossbot20','bossbot21','bossbot22','bossbot21'], 5, true);
 	this.animations.add('bobble', ['bossbot0','bossbot10','bossbot0','bossbot11'], 20, true);
 	this.animations.add('flail', ['bossbot0','bossbot1','bossbot2','bossbot3','bossbot4','bossbot5','bossbot6','bossbot7','bossbot8','bossbot9',
- 'bossbot10','bossbot11','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17'], 3, true);
+'bossbot10','bossbot11','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17'], 3, true);
 		
 	this.body.collideWorldBounds = true;
 	this.body.gravity.y = 1000;
@@ -124,9 +124,9 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.spawn_sound.loop = false;
 	this.spawn_sound.volume = 3;
 	
-	this.spawn_sound = this.game.add.audio('');
-	this.spawn_sound.loop = false;
-	this.spawn_sound.volume = 3;
+	this.fly_sound = this.game.add.audio('bossFly');
+	this.fly_sound.loop = false;
+	this.fly_sound.volume = 3;
 }
 
 Boss.prototype = Object.create(Phaser.Sprite.prototype);
@@ -187,6 +187,10 @@ Boss.prototype.update = function() {
 
 Boss.prototype.scream = function() {
 	this.scream_sound.play();
+}
+
+Boss.prototype.deathAnim = function() {
+	this.animations.play('death');
 }
 
 Boss.prototype.takeBulletDmg = function(killBox, bullet) {

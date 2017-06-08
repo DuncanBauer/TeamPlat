@@ -1,4 +1,4 @@
-var Preloader = function(game) {
+	var Preloader = function(game) {
 };
 Preloader.prototype = {
 	preload: function() {
@@ -53,6 +53,7 @@ Preloader.prototype = {
 		this.game.load.audio('boss_laugh', '/audio/bossLaugh.ogg');
 		this.game.load.audio('boss_scream', '/audio/bossScream.ogg');
 		this.game.load.audio('boss_pound', '/audio/groundPound.ogg');
+		this.game.load.audio('bossFly', '/audio/bossFly.ogg');
 		this.game.load.audio('pickup', '/audio/pickup.ogg');
 	},
 	

@@ -316,6 +316,7 @@ Mob.prototype.stopMusic = function() {
 }
 
 Mob.prototype.reinitialize = function() {
+	this.dying = false;
 	this.revive();
 	this.idle_music.play();
 	this.set = false;

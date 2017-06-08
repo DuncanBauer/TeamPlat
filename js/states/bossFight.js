@@ -39,8 +39,7 @@ BossFight.prototype = {
 	update:function() {
 		
 		this.game.physics.arcade.overlap(this.player.weapon.bullets, this.world.minions, this.minionHit, null, this);
-		//this.game.physics.arcade.overlap(this.player, this.world.minions, this.contest, null, this);
-	
+		//this.game.physics.arcade.overlap(this.player, this.world.minions, this.contest, null, this);	
 		
 		if(!this.fightStarted) {
 			if(this.game.physics.arcade.overlap(this.player, this.world.startLine) && !this.panning) {
@@ -49,7 +48,7 @@ BossFight.prototype = {
 				this.panning = true;
 				this.game.camera.unfollow();
 				
-				this.player.animations.play('stand');
+				this.player.animations.play('idle');
 				this.player.stopMovement();
 				this.player.dashCancel();
 				this.game.input.keyboard.enabled = false;
@@ -117,7 +116,8 @@ BossFight.prototype = {
 		this.fightStarted = true;
 		this.game.input.keyboard.start();
 		this.game.input.keyboard.enabled = true;
-		this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.world.boss.children[0].charge, this.world.boss.children[0]);
+		this.game.time.events.add(Phaser.Timer.SECOND*1, this.world.boss.children[0].deathAnim, this.world.boss.children[0]);
+		//this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.world.boss.children[0].charge, this.world.boss.children[0]);
 	},
 	
 	minionHit: function(bullet, minion) {
@@ -135,7 +135,7 @@ BossFight.prototype = {
 		if(player.dashing && minion.alive && !minion.spawning) {
 			minion.kills();
 			this.world.killMinion();
-		console.log(this.world.minionCount);
+			console.log(this.world.minionCount);
 		}
 	},
 	
