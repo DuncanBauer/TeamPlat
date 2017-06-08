@@ -318,7 +318,7 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 			this.dmg_sound.play();
 		}, this);
 		this.timer.add(Phaser.Timer.SECOND*4.1, this.toDie, this);
-		this.myWorld.shakeCameraMed2();
+		this.myWorld.shakeCameraLong();
 	}
 	else {
 		this.myWorld.shakeCameraLite();

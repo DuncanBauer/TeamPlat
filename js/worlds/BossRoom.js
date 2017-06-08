@@ -144,6 +144,10 @@ BossRoom.prototype.shakeCameraLite = function() {
 	this.game.camera.shake(.005, 200);
 }
 	
+BossRoom.prototype.shakeCameraLong = function() {
+	this.game.camera.shake(.01, 4000);
+}
+	
 BossRoom.prototype.shakeCameraMed = function() {
 	this.game.camera.shake(.01, 500);
 }
