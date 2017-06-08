@@ -606,11 +606,16 @@ Player.prototype.respawn = function() {
 }
 
 Player.prototype.determineLoser = function(player, enemy) {
-	if(!this.dashing) {
-		this.stupidPlayer();
+	if(this.myWorld.type != "boss") {
+		if(!this.dashing) {
+			this.stupidPlayer();
+		}
+		else {
+			enemy.parent.kills();
+		}
 	}
 	else {
-		enemy.parent.kills();
+		this.stupidPlayer();
 	}
 }
 
@@ -627,6 +632,7 @@ Player.prototype.stupidPlayer = function(player, obstacle) {
 	if(this.myWorld.type == "boss") {
 		if(this.legs > 0) {
 			this.legs--;
+			console.log(this.legs);
 			this.invincible = true;
 			this.game.time.events.add(Phaser.Timer.SECOND*2.5, this.loseInvinc, this);
 			
@@ -661,6 +667,7 @@ Player.prototype.stupidPlayer2 = function(player, bullet) {
 	if(this.myWorld.type == "boss") {
 		if(this.legs > 0) {
 			this.legs--;
+			console.log(this.legs);
 			this.invincible = true;
 			this.game.time.events.add(Phaser.Timer.SECOND*2.5, this.loseInvinc, this);
 			

@@ -15,7 +15,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.animations.add('control', ['bossbot5'], 30, true);
 	this.animations.add('smash', ['bossbot6','bossbot7','bossbot8','bossbot9','bossbot5',], 30, false);
 	this.animations.add('fire', ['bossbot3', 'bossbot4'], 15, false)
-	this.animations.add('death', ['bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17'], 15, false);
+	this.animations.add('death', ['bossbot11','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17'], 10, true);
 	this.animations.add('bobble', ['bossbot0','bossbot10','bossbot0','bossbot11'], 20, true);
 	this.animations.add('flail', ['bossbot0','bossbot1','bossbot2','bossbot3','bossbot4','bossbot5','bossbot6','bossbot7','bossbot8','bossbot9',
  'bossbot10','bossbot11','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17'], 3, true);
@@ -41,11 +41,21 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.game.physics.enable(this.chargeBox2, Phaser.Physics.ARCADE);
 	this.chargeBox2.body.setSize(50, 100);
 	this.chargeBox2.anchor.set(0.5);
-
-	this.chargeBox3 = this.game.add.sprite(this.x, this.y, null);
-	this.game.physics.enable(this.chargeBox3, Phaser.Physics.ARCADE);
-	this.chargeBox3.body.setSize(75, 40);
-	this.chargeBox3.anchor.set(0.5);
+	
+	this.killBox1 = this.game.add.sprite(this.x, this.y, null);
+	this.game.physics.enable(this.killBox1, Phaser.Physics.ARCADE);
+	this.killBox1.body.setSize(50, 100);
+	this.killBox1.anchor.set(0.5);
+	
+	this.killBox2 = this.game.add.sprite(this.x, this.y, null);
+	this.game.physics.enable(this.killBox2, Phaser.Physics.ARCADE);
+	this.killBox2.body.setSize(50, 100);
+	this.killBox2.anchor.set(0.5);
+	
+	this.killBox3 = this.game.add.sprite(this.x, this.y, null);
+	this.game.physics.enable(this.killBox3, Phaser.Physics.ARCADE);
+	this.killBox3.body.setSize(80, 40);
+	this.killBox3.anchor.set(0.5);
 	
 	this.myWorld = world;
 	this.thePlayer = player;
@@ -58,7 +68,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	
 	this.firing = false;
 	
-	this.idling = false;
+	this.idling = true;
 	this.idleLeft = null;
 	this.idleSpeed = 200;
 	
@@ -67,6 +77,8 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.disabled = true;
 
 	this.inControl = false;
+	
+	this.health = 50;
 	
 	this.weapon = this.game.add.weapon(100, 'lemon');
 	this.weapon.bullets.setAll('scale.x', .5);
@@ -98,6 +110,10 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 Boss.prototype = Object.create(Phaser.Sprite.prototype);
 Boss.prototype.update = function() {
 	this.game.physics.arcade.collide(this, this.myWorld.ground.children);
+
+	this.game.physics.arcade.overlap(this.killBox1, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
+	this.game.physics.arcade.overlap(this.killBox2, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
+	this.game.physics.arcade.overlap(this.killBox3, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
 	
 	this.setup();
 
@@ -106,8 +122,8 @@ Boss.prototype.update = function() {
 		this.game.physics.arcade.overlap(this.thePlayer, this.weapon1.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
 		
 		if(this.charging) {
-			this.game.physics.arcade.collide(this.thePlayer, this.chargeBox1, this.thePlayer.determineLoser, null, this.thePlayer);
-			this.game.physics.arcade.collide(this.thePlayer, this.chargeBox2, this.thePlayer.determineLoser, null, this.thePlayer);
+			this.game.physics.arcade.overlap(this.thePlayer, this.chargeBox1, this.thePlayer.determineLoser, null, this.thePlayer);
+			this.game.physics.arcade.overlap(this.thePlayer, this.chargeBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 		}
 	}
 	
@@ -118,13 +134,45 @@ Boss.prototype.update = function() {
 		this.fire();
 	}
 	else if(this.idling) {
+		this.setKillBoxesIdle();
 		this.idleTime();
 	}
 	else if(this.disabled || this.inControl) {
 	}
 }
 
+Boss.prototype.takeBulletDmg = function(killBox, bullet) {
+	bullet.kill();
+	this.health--;
+	console.log(this.health);
+	this.myWorld.shakeCameraLite();
+}
+
+Boss.prototype.setKillBoxesIdle = function() {
+	var killBox = this.killBox1;
+	killBox.body.x = this.x - killBox.width / 2 - 105;
+	killBox.body.y = this.y - killBox.height / 2 + 30;
+	killBox.anchor.set(0.5);
+	killBox.body.velocity.x = 0;
+	killBox.body.velocity.y = 0;
+	
+	killBox = this.killBox2;
+	killBox.body.x = this.x - killBox.width / 2 + 55;
+	killBox.body.y = this.y - killBox.height / 2 + 30;
+	killBox.anchor.set(0.5);
+	killBox.body.velocity.x = 0;
+	killBox.body.velocity.y = 0;
+	
+	killBox = this.killBox3;
+	killBox.body.x = this.x - this.body.width/5 + 8;
+	killBox.body.y = this.y - killBox.height / 2 - 100;
+	killBox.anchor.set(0.5);
+	killBox.body.velocity.x = 0;
+	killBox.body.velocity.y = 0;
+}
+
 Boss.prototype.determineMove = function() {
+	this.idle();
 	var nextAttack = 0;
 	var rand = Math.floor(Math.random() * 3);
 	
@@ -138,7 +186,7 @@ Boss.prototype.determineMove = function() {
 		nextAttack = 2;
 	}
 	
-	nextAttack = 1;
+	nextAttack = 0;
 
 	if(nextAttack == 0){
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.charge, this);
@@ -204,6 +252,8 @@ Boss.prototype.fire = function() {
 
 Boss.prototype.ceaseFire = function() {
 	this.firing = false;
+	this.idling = true;
+	this.animations.play('idle');
 	this.game.time.events.add(Phaser.Timer.SECOND*2, this.determineMove, this);
 }
 
@@ -241,6 +291,7 @@ Boss.prototype.letsCharge = function() {
 
 Boss.prototype.endCharge = function() {
 	this.animations.play('idle');
+	this.idling = true;
 	this.body.acceleration.x = 0;
 	this.charging = false;
 	this.game.time.events.add(Phaser.Timer.SECOND*2, this.determineMove, this);
@@ -248,16 +299,32 @@ Boss.prototype.endCharge = function() {
 
 Boss.prototype.repoChargeHitboxes = function() {
 	var chargeBox;
+	var killBox;
 	if(this.chargeRight) {
 		chargeBox = this.chargeBox1;
 		chargeBox.body.x = this.x - chargeBox.width / 2 - 100;
 		chargeBox.body.y = this.y - chargeBox.height / 2 + 10;
-		chargeBox.anchor.set(0.5,);
+		chargeBox.anchor.set(0.5);
 		
 		chargeBox = this.chargeBox2;
 		chargeBox.body.x = this.x - chargeBox.width / 2 + 60;
 		chargeBox.body.y = this.y - chargeBox.height / 2 + 40;
 		chargeBox.anchor.set(0.5);
+		
+		killBox = this.killBox1;
+		killBox.body.x = this.x - chargeBox.width / 2 - 100;
+		killBox.body.y = this.y - chargeBox.height / 2 + 10;
+		killBox.anchor.set(0.5);
+		
+		killBox = this.killBox2;
+		killBox.body.x = this.x - killBox.width / 2 + 60;
+		killBox.body.y = this.y - killBox.height / 2 + 40;
+		killBox.anchor.set(0.5);
+		
+		killBox = this.killBox3;
+		killBox.body.x = this.x - killBox.width/2 + 25;
+		killBox.body.y = this.y - killBox.height / 2 - 110;
+		killBox.anchor.set(0.5);
 	}
 	else {
 		chargeBox = this.chargeBox1;
@@ -269,6 +336,21 @@ Boss.prototype.repoChargeHitboxes = function() {
 		chargeBox.body.x = this.x - chargeBox.width / 2 + 40;
 		chargeBox.body.y = this.y - chargeBox.height / 2 + 10;
 		chargeBox.anchor.set(0.5);
+		
+		killBox = this.killBox1;
+		killBox.body.x = this.x - killBox.width / 2 - 100;
+		killBox.body.y = this.y - killBox.height / 2 + 40;
+		killBox.anchor.set(0.5);
+		
+		killBox = this.killBox2;
+		killBox.body.x = this.x - killBox.width / 2 + 40;
+		killBox.body.y = this.y - killBox.height / 2 + 10;
+		killBox.anchor.set(0.5);
+		
+		killBox = this.killBox3;
+		killBox.body.x = this.x - this.body.width/2 + 25;
+		killBox.body.y = this.y - killBox.height / 2 - 110;
+		killBox.anchor.set(0.5);
 	}
 }
 
