@@ -15,7 +15,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.animations.add('charge', ['bossbot2'], 30, false);	
 	this.animations.add('invincible', ['bossbot0'], 30, true);
 	this.animations.add('control', ['bossbot5'], 30, false);
-	this.animations.add('smash', ['bossbot6','bossbot7','bossbot8','bossbot9'], 11, false);
+	this.animations.add('smash', ['bossbot6','bossbot7','bossbot8','bossbot9'], 7, false);
 	this.animations.add('fire', ['bossbot3', 'bossbot4'], 6, false);
 	this.animations.add('unfire', ['bossbot4', 'bossbot3','bossbot0'], 11, false);
 	this.animations.add('death', ['bossbot11','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17'], 10, true);
@@ -86,12 +86,11 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.idleSpeed = 200;
 	
 	this.minionCount = 0;
-	
 	this.disabled = true;
-
 	this.inControl = false;
-	
-	this.health = 50;
+	this.health = 100;
+	this.recovering = false;	
+	this.invuln = true;
 	
 	this.weapon = this.game.add.weapon(100, 'evil_lemon');
 	this.weapon.bullets.setAll('scale.x', .5);
@@ -117,9 +116,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	
 	this.death_sound = this.game.add.audio('boss_explode');
 	this.death_sound.loop = false;
-	this.death_sound.volume = 2;	
-	
-	this.invuln = true;
+	this.death_sound.volume = 2;
 }
 
 Boss.prototype = Object.create(Phaser.Sprite.prototype);
@@ -157,6 +154,10 @@ Boss.prototype.update = function() {
 		this.fire();
 	}
 	else if(this.jumping) {
+		this.setKillBoxesJump();
+	}
+	else if(this.recovering) {
+		this.setKillBoxesRecovery();
 	}
 	else if(this.idling) {
 		this.setKillBoxesIdle();
@@ -174,6 +175,28 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 }
 
 Boss.prototype.setKillBoxesIdle = function() {
+	var killBox = this.killBox1;
+	killBox.body.x = this.x - killBox.width / 2 - 145;
+	killBox.body.y = this.y - killBox.height / 2 + 50;
+	killBox.anchor.set(0.5);
+	killBox.body.width = 50;
+	killBox.body.height = 100;
+	
+	killBox = this.killBox2;
+	killBox.body.x = this.x - killBox.width / 2 + 95;
+	killBox.body.y = this.y - killBox.height / 2 + 50;
+	killBox.anchor.set(0.5);
+	killBox.body.width = 50;
+	killBox.body.height = 100;
+	
+	killBox = this.killBox3;
+	killBox.body.x = this.x - this.body.width/5 + 8;
+	killBox.body.y = this.y - 40;
+	killBox.anchor.set(0.5);
+}
+
+Boss.prototype.setKillBoxesRecovery = function() {
+	console.log("called");
 	var killBox = this.killBox1;
 	killBox.body.x = this.x - killBox.width / 2 - 105;
 	killBox.body.y = this.y - killBox.height / 2 + 30;
@@ -194,6 +217,110 @@ Boss.prototype.setKillBoxesIdle = function() {
 	killBox.anchor.set(0.5);
 }
 
+Boss.prototype.setKillBoxesJump = function() {
+	var killBox;
+	if(this.animations.currentFrame.index == 6) {
+		killBox = this.killBox1;
+		killBox.body.x = this.x - killBox.width / 2 - 155;
+		killBox.body.y = this.y;
+		killBox.anchor.set(0.5);
+		killBox.body.width = 50;
+		killBox.body.height = 80;
+		
+		killBox = this.killBox2;
+		killBox.body.x = this.x - killBox.width / 2 + 105;
+		killBox.body.y = this.y;
+		killBox.anchor.set(0.5);
+		killBox.body.width = 50;
+		killBox.body.height = 80;
+		
+		killBox = this.killBox3;
+		killBox.body.x = this.x - this.body.width/5 + 8;
+		killBox.body.y = this.y - killBox.height / 2 - 75;
+		killBox.anchor.set(0.5);
+	}
+	else if(this.animations.currentFrame.index == 7) {
+		killBox = this.killBox1;
+		killBox.body.x = this.x - killBox.width / 2 - 170;
+		killBox.body.y = this.y + 50;
+		killBox.anchor.set(0.5);
+		killBox.body.width = 65;
+		killBox.body.height = 50;
+		
+		killBox = this.killBox2;
+		killBox.body.x = this.x - killBox.width / 2 + 105;
+		killBox.body.y = this.y + 50;
+		killBox.anchor.set(0.5);
+		killBox.body.width = 65;
+		killBox.body.height = 50;
+		
+		killBox = this.killBox3;
+		killBox.body.x = this.x - this.body.width/5 + 8;
+		killBox.body.y = this.y - killBox.height / 2 - 77;
+		killBox.anchor.set(0.5);
+	}
+	else if(this.animations.currentFrame.index == 8) {
+		killBox = this.killBox1;
+		killBox.body.x = this.x - killBox.width / 2 - 187;
+		killBox.body.y = this.y;
+		killBox.anchor.set(0.5);
+		killBox.body.width = 65;
+		killBox.body.height = 50;
+		
+		killBox = this.killBox2;
+		killBox.body.x = this.x - killBox.width / 2 + 137;
+		killBox.body.y = this.y;
+		killBox.anchor.set(0.5);
+		killBox.body.width = 65;
+		killBox.body.height = 50;
+		
+		killBox = this.killBox3;
+		killBox.body.x = this.x - this.body.width/5 + 8;
+		killBox.body.y = this.y - killBox.height / 2 - 77;
+		killBox.anchor.set(0.5);
+	}
+	else if(this.animations.currentFrame.index == 9) {
+		killBox = this.killBox1;
+		killBox.body.x = this.x - killBox.width / 2 - 105;
+		killBox.body.y = this.y - 150;
+		killBox.anchor.set(0.5);
+		killBox.body.width = 50;
+		killBox.body.height = 100;
+		
+		killBox = this.killBox2;
+		killBox.body.x = this.x - killBox.width / 2 + 55;
+		killBox.body.y = this.y - 150;
+		killBox.anchor.set(0.5);
+		killBox.body.width = 50;
+		killBox.body.height = 100;
+		
+		killBox = this.killBox3;
+		killBox.body.x = this.x - this.body.width/5 + 8;
+		killBox.body.y = this.y - killBox.height / 2 - 77;
+		killBox.anchor.set(0.5);
+	}
+	else if(this.animations.currentFrame.index == 1) {
+		killBox = this.killBox1;
+		killBox.body.x = this.x - killBox.width / 2 - 105;
+		killBox.body.y = this.y - 150;
+		killBox.anchor.set(0.5);
+		killBox.body.width = 50;
+		killBox.body.height = 100;
+		
+		killBox = this.killBox2;
+		killBox.body.x = this.x - killBox.width / 2 + 55;
+		killBox.body.y = this.y - 150;
+		killBox.anchor.set(0.5);
+		killBox.body.width = 50;
+		killBox.body.height = 100;
+		
+		killBox = this.killBox3;
+		killBox.body.x = this.x - this.body.width/5 + 8;
+		killBox.body.y = this.y - killBox.height / 2 - 77;
+		killBox.anchor.set(0.5);
+	}
+}
+
 Boss.prototype.determineMove = function() {
 	this.idle();
 	var nextAttack = 0;
@@ -212,7 +339,7 @@ Boss.prototype.determineMove = function() {
 		nextAttack = 3;
 	}
 	
-	nextAttack = 2;
+	nextAttack = 3;
 
 	if(nextAttack == 0){
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.charge, this);
@@ -226,7 +353,6 @@ Boss.prototype.determineMove = function() {
 		this.game.time.events.add(Phaser.Timer.SECOND*.9, this.control, this);
 	}
 	else if(nextAttack == 3) {
-		this.invuln = true;
 		this.game.time.events.add(Phaser.Timer.SECOND*.9, this.jump, this);
 	}
 }
@@ -234,6 +360,7 @@ Boss.prototype.determineMove = function() {
 Boss.prototype.jump = function() {
 	this.jumping = true;
 	this.idling = false;
+	this.invuln = false;
 	
 	this.animations.play('smash');
 	this.body.velocity.y = -700;
@@ -242,6 +369,7 @@ Boss.prototype.jump = function() {
 
 Boss.prototype.endJump = function() {
 	this.jumping = false;
+	this.recovering = true;
 	this.animations.play('control');
 	this.myWorld.shakeCameraMed();
 	this.game.time.events.add(Phaser.Timer.SECOND*1.5, this.determineMove, this);
@@ -256,6 +384,7 @@ Boss.prototype.control = function() {
 
 Boss.prototype.idle = function() {
 	this.idling = true;
+	this.recovering = false;
 	var x = Math.floor(Math.random() * 2);
 	if(x) {
 		this.idleLeft = false;
