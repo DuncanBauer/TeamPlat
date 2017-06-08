@@ -13,6 +13,12 @@ function World(game) {
 
 	this.absBottom = null;
 	this.thePlayer = null;
+
+	// Start music
+	this.bg_music = this.game.add.audio('bg_music');
+	this.bg_music.loop = true;
+	this.bg_music.volume = 1;
+	this.bg_music.fadeIn(7000, true);
 };
 
 World.prototype = Object.create(Phaser.Group.prototype);
@@ -21,6 +27,10 @@ World.prototype.constructor = World;
 World.prototype.retreivePlayer = function(player) {
 	this.thePlayer = player;
 	this.init();
+}
+
+World.prototype.stopMusic = function() {
+	this.bg_music.stop();
 }
 
 World.prototype.init = function() {
@@ -35,8 +45,8 @@ World.prototype.init = function() {
 }
 
 World.prototype.loadLegs = function() {
-	this.legs.add(new Leg(this.game, 'player_atlas', 'player_1', 264, 2270, this.thePlayer));
-	this.legs.add(new Leg(this.game, 'player_atlas', 'player_1', 264, 2270, this.thePlayer));
+	this.legs.add(new Leg(this.game, 'leg', 264, 2270, this.thePlayer));
+	this.legs.add(new Leg(this.game, 'leg', 464, 2270, this.thePlayer));
 }
 
 World.prototype.loadChecks = function() {
@@ -50,7 +60,7 @@ World.prototype.loadChecks = function() {
 
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1850, 1550));
 	
-	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 2000, 1800, 'LevelSelect', 0));
+	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 2050, 1850, 'LevelSelect', 0));
 }
 
 World.prototype.loadFloor = function(atlas, frame) {
@@ -225,6 +235,7 @@ World.prototype.loadAbsBottom = function() {
 
 World.prototype.resetWorld = function() {
 	this.enemies.forEach(function(enemy) {
+		enemy.stopMusic();
 		enemy.reinitialize();
 	}, Mob);
 

@@ -21,18 +21,18 @@ Checkpoint.prototype.update = function() {
 	if(this.game.physics.arcade.overlap(this, this.player)){
 		if(this.id != this.player.checkpointID){
 			if(!this.portOn){
-				this.animations.play('portOn');
 				this.portOn = true;
+				this.animations.play('portOn');
 			}
 			
 			this.player.checkpointX = this.x;
 			this.player.checkpointY = this.y;
 			this.player.checkpointID = this.id;
-			console.log("Checkpoint: "+this.player.x+", "+this.player.y);
 		}
 	}
-	else {
+
+	if(this.portOn && this.player.checkpointID != this.id) {
 		this.portOn = false;
-		this.animations.play('port');
+		this.animations.play('port')
 	}
 }
