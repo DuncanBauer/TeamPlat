@@ -613,6 +613,10 @@ Boss.prototype.determineMove = function() {
 		var nextAttack = 0;
 		var rand = Math.floor(Math.random() * 6);
 		
+		var x = this.x - this.thePlayer.x;
+		var y = this.y - this.thePlayer.y;
+		var dist = Math.sqrt((x*x) + (y*y));
+		
 		if(rand >= 0 && rand < 2) {
 			nextAttack = 0;
 		}
@@ -621,6 +625,10 @@ Boss.prototype.determineMove = function() {
 		}
 		else if(rand >= 4 && rand < 6) {
 			nextAttack = 3;
+		}
+		
+		if(dist > 400) {
+			nextAttack = 0;
 		}
 		
 		//nextAttack = 3;
