@@ -68,9 +68,9 @@ BossRoom.prototype.loadFloor = function(atlas, frame) {
 	temp.x = -32;
 	temp.y = 1800;
 	
-	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 63));
-	temp.x = -32;
-	temp.y = 1400;
+	//temp = this.ground.add(new PlatformA(this.game, atlas, frame, 63));
+	//temp.x = -32;
+	//temp.y = 1400;
 }
 
 BossRoom.prototype.loadEnemies = function() {
@@ -135,5 +135,9 @@ BossRoom.prototype.shakeCamera = function() {
 	
 BossRoom.prototype.shakeCameraLite = function() {
 	this.game.camera.shake(.005, 200);
+}
+	
+BossRoom.prototype.shakeCameraMed = function() {
+	this.game.camera.shake(.01, 500);
 }
 	

@@ -27,6 +27,7 @@ Preloader.prototype = {
 		this.game.load.atlas('tile_atlas', '/img/tiles.png', '/img/tiles.json');
 		this.game.load.atlas('platform_atlas', '/img/platforms.png', '/img/platforms.json');
 		this.game.load.image('lemon', '/img/lemon.png');
+		this.game.load.image('evil_lemon', '/img/evilLemon.png');
 		this.game.load.image('leg', '/img/legpickup.png');
 		this.game.load.image('tileShade', '/img/tile_shadow.png');
 		this.game.load.atlas('checkpoint', '/img/portal.png', '/img/portal.json');

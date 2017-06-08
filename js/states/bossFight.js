@@ -30,14 +30,17 @@ BossFight.prototype = {
 
 		// Create camera and lock it to the player with mario-esque deadzone
 		this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);		
-		this.game.camera.deadzone = new Phaser.Rectangle(400, 250, 200, 70);
+		this.game.camera.deadzone = new Phaser.Rectangle(400, 400, 200, 70);
 		
 		this.fightStarted = false;
 		this.panning = false;
 	},
 	
 	update:function() {
+		
 		this.game.physics.arcade.overlap(this.player.weapon.bullets, this.world.minions, this.minionHit, null, this);
+		//this.game.physics.arcade.overlap(this.player, this.world.minions, this.contest, null, this);
+	
 		
 		if(!this.fightStarted) {
 			if(this.game.physics.arcade.overlap(this.player, this.world.startLine) && !this.panning) {
@@ -77,6 +80,7 @@ BossFight.prototype = {
 				}, this);
 			}
 			
+			/*
 			if(Math.abs(this.game.camera.y - this.player.y) > 5) {
 				if(this.game.camera.y > this.player.y) {
 					this.game.camera.y -= 5;
@@ -85,9 +89,10 @@ BossFight.prototype = {
 					this.game.camera.y += 5;
 				}
 			}
+			*/
 		}
 	},
-
+	
 	bobbleHead: function() {
 		this.world.boss.children[0].animations.play('bobble');
 	},
@@ -103,7 +108,7 @@ BossFight.prototype = {
 	resetCamera: function() {
 		// Create camera and lock it to the player with mario-esque deadzone
 		this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);
-		this.game.camera.deadzone = new Phaser.Rectangle(400, 250, 200, 70);
+		this.game.camera.deadzone = new Phaser.Rectangle(400, 400, 200, 70);
 
 		this.fightStarted = true;
 		this.game.input.keyboard.start();
@@ -117,14 +122,23 @@ BossFight.prototype = {
 				this.world.killMinion();
 				minion.kills();
 				bullet.kill();
+		console.log(this.world.minionCount);
 			}
+		}
+	},
+	
+	contest: function(player, minion) {
+		if(player.dashing && minion.alive && !minion.spawning) {
+			minion.kills();
+			this.world.killMinion();
+		console.log(this.world.minionCount);
 		}
 	},
 	
 	render: function() {
 /*
 		this.game.debug.cameraInfo(this.game.camera, 32, 32);
-		*/
+		
 		//this.game.debug.body(this.player);
 		//this.game.debug.body(this.player.weapon.bullets);
 		this.game.debug.body(this.world.boss.children[0].chargeBox1);
@@ -133,7 +147,7 @@ BossFight.prototype = {
 		this.game.debug.body(this.world.boss.children[0].killBox1);
 		this.game.debug.body(this.world.boss.children[0].killBox2);
 		this.game.debug.body(this.world.boss.children[0].killBox3);
-		/*
+		
 		this.game.debug.body(this.world.startLine);
 		
 		this.game.debug.body(this.world.boss.children[0].killBox);

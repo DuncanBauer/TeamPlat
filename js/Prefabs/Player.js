@@ -615,16 +615,13 @@ Player.prototype.determineLoser = function(player, enemy) {
 		}
 	}
 	else {
-		this.stupidPlayer();
-	}
-}
-
-Player.prototype.determineLoser2 = function(player, enemy) {
-	if(!this.dashing) {
-		this.stupidPlayer2();
-	}
-	else {
-		enemy.parent.kills();
+		if(!this.dashing) {
+			this.stupidPlayer();
+		}
+		else if(enemy.type != "boss"){
+			enemy.parent.kills();
+			this.myWorld.killMinion();
+		}
 	}
 }
 

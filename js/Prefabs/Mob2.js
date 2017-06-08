@@ -46,7 +46,7 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 
 	this.spawning = true;
 
-	this.weapon = this.game.add.weapon(100, 'lemon');
+	this.weapon = this.game.add.weapon(100, 'evil_lemon');
 	this.weapon.bullets.setAll('scale.x', .5);
 	this.weapon.bullets.setAll('scale.y', .5);
 	this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
@@ -105,8 +105,8 @@ Mob2.prototype.update = function() {
 		
 			if(!this.thePlayer.invincible) {
 				this.game.physics.arcade.collide(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
-				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser2, null, this.thePlayer);
-				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser2, null, this.thePlayer);
+				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
+				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 			}
 		}
 	}

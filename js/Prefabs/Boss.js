@@ -4,6 +4,8 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.ogX = x;
 	this.ogY = y;
 	
+	this.type = "boss";
+	
 	this.game.physics.enable(this, Phaser.Physics.ARCADE);
 	
 	//this.animations.add('flail', Phaser.Animation.generateFrameNames('robobitch', 0, 7, '', 1), 15, true);
@@ -12,9 +14,10 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.animations.add('idle', ['bossbot0'], 30, false);
 	this.animations.add('charge', ['bossbot2'], 30, false);	
 	this.animations.add('invincible', ['bossbot0'], 30, true);
-	this.animations.add('control', ['bossbot5'], 30, true);
-	this.animations.add('smash', ['bossbot6','bossbot7','bossbot8','bossbot9','bossbot5',], 30, false);
-	this.animations.add('fire', ['bossbot3', 'bossbot4'], 15, false)
+	this.animations.add('control', ['bossbot5'], 30, false);
+	this.animations.add('smash', ['bossbot6','bossbot7','bossbot8','bossbot9'], 11, false);
+	this.animations.add('fire', ['bossbot3', 'bossbot4'], 6, false);
+	this.animations.add('unfire', ['bossbot4', 'bossbot3','bossbot0'], 11, false);
 	this.animations.add('death', ['bossbot11','bossbot12','bossbot13','bossbot14','bossbot15','bossbot16','bossbot17'], 10, true);
 	this.animations.add('bobble', ['bossbot0','bossbot10','bossbot0','bossbot11'], 20, true);
 	this.animations.add('flail', ['bossbot0','bossbot1','bossbot2','bossbot3','bossbot4','bossbot5','bossbot6','bossbot7','bossbot8','bossbot9',
@@ -31,6 +34,16 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	
 	this.body.onWorldBounds = new Phaser.Signal();
 	this.body.onWorldBounds.add(this.hitWorldBounds, this);
+	
+	this.chargeBox1 = this.game.add.sprite(this.x, this.y, null);
+	this.game.physics.enable(this.chargeBox1, Phaser.Physics.ARCADE);
+	this.chargeBox1.body.setSize(50, 100);
+	this.chargeBox1.anchor.set(0.5);
+	
+	this.chargeBox2 = this.game.add.sprite(this.x, this.y, null);
+	this.game.physics.enable(this.chargeBox2, Phaser.Physics.ARCADE);
+	this.chargeBox2.body.setSize(50, 100);
+	this.chargeBox2.anchor.set(0.5);
 	
 	this.chargeBox1 = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.chargeBox1, Phaser.Physics.ARCADE);
@@ -80,7 +93,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	
 	this.health = 50;
 	
-	this.weapon = this.game.add.weapon(100, 'lemon');
+	this.weapon = this.game.add.weapon(100, 'evil_lemon');
 	this.weapon.bullets.setAll('scale.x', .5);
 	this.weapon.bullets.setAll('scale.y', .5);
 	this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
@@ -89,7 +102,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	//this.weapon.fireRate = 1000;  Using attackCooldown instead
 	//this.weapon.trackSprite(this); // Has the weapon follow the player
 	
-	this.weapon1 = this.game.add.weapon(100, 'lemon');
+	this.weapon1 = this.game.add.weapon(100, 'evil_lemon');
 	this.weapon1.bullets.setAll('scale.x', .5);
 	this.weapon1.bullets.setAll('scale.y', .5);
 	this.weapon1.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
@@ -105,18 +118,24 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.death_sound = this.game.add.audio('boss_explode');
 	this.death_sound.loop = false;
 	this.death_sound.volume = 2;	
+	
+	this.invuln = true;
 }
 
 Boss.prototype = Object.create(Phaser.Sprite.prototype);
 Boss.prototype.update = function() {
 	this.game.physics.arcade.collide(this, this.myWorld.ground.children);
 
-	this.game.physics.arcade.overlap(this.killBox1, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
-	this.game.physics.arcade.overlap(this.killBox2, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
-	this.game.physics.arcade.overlap(this.killBox3, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
+	if(!this.invuln) {
+		this.game.physics.arcade.overlap(this.killBox1, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
+		this.game.physics.arcade.overlap(this.killBox2, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
+		this.game.physics.arcade.overlap(this.killBox3, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
+	}
 	
-	this.setup();
-
+	if(!this.set) {
+		this.setup();
+	}
+	
 	if(!this.thePlayer.invincible) {
 		this.game.physics.arcade.overlap(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
 		this.game.physics.arcade.overlap(this.thePlayer, this.weapon1.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
@@ -128,10 +147,14 @@ Boss.prototype.update = function() {
 	}
 	
 	if(this.charging) {
+		this.repoChargeHitboxes();
 		this.letsCharge();
 	}
 	else if(this.firing) {
+		this.setKillBoxesFire();
 		this.fire();
+	}
+	else if(this.jumping) {
 	}
 	else if(this.idling) {
 		this.setKillBoxesIdle();
@@ -153,28 +176,26 @@ Boss.prototype.setKillBoxesIdle = function() {
 	killBox.body.x = this.x - killBox.width / 2 - 105;
 	killBox.body.y = this.y - killBox.height / 2 + 30;
 	killBox.anchor.set(0.5);
-	killBox.body.velocity.x = 0;
-	killBox.body.velocity.y = 0;
+	killBox.body.width = 50;
+	killBox.body.height = 100;
 	
 	killBox = this.killBox2;
 	killBox.body.x = this.x - killBox.width / 2 + 55;
 	killBox.body.y = this.y - killBox.height / 2 + 30;
 	killBox.anchor.set(0.5);
-	killBox.body.velocity.x = 0;
-	killBox.body.velocity.y = 0;
+	killBox.body.width = 50;
+	killBox.body.height = 100;
 	
 	killBox = this.killBox3;
 	killBox.body.x = this.x - this.body.width/5 + 8;
 	killBox.body.y = this.y - killBox.height / 2 - 100;
 	killBox.anchor.set(0.5);
-	killBox.body.velocity.x = 0;
-	killBox.body.velocity.y = 0;
 }
 
 Boss.prototype.determineMove = function() {
 	this.idle();
 	var nextAttack = 0;
-	var rand = Math.floor(Math.random() * 3);
+	var rand = Math.floor(Math.random() * 4);
 	
 	if(rand < 1) {
 		nextAttack = 0;
@@ -182,26 +203,50 @@ Boss.prototype.determineMove = function() {
 	else if(rand >= 1 && rand < 2) {
 		nextAttack = 1;
 	}
-	else if(rand >= 2) {
+	else if(rand >= 2 && rand < 3) {
 		nextAttack = 2;
 	}
+	else if(rand >= 3) {
+		nextAttack = 3;
+	}
 	
-	nextAttack = 0;
+	nextAttack = 3;
 
 	if(nextAttack == 0){
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.charge, this);
 	}
 	else if(nextAttack == 1) {
+		this.game.time.events.add(Phaser.Timer.SECOND*0.9, this.startFireAnim, this);
 		this.game.time.events.add(Phaser.Timer.SECOND*2, this.openFire, this);
 	}
 	else if(nextAttack == 2) {
-		this.game.time.events.add(Phaser.Timer.SECOND*1.4, this.control, this);
+		this.invuln = true;
+		this.game.time.events.add(Phaser.Timer.SECOND*.9, this.control, this);
 	}
+	else if(nextAttack == 3) {
+		this.invuln = true;
+		this.game.time.events.add(Phaser.Timer.SECOND*.9, this.jump, this);
+	}
+}
+
+Boss.prototype.jump = function() {
+	this.jumping = true;
+	this.idling = false;
+	
+	this.animations.play('smash');
+	this.body.velocity.y = -700;
+	this.game.time.events.add(Phaser.Timer.SECOND*1.35, this.endJump, this);
+}
+
+Boss.prototype.endJump = function() {
+	this.jumping = false;
+	this.animations.play('control');
+	this.myWorld.shakeCameraMed();
+	this.game.time.events.add(Phaser.Timer.SECOND*1.5, this.determineMove, this);
 }
 
 Boss.prototype.control = function() {
 	this.inControl = true;
-	//this.game.time.events.add(Phaser.Timer.SECOND*2, this.determineMove, this);
 	this.idling = false;
 	this.animations.play('control');
 	this.game.time.events.add(Phaser.Timer.SECOND*2, this.myWorld.callMinions, this.myWorld);
@@ -224,28 +269,46 @@ Boss.prototype.idleTime = function() {
 	}
 }
 
-Boss.prototype.openFire = function() {
+Boss.prototype.startFireAnim = function() {
+	this.animations.play('fire');
 	this.firing = true;
+}
+
+Boss.prototype.openFire = function() {
 	this.idling = false;
 	this.body.acceleration.x = 0;
-	this.animations.play('fire');
 	
 	this.fireY = this.y - 600;
 	this.fireX1 = this.x - 800;
 	this.fireX2 = this.x + 800;
 	
 	this.weapon.x = this.x + this.width/2 - 8;
-	this.weapon.y = this.y - 25;
+	this.weapon.y = this.y - 30;
 	this.weapon1.x = this.x - this.width/2 + 8;
-	this.weapon1.y = this.y - 25;
+	this.weapon1.y = this.y - 30;
 	
 	this.fire_sound.play();
 	this.game.time.events.add(Phaser.Timer.SECOND*1.3, this.ceaseFire, this);
 }
 
+Boss.prototype.setKillBoxesFire = function() {
+	var killBox = this.killBox1;
+	killBox.body.width = 100;
+	killBox.body.height = 50;
+	killBox.body.x = this.x - this.width / 2 + 20;
+	killBox.body.y = this.y - 60;
+	killBox.anchor.set(0.5);
+	
+	var killBox = this.killBox2;
+	killBox.body.width = 100;
+	killBox.body.height = 50;
+	killBox.body.x = this.x + 125;
+	killBox.body.y = this.y - 60;
+	killBox.anchor.set(0.5);
+}
+
 Boss.prototype.fire = function() {
 	this.weapon.fireAtXY(this.fireX2, this.fireY);
-
 	this.weapon1.fireAtXY(this.fireX1, this.fireY);
 	this.fireY += 15;
 }
@@ -253,7 +316,7 @@ Boss.prototype.fire = function() {
 Boss.prototype.ceaseFire = function() {
 	this.firing = false;
 	this.idling = true;
-	this.animations.play('idle');
+	this.animations.play('unfire');
 	this.game.time.events.add(Phaser.Timer.SECOND*2, this.determineMove, this);
 }
 
@@ -286,7 +349,6 @@ Boss.prototype.letsCharge = function() {
 	else {
 		this.body.acceleration.x = -1 * this.chargeSpeed;
 	}
-	this.repoChargeHitboxes();
 }
 
 Boss.prototype.endCharge = function() {
@@ -361,6 +423,7 @@ Boss.prototype.hitWorldBounds = function () {
 Boss.prototype.setup = function() {
 	this.set = true;
 	this.disabled = false;
+	this.invuln = false;
 }
 
 Boss.prototype.kills = function() {
