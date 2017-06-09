@@ -41,11 +41,11 @@ BossFight.prototype = {
 		this.stocks.scale.x *= .5;
 		this.stocks.scale.y *= .5;
 		
-		this.stockText = this.game.add.text(this.game.camera.x + 64, this.game.camera.y + 45, 'x');
+		this.stockText = this.game.add.text(this.game.camera.x + 64, this.game.camera.y + 35, 'x');
 		this.stockText.anchor.set(.5,.5);
 		this.stockText.fixedToCamera = true;
 		
-		this.stockNum = this.game.add.text(this.game.camera.x + 80, this.game.camera.y + 45, this.player.legs);
+		this.stockNum = this.game.add.text(this.game.camera.x + 80, this.game.camera.y + 35, this.player.legs);
 		this.stockNum.anchor.set(.5,.5);
 		this.stockNum.fixedToCamera = true;
 	},

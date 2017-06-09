@@ -100,7 +100,7 @@ Mob2.prototype.update = function() {
 				this.fireCheck = this.game.time.now;
 				this.playerX = this.thePlayer.x;
 				this.playerY = this.thePlayer.y;
-				this.timer.add(Phaser.Timer.SECOND * .7, this.openFire, this);
+				this.timer.add(Phaser.Timer.SECOND *.2 + Math.floor(Math.random() * 1000) + 500, this.openFire, this);
 			}
 		
 			if(!this.thePlayer.invincible && !this.thePlayer.dying) {

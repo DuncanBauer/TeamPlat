@@ -588,7 +588,7 @@ Player.prototype.attack = function() {
 		if(cursors.right.isDown) {
 			// Sets firing angle
 			this.weapon.fireAngle = 0;
-			this.angle = 270;
+			//this.angle = 270;
 			
 			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
 			//triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 0, .5, this.x + this.width/2, this.y - this.height/4);
@@ -609,16 +609,16 @@ Player.prototype.attack = function() {
 				this.angle = 45 + 180;
 			}
 			else {
-				if(!this.jumping && !this.doubleJumpd) {
+/*				if(!this.jumping && !this.doubleJumpd) {
 					this.jumpLite();
 				}
-			}
+*/			}
 		}
 		// If player is aiming left
 		else if(cursors.left.isDown) {
 			// Sets firing angle
 			this.weapon.fireAngle = 180;
-			this.angle = 90;
+			//this.angle = 90;
 			
 			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
 			//triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 1, .5, this.x - this.width/2 - this.attackDistance, this.y - this.height/4);
@@ -639,10 +639,11 @@ Player.prototype.attack = function() {
 				this.angle = 135;
 			}
 			else {
+/*
 				if(!this.jumping && !this.doubleJumpd) {
 					this.jumpLite();
 				}
-			}
+*/			}
 		}
 		// If player is aiming down
 		else if(cursors.down.isDown) {
@@ -666,7 +667,7 @@ Player.prototype.attack = function() {
 		else if(this.facingForward) {
 			// Sets firing angle
 			this.weapon.fireAngle = 0;
-			this.angle = 0;
+			//this.angle = 0;
 			
 			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
 			//triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 0, .5, this.x + this.width/2, this.y - this.height/4);
@@ -674,7 +675,7 @@ Player.prototype.attack = function() {
 		else {
 			// Sets firing angle
 			this.weapon.fireAngle = 180;
-			this.angle = 180;
+			//this.angle = 180;
 			
 			// Sets the hitbox accordingly (hitbox, hitbox template, anchorX, anchorY, x, y)
 			//triggerBox = this.setHitbox(triggerBox, this.triggerBoxHorizontal, 1, .5, this.x - this.width/2 - this.attackDistance, this.y - this.height/4);

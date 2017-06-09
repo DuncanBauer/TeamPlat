@@ -49,9 +49,9 @@ World.prototype.loadLegs = function() {
 	var tween = this.game.add.tween(newLeg);
 	tween.to({y: newLeg.y - 10}, 1000, 'Linear', true, 200, false, true);
 	
-	newLeg = this.legs.add(new Leg(this.game, 'leg', 464, 2270, this.thePlayer));
-	var tween = this.game.add.tween(newLeg);
-	tween.to({y: newLeg.y - 10}, 1000, 'Linear', true, 200, false, true);
+	//newLeg = this.legs.add(new Leg(this.game, 'leg', 464, 2270, this.thePlayer));
+	//var tween = this.game.add.tween(newLeg);
+	//tween.to({y: newLeg.y - 10}, 1000, 'Linear', true, 200, false, true);
 }
 
 World.prototype.loadChecks = function() {

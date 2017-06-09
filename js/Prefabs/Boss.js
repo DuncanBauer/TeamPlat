@@ -620,13 +620,13 @@ Boss.prototype.determineMove = function() {
 		var y = this.y - this.thePlayer.y;
 		var dist = Math.sqrt((x*x) + (y*y));
 		
-		if(rand >= 0 && rand < 2) {
+		if(rand >= 0 && rand <= 2) {
 			nextAttack = 0;
 		}
-		else if(rand >= 2 && rand < 4) {
+		else if(rand > 2 && rand <= 3) {
 			nextAttack = 1;
 		}
-		else if(rand >= 4 && rand < 6) {
+		else if(rand > 3 && rand < 5) {
 			nextAttack = 3;
 		}
 		
