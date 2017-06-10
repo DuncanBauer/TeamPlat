@@ -743,6 +743,14 @@ Player.prototype.determineLoser = function(player, enemy) {
 			this.stupidPlayer();
 		}
 		else {
+			console.log("in here stupid");
+			if(this.dashingDown && (this.dashingRight || this.dashingLeft)){
+				this.dashCancel();
+				this.body.velocity.y = -700;
+				/*if(this.dashingRight){
+					this.body.vel
+				}*/
+			}
 			enemy.parent.kills();
 		}
 	}
@@ -751,6 +759,7 @@ Player.prototype.determineLoser = function(player, enemy) {
 			this.stupidPlayer();
 		}
 		else if(enemy.type != "boss"){
+			console.log("DETERMINE LOSER");
 			enemy.parent.kills();
 			this.myWorld.killMinion();
 		}

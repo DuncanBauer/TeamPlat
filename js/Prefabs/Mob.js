@@ -296,10 +296,10 @@ Mob.prototype.kills = function() {
 		scale = 1;
 	}
 	
-	if(scale > 0) {
+	/*if(scale > 0) {
 		var angle = this.game.physics.arcade.angleBetween(this, this.thePlayer) * (180/Math.PI);
 		this.game.physics.arcade.velocityFromAngle(angle, 300 * scale, this.thePlayer.body.velocity);
-	}
+	}*/
 	
 	this.idle_music.stop();
 	this.death_sound.play();
