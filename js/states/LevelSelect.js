@@ -27,6 +27,9 @@ LevelSelect.prototype = {
 			
 			time = this.times.add(this.game.add.text(this.game.world.centerX + button.width / 2 + 100, 100, (this.game.times[0]/1000)));
 			time.anchor.set(.5)
+
+			time = this.times.add(this.game.add.text(this.game.world.centerX + button.width / 2 + 100, 350, (this.game.times[1]/1000)));
+			time.anchor.set(.5)
 		}
 		
 		//if(this.game.levelsComplete[0]) {
