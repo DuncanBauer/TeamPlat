@@ -1,8 +1,8 @@
-var Game = function(game) {
+var Game2 = function(game) {
 };
-Game.prototype = {	
+Game2.prototype = {	
 	create: function() {
-		console.log('Game: create');
+		console.log('Game2: create');
 
 		// Sets the physics system to arcade
 		this.game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -11,7 +11,7 @@ Game.prototype = {
 
 		// BACKGROUND FIRST BECAUSE LAYERS AND SHIT
 		// Set Game background and adjust size
-		this.bkgd = this.add.sprite(0, 0, 'background00');
+		this.bkgd = this.add.sprite(0, 0, 'background02');
 		this.bkgd.height = 600;
 		this.bkgd.width = 1000;	
 		this.bkgd.fixedToCamera = true;
@@ -20,7 +20,7 @@ Game.prototype = {
 		this.game.world.setBounds(0, 0, 3600, 3600);
 
 		// Create world
-		this.world = new World(this.game);
+		this.world = new World2(this.game);
 		
 		this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2300, this.world);
 		this.game.add.existing(this.player);
@@ -99,14 +99,14 @@ Game.prototype = {
 	},
 	
 	update:function() {	
-		
+
 		if(this.game.input.keyboard.isDown(Phaser.KeyCode.ESC)){
 			this.game.sound.stopAll();
 			this.game.state.start("LevelSelect");
 		}
 
 		if(!this.player.dying) {
-			this.game.physics.arcade.overlap(this.player, this.world.absBottom, null, this.player.respawn, this.player);
+			//this.game.physics.arcade.overlap(this.player, this.world.absBottom, null, this.player.respawn, this.player);
 		}
 	},
 	

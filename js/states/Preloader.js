@@ -62,6 +62,6 @@ Preloader.prototype = {
 		console.log('Preloader: create');
 		
 		// Starts MainMenu state
-		this.game.state.start('MainMenu');
+		this.game.state.start('Game2');
 	}
 }

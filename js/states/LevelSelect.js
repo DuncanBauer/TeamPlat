@@ -34,9 +34,18 @@ LevelSelect.prototype = {
 			button.anchor.set(.5);
 			this.buttons.create(button);
 		//}
+
+		button = this.game.add.button(this.game.world.centerX, 340, 'lvl2button', this.playLevel2, this);
+		button.anchor.set(.5);
+		this.buttons.create(button);
 	},
 	
 	update: function() {
+
+		if(this.game.input.keyboard.isDown(Phaser.KeyCode.ESC)){
+			this.game.sound.stopAll();
+			this.game.state.start("MainMenu");
+		}
 	},
 	
 	spawnLeg: function() {
@@ -54,6 +63,11 @@ LevelSelect.prototype = {
 	playLevel1: function() {
 		this.game.sound.stopAll();
 		this.game.state.start('Game');
+	},
+
+	playLevel2: function() {
+		this.game.sound.stopAll();
+		this.game.state.start('Game2');
 	},
 	
 	render: function() {
