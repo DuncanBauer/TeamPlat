@@ -566,7 +566,7 @@ Player.prototype.dashChecking = function() {
 			this.body.maxVelocity.x = 350;
 			this.justDashed = false;
 			this.dashing = false;
-			console.log("just dashed");
+			//console.log("just dashed");
 		}
 		
 		if(this.game.time.now - this.gravityTimeCheck > this.gravityCooldown) {
@@ -789,6 +789,7 @@ Player.prototype.stupidPlayer = function(player, obstacle) {
 			}
 		}
 		else {
+			this.dashCancel();
 			this.dying = true;
 			this.death_sound.play();
 			this.game.input.keyboard.stop();
@@ -804,6 +805,8 @@ Player.prototype.stupidPlayer = function(player, obstacle) {
 		this.emitter.children.forEach(function(particle) {
 			particle.kill();
 		});
+
+		this.dashCancel();
 		this.death_sound.play();
 		
 		this.dying = true;

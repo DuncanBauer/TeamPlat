@@ -17,7 +17,7 @@ Game2.prototype = {
 		this.bkgd.fixedToCamera = true;
 
 		// Set world bounds
-		this.game.world.setBounds(0, 0, 3600, 3600);
+		this.game.world.setBounds(0, 0, 4600, 3600);
 
 		// Create world
 		this.world = new World2(this.game);

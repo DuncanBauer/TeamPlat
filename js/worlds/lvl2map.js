@@ -67,9 +67,19 @@ World2.prototype.loadLegs = function() {
 }
 
 World2.prototype.loadChecks = function() {
-	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, this.thePlayer.x-100, this.thePlayer.y+100));
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, this.thePlayer.x, this.thePlayer.y+100));
 
-	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 2050, 1850, 'LevelSelect', 0));
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1536, 1870));
+
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 230, 1200));
+
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1810, 1050));
+
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 2600, 1900));
+
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 3850, 1220));
+
+	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 4010, 1415, 'LevelSelect', 0));
 }
 
 World2.prototype.loadFloor = function(atlas, frame) {
@@ -82,8 +92,8 @@ World2.prototype.loadFloor = function(atlas, frame) {
 	temp.y = 1660;
 
 	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 9));
-	temp.x = 1464 + 3*32 - 24;
-	temp.y = 2000 - 3*32;
+	temp.x = 1536;
+	temp.y = 1904;
 
 	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 4));
 	temp.x = 1000 + 15*32;
@@ -133,6 +143,33 @@ World2.prototype.loadFloor = function(atlas, frame) {
 	temp.x = 2288;
 	temp.y = 1184;
 
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 8));
+	temp.x = 2544;
+	temp.y = 1472;
+
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 50));
+	temp.x = 2960;
+	temp.y = 1472;
+
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 43));
+	temp.x = 3056;
+	temp.y = 1152;
+
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 30));
+	temp.x = 3622;
+	temp.y = 544;
+
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 20));
+	temp.x = 3782;
+	temp.y = 768;
+
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 5));
+	temp.x = 3942;
+	temp.y = 928;
+
+	temp = this.ground.add(new PlatformA(this.game, atlas, frame, 11));
+	temp.x = 1824;
+	temp.y = 1486;
 }
 
 World2.prototype.loadWalls = function(atlas, frame) {
@@ -148,9 +185,6 @@ World2.prototype.loadWalls = function(atlas, frame) {
 	temp.y = 1550 + 2*32;
 
 	temp = this.walls.add(new WallA(this.game, atlas, frame, 14));
-	temp.x = 1464 + 3*32 - 24 + 9*32;
-	temp.y = 1486;
-	temp = this.ground.add(new PlatformA(this.game, 'platform_atlas', 'platform0', 1));
 	temp.x = 1464 + 3*32 - 24 + 9*32;
 	temp.y = 1486;
 
@@ -170,13 +204,41 @@ World2.prototype.loadWalls = function(atlas, frame) {
 	temp.x = 2892;
 	temp.y = 380;
 
-	temp = this.walls.add(new WallA(this.game, atlas, frame, 37));
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 56));
 	temp.x = 3052;
-	temp.y = 0;
+	temp.y = -600;
 
 	temp = this.walls.add(new WallA(this.game, atlas, frame, 10));
 	temp.x = 2288;
 	temp.y = 1184;
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 10));
+	temp.x = 2768;
+	temp.y = 1472;
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 10));
+	temp.x = 2960;
+	temp.y = 1472;
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 30));
+	temp.x = 4560;
+	temp.y = 544;
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 30));
+	temp.x = 4560;
+	temp.y = 544;
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 12));
+	temp.x = 4390;
+	temp.y = 768;
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 4));
+	temp.x = 3782;
+	temp.y = 768;
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 19));
+	temp.x = 3622;
+	temp.y = 544;
 }
 
 World2.prototype.loadEnemies = function() {
@@ -199,6 +261,10 @@ World2.prototype.loadEnemies = function() {
 	temp = this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 1250, 1500, this, this.thePlayer, 0));
 	temp.x = 2320;
 	temp.y = 2256;
+
+	temp = this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 1250, 1500, this, this.thePlayer, 0));
+	temp.x = 3804;
+	temp.y = 1640;
 }
 
 World2.prototype.loadObstacles = function(atlas, frame) {
@@ -221,6 +287,10 @@ World2.prototype.loadObstacles = function(atlas, frame) {
 	temp = this.obstacles.add(new Obstacle(this.game, atlas, frame, 0, 0, 0.5, 0.5, 0, 18));
 	temp.x = 2192;
 	temp.y = 1724;
+
+	temp = this.obstacles.add(new Obstacle(this.game, atlas, frame, 0, 0, 0.5, 0.5, 0, 23));
+	temp.x = 3654;
+	temp.y = 1120;
 }
 
 World2.prototype.loadAbsBottom = function() {
