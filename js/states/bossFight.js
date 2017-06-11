@@ -163,15 +163,16 @@ BossFight.prototype = {
 		
 		this.game.debug.body(this.player);
 		this.game.debug.body(this.player.weapon.bullets);
+		*/
+
+	//	this.game.debug.body(this.world.boss.children[0].chargeBox1);
+	//	this.game.debug.body(this.world.boss.children[0].chargeBox2);
+	//	this.game.debug.body(this.world.boss.children[0].killBox1);
+	//	this.game.debug.body(this.world.boss.children[0].killBox2);
+	//	this.game.debug.body(this.world.boss.children[0].killBox3);
+	//	this.game.debug.body(this.world.boss.children[0].smashBox);
 		
-		
-		this.game.debug.body(this.world.boss.children[0].chargeBox1);
-		this.game.debug.body(this.world.boss.children[0].chargeBox2);
-		this.game.debug.body(this.world.boss.children[0].killBox1);
-		this.game.debug.body(this.world.boss.children[0].killBox2);
-		this.game.debug.body(this.world.boss.children[0].killBox3);
 		/*
-		
 		this.game.debug.body(this.world.startLine);
 		
 		this.game.debug.body(this.world.boss.children[0].killBox);

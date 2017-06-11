@@ -280,6 +280,7 @@ Mob.prototype.setup = function() {
 
 Mob.prototype.kills = function() {
 	this.dying = true;
+	/*
 	var x = this.x - this.thePlayer.x;
 	var y = this.y - this.thePlayer.y;
 	
@@ -300,7 +301,7 @@ Mob.prototype.kills = function() {
 		var angle = this.game.physics.arcade.angleBetween(this, this.thePlayer) * (180/Math.PI);
 		this.game.physics.arcade.velocityFromAngle(angle, 300 * scale, this.thePlayer.body.velocity);
 	}
-	
+	*/
 	this.idle_music.stop();
 	this.death_sound.play();
 	this.animations.play('death');

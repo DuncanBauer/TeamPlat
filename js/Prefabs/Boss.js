@@ -43,12 +43,21 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.chargeBox1.body.setSize(50, 100);
 	this.chargeBox1.anchor.set(0.5);
 	this.chargeBox1.type = "boss";
+	this.chargeBox1.parent = this;
 	
 	this.chargeBox2 = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.chargeBox2, Phaser.Physics.ARCADE);
 	this.chargeBox2.body.setSize(50, 100);
 	this.chargeBox2.anchor.set(0.5);
 	this.chargeBox2.type = "boss";
+	this.chargeBox2.parent = this;
+
+	this.smashBox = this.game.add.sprite(this.x, this.y, null);
+	this.game.physics.enable(this.smashBox, Phaser.Physics.ARCADE);
+	this.smashBox.body.setSize(600, 20);
+	this.smashBox.anchor.set(0.5);
+	this.smashBox.type = "smash";
+	this.smashBox.parent = this;
 	
 	this.killBox1 = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.killBox1, Phaser.Physics.ARCADE);
@@ -84,7 +93,7 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
 	this.disabled = true;
 	this.inControl = false;
 	//this.health = 20;
-	this.health = 130;
+	this.health = 100;
 	this.recovering = false;	
 	this.invuln = true;
 	this.firePrep = false;
@@ -170,17 +179,13 @@ Boss.prototype.update = function() {
 				this.game.physics.arcade.overlap(this.thePlayer, this.chargeBox1, this.thePlayer.determineLoser, null, this.thePlayer);
 				this.game.physics.arcade.overlap(this.thePlayer, this.chargeBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 			}
+
+			if(this.recovering) {
+				this.game.physics.arcade.overlap(this.thePlayer, this.smashBox, this.thePlayer.determineLoser, null, this.thePlayer);
+			}
 		}
 			
 		if(this.takingDmg) {
-			if(this.timer.events.length > 0 && !this.removed) {
-				this.timer.removeAll();
-				this.removed = true;
-				this.timer.add(Phaser.Timer.SECOND*0.7, function() {
-					this.takingDmg = false;
-				}, this);
-				this.timer.add(Phaser.Timer.SECOND*0.9, this.determineMove, this);
-			}
 		}
 		else if(this.charging) {
 			this.repoChargeHitboxes();
@@ -230,7 +235,7 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 	this.health--;
 	
 	console.log(this.health);
-	if(this.health == 100 || this.health == 75 || this.health == 50 || this.health == 25) {
+	if(this.health == 75 || this.health == 50 || this.health == 25) {
 		if(this.timer.events.length > 0) {
 			this.timer.removeAll();
 		}
@@ -281,7 +286,7 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 			this.takingDmg = false;
 			this.recFromDmg = false;
 			this.invuln = false;
-			this.determineMove();
+			this.control();
 		},this);
 	}
 	else if(this.health == 0) {
@@ -360,8 +365,10 @@ Boss.prototype.setKillBoxesIdle = function() {
 }
 
 Boss.prototype.setKillBoxesRecovery = function() {
+	var hitbox;
+	var killBox;
 	if(this.animations.currentFrame.index == 9) {
-		var killBox = this.killBox1;
+		killBox = this.killBox1;
 		killBox.body.x = this.x - killBox.width / 2 - 145;
 		killBox.body.y = this.y - killBox.height / 2 + 50;
 		killBox.anchor.set(0.5);
@@ -379,11 +386,17 @@ Boss.prototype.setKillBoxesRecovery = function() {
 		killBox.body.x = this.x - this.body.width/5 + 8;
 		killBox.body.y = this.y - killBox.height / 2 - 50;
 		killBox.anchor.set(0.5);	
+
+		hitbox = this.smashBox;
+		hitbox.body.x = this.x - 300;
+		hitbox.body.y = this.y + this.height/2;
+		//hitbox.anchor.set(0.5);
 	}
 }
 
 Boss.prototype.setKillBoxesJump = function() {
 	var killBox;
+
 	if(this.animations.currentFrame.index == 10) {
 		killBox = this.killBox1;
 		killBox.body.x = this.x - killBox.width / 2 - 155;
@@ -613,6 +626,7 @@ Boss.prototype.determineMove = function() {
 	this.invuln = false;
 	if(!this.takingDmg && !this.charging && !this.firing && !this.inControl && !this.jumping && !this.dying && !this.firePrep) {
 		this.idle();
+		console.log('determining');
 		var nextAttack = 0;
 		var rand = Math.floor(Math.random() * 6);
 		
@@ -620,33 +634,29 @@ Boss.prototype.determineMove = function() {
 		var y = this.y - this.thePlayer.y;
 		var dist = Math.sqrt((x*x) + (y*y));
 		
-		if(rand >= 0 && rand <= 2) {
+		if(rand >= 0 && rand <= 1) {
 			nextAttack = 0;
 		}
-		else if(rand > 2 && rand <= 3) {
+		else if(rand > 1 && rand <= 3) {
 			nextAttack = 1;
 		}
 		else if(rand > 3 && rand < 5) {
-			nextAttack = 3;
+			nextAttack = 2;
 		}
 		
-		if(dist > 400) {
+		if(dist > 800 || this.checkWalls()) {
 			nextAttack = 0;
 		}
-		
-		//nextAttack = 3;
 
 		if(!this.takingDmg && !this.dying) {
 			if(nextAttack == 0){
 				this.timer.add(Phaser.Timer.SECOND*2, this.charge, this);
 			}
 			else if(nextAttack == 1) {
-				this.readjust();
+				this.timer.add(Phaser.Timer.SECOND*0.9, this.startFireAnim, this);
+				this.timer.add(Phaser.Timer.SECOND*1.7, this.openFire, this);
 			}
 			else if(nextAttack == 2) {
-				this.timer.add(Phaser.Timer.SECOND*.9, this.control, this);
-			}
-			else if(nextAttack == 3) {
 				this.timer.add(Phaser.Timer.SECOND*.9, this.jump, this);
 			}
 		}
@@ -669,19 +679,7 @@ Boss.prototype.endJump = function() {
 	this.pound_sound.play();
 	this.animations.play('control');
 	this.myWorld.shakeCameraMed();
-	
-	if(this.health < 50 && Math.floor(Math.random() * 10) < 5) {
-		this.timer.add(Phaser.Timer.SECOND*1.5, this.control, this);
-	}
-	else if(this.health < 75 && Math.floor(Math.random() * 10) < 3) {
-		this.timer.add(Phaser.Timer.SECOND*1.5, this.control, this);
-	} 
-	else if(this.health < 115 && Math.floor(Math.random() * 10) < 2) {
-		this.timer.add(Phaser.Timer.SECOND*1.5, this.control, this);
-	} 
-	else{
-		this.timer.add(Phaser.Timer.SECOND*.9, this.determineMove, this);
-	}
+	this.timer.add(Phaser.Timer.SECOND*.9, this.determineMove, this);
 }
 
 Boss.prototype.control = function() {
@@ -784,15 +782,15 @@ Boss.prototype.endCharge = function() {
 	this.idling = true;
 	this.body.acceleration.x = 0;
 	this.charging = false;
-	let rand = Math.floor(Math.random() * 4);
-	if(rand >= 2 && rand <= 3) {
-		this.timer.add(Phaser.Timer.SECOND*1.2, this.readjust2, this);
-	}
-	else if(rand >= 0 && rand < 2) {
-		this.timer.add(Phaser.Timer.SECOND*1.2, this.readjust, this);
+	this.timer.add(Phaser.Timer.SECOND*1, this.determineMove, this);
+}
+
+Boss.prototype.checkWalls = function() {
+	if(this.x < 0 + this.width/2 + 40 || this.x > this.game.world.width - this.width/2 - 40) {
+		return true;
 	}
 	else {
-		this.timer.add(Phaser.Timer.SECOND*1, this.determineMove, this);
+		return false;
 	}
 }
 

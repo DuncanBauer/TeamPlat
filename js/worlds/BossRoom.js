@@ -89,14 +89,16 @@ BossRoom.prototype.loadEnemies = function() {
 BossRoom.prototype.callMinions = function() {
 	let temp = [];
 	let taken = [];
-	let rand = Math.floor(Math.random() * 10) + 5;
+	let tempConst = 6;
 	
-	let tempConst = 5;
-	if(this.boss.children[0].health <= 75 && this.boss.children[0].health > 50) {
-		tempConst = 7;
+	if(this.boss.children[0].health == 75) {
+		tempConst = 6;
 	}
-	else if(this.boss.children[0].health <= 50) {
+	else if(this.boss.children[0].health == 50) {
 		tempConst = 9;
+	}
+	else if(this.boss.children[0].health == 25) {
+		tempConst = 12;
 	}
 	
 	let i = 0
@@ -130,6 +132,7 @@ BossRoom.prototype.killMinion = function() {
 	if(this.minionCount == 0) {	
 		this.boss.children[0].inControl = false;
 		this.boss.children[0].timer.add(Phaser.Timer.SECOND*.9, this.boss.children[0].determineMove, this.boss.children[0]);
+		this.boss.children[0].invuln = false;
 	}
 }
 

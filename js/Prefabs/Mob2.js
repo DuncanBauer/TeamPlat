@@ -108,6 +108,16 @@ Mob2.prototype.update = function() {
 				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
 				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 			}
+
+			this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.ground.children, function(bullet, ground) {
+				bullet.kill();
+			}, null, this);
+			this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.walls.children, function(bullet, wall) {
+				bullet.kill();
+			}, null, this);
+			this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.obstacles.children, function(bullet, obstacle) {
+				bullet.kill();
+			}, null, this);
 		}
 	}
 	else if(!this.dying) {
@@ -324,6 +334,7 @@ Mob2.prototype.openFire = function() {
 
 Mob2.prototype.kills = function() {
 	this.dying = true;
+	/*
 	var x = this.x - this.thePlayer.x;
 	var y = this.y - this.thePlayer.y;
 	
@@ -344,7 +355,7 @@ Mob2.prototype.kills = function() {
 		var angle = this.game.physics.arcade.angleBetween(this, this.thePlayer) * (180/Math.PI);
 		this.game.physics.arcade.velocityFromAngle(angle, 300 * scale, this.thePlayer.body.velocity);
 	}
-	
+	*/
 	this.idle_music.stop();
 	this.death_sound.play();
 	
