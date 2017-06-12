@@ -2,6 +2,7 @@ function BossRoom(game) {
 	Phaser.Group.call(this, game);
 	this.game = game;
 
+	// Creates groups for the objects in the world
 	this.ground = this.add(this.game.add.group());
 	this.walls  = this.add(this.game.add.group());
 	this.caps = this.add(this.game.add.group());
@@ -26,11 +27,13 @@ function BossRoom(game) {
 BossRoom.prototype = Object.create(Phaser.Group.prototype);
 BossRoom.prototype.constructor = BossRoom;
 
+// Gives a reference of the player to the world map
 BossRoom.prototype.retreivePlayer = function(player) {
 	this.thePlayer = player;
 	this.init();
 }
 
+// Resets the fighht if the player dies
 BossRoom.prototype.resetFight = function() {
 	this.bg_music.stop();
 	this.minions.forEach(function(minion) {
@@ -39,6 +42,7 @@ BossRoom.prototype.resetFight = function() {
 	this.game.state.restart();
 }
 
+//Initializes world and gives locations for enemies to be spawned in
 BossRoom.prototype.init = function() {
 	this.mobSpawnLocations.push([172,2327]);
 	this.mobSpawnLocations.push([525,2327]);
@@ -64,15 +68,18 @@ BossRoom.prototype.init = function() {
 	this.loadStartLine();
 }
 
+// Loads portal to be used after victory
 BossRoom.prototype.loadPortal = function() {
 	let temp = this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 1800, 2110, 'LevelSelect', 2));
 	temp.kills();
 }
 
+// Shows portal after boss death
 BossRoom.prototype.revivePortal = function() {
 	this.checkpoints.children[0].revive();
 }
 
+// Loads the floor and ceiling of the room
 BossRoom.prototype.loadFloor = function(atlas, frame) {
 	let temp = this.ground.add(new PlatformA(this.game, atlas, frame, 63));
 	temp.x = -32;
@@ -83,15 +90,18 @@ BossRoom.prototype.loadFloor = function(atlas, frame) {
 	temp.y = 1400;
 }
 
+// Spawns the boss
 BossRoom.prototype.loadEnemies = function() {
 	this.boss.add(new Boss(this.game, 'bossbot_atlas', 'bossbot0', 1600, 2000, this, this.thePlayer, false));
 }
 
+// Spawns minions called by the boss based on health
 BossRoom.prototype.callMinions = function() {
 	let temp = [];
 	let taken = [];
 	let tempConst = 6;
 	
+	// Determines number of enemies to spawn
 	if(this.boss.children[0].health == 75) {
 		tempConst = 6;
 	}
@@ -102,9 +112,12 @@ BossRoom.prototype.callMinions = function() {
 		tempConst = 12;
 	}
 	
+	// Grabs random locations for the enemies to be spawned in
 	let i = 0
 	while(i < tempConst) {
 		let other = Math.floor(Math.random() * 14); 
+
+		// Only one enemy in one place
 		if(!taken.includes(other)) {
 			temp.push(other);
 			taken.push(other);
@@ -112,6 +125,7 @@ BossRoom.prototype.callMinions = function() {
 		}
 	}
 	
+	// Spawns enemies
 	for(i = 0; i < tempConst; i++) {
 		this.minionCount++;
 		if(temp[i] < 8) {
@@ -128,8 +142,11 @@ BossRoom.prototype.callMinions = function() {
 	}
 }
 
+// Called when the player kills one of the bosses minion
 BossRoom.prototype.killMinion = function() {
 	this.minionCount--;
+
+	// If no more minions exist restart boss movement and attacking
 	if(this.minionCount == 0) {	
 		this.boss.children[0].inControl = false;
 		this.boss.children[0].timer.add(Phaser.Timer.SECOND*.9, this.boss.children[0].determineMove, this.boss.children[0]);
@@ -137,35 +154,41 @@ BossRoom.prototype.killMinion = function() {
 	}
 }
 
+// Loads the line that triggers the boss fight
 BossRoom.prototype.loadStartLine = function() {
 	this.startLine = this.game.add.sprite(1000, 0, null);
 	this.game.physics.enable(this.startLine, Phaser.Physics.ARCADE);
 	this.startLine.body.setSize(5, this.game.world.height);
 }
 
+// Resets boss fight
 BossRoom.prototype.resetWorld = function() {	
 	this.game.input.keyboard.start();
 	this.game.sound.stopAll();
 	this.game.state.restart();
 }
 
+// Shakes camera hard
 BossRoom.prototype.shakeCamera = function() {
 	this.game.camera.shake(.02, 3600);
 }
 	
+// Shakes camera just a wee bit
 BossRoom.prototype.shakeCameraLite = function() {
 	this.game.camera.shake(.005, 200);
 }
-	
+
+// Shakes camera for a little longer
 BossRoom.prototype.shakeCameraLong = function() {
 	this.game.camera.shake(.01, 4000);
 }
 	
+// Not too short of a camera shake
 BossRoom.prototype.shakeCameraMed = function() {
 	this.game.camera.shake(.01, 500);
 }
 	
+// A little longer of a shake
 BossRoom.prototype.shakeCameraMed2 = function() {
 	this.game.camera.shake(.015, 1500);
 }
-	

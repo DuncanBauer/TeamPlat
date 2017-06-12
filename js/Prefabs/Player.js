@@ -790,6 +790,17 @@ Player.prototype.determineLoser = function(player, enemy) {
 	}
 }
 
+Player.prototype.loseLeg = function() {
+	if(this.player.legs >= 0) {
+		this.player.legs--;
+	}
+	else {
+		this.dashCancel();
+		this.timeToDie();
+		this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.myWorld.resetWorld, this.myWorld);
+	}
+}
+
 Player.prototype.stupidPlayer = function(player, collisionBox) {
 	if(this.myWorld.type == "boss") {
 		if(this.legs > 0) {
@@ -801,26 +812,14 @@ Player.prototype.stupidPlayer = function(player, collisionBox) {
 			player.body.acceleration.x = 0;
 
 			if(collisionBox.parent.type == "boss") {
-				if(collisionBox.type == "smash") {
-					if(player.x < collisionBox.parent.x) {
-						player.body.velocity.x = -1075;
-					}
-					else if(player.x > collisionBox.parent.x) {
-						player.body.velocity.x = 1075;
-					}
-					this.pauseInput(1.5);
-					this.game.time.events.add(Phaser.Timer.SECOND*1.5, this.loseInvinc, this);
+				if(player.x < collisionBox.parent.x) {
+						player.body.velocity.x = -875;
 				}
-				else {
-					if(player.x < collisionBox.parent.x) {
-							player.body.velocity.x = -875;
-					}
-					else if(player.x > collisionBox.parent.x) {
-						player.body.velocity.x = 875;
-					}
-					this.pauseInput(1.5);
-					this.game.time.events.add(Phaser.Timer.SECOND*1.5, this.loseInvinc, this);
+				else if(player.x > collisionBox.parent.x) {
+					player.body.velocity.x = 875;
 				}
+				this.pauseInput(1.5);
+				this.game.time.events.add(Phaser.Timer.SECOND*1.5, this.loseInvinc, this);
 			}
 			else {
 				if(player.x < collisionBox.parent.x) {

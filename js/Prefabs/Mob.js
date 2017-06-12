@@ -57,28 +57,36 @@ function Mob(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 
 Mob.prototype = Object.create(Phaser.Sprite.prototype);
 Mob.prototype.update = function() {
+	// If the mob isnt dying
 	if(!this.dying) {
 		this.setup();
 		
+		// Gets distance to player
 		var x = this.x - this.thePlayer.x;
 		var y = this.y - this.thePlayer.y;
 		var dist = Math.sqrt((x*x) + (y*y));
 		
+		// Determines whether to flail based on distance
+		// Player just got in range
 		if(!this.flailing && dist <= 175) {
 			this.flailing = true;
 			this.animations.play('flail');
 		}
+		// Player left range
 		else if(this.flailing && dist > 175) {
 			this.flailing = false;
 			this.animations.play('idle');
 		}
+		// Player remains in range
 		else if(this.flailing) {
+			// Track collision with player if not invincible or already dying
 			if(!this.thePlayer.invincible && !this.thePlayer.dying) {
 				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
 				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 			}
 		}
 		
+		// Change music volume based on distance to player
 		if(dist > 400 && dist < 600) {
 			this.idle_music.volume = 1;
 		}
@@ -94,6 +102,7 @@ Mob.prototype.update = function() {
 	}
 }
 
+// Sets the mob hitboxes based on frame - locks onto eye and claws
 Mob.prototype.setup = function() {
 	this.set = true;
 	
@@ -278,31 +287,19 @@ Mob.prototype.setup = function() {
 	}
 }
 
+// Is called when the mob dies
 Mob.prototype.kills = function() {
 	this.dying = true;
-	/*
-	var x = this.x - this.thePlayer.x;
-	var y = this.y - this.thePlayer.y;
-	
-	var dist = Math.sqrt((x*x) + (y*y));
-	var scale = 0;
-	
-	if(dist <= 100) {
-		scale = 2;
-	}
-	else if(dist <= 200) {
-		scale = 1.5;
-	}
-	else if(dist <= 220) {
-		scale = 1;
-	}
-	
-	/*if(scale > 0) {
-		var angle = this.game.physics.arcade.angleBetween(this, this.thePlayer) * (180/Math.PI);
-		this.game.physics.arcade.velocityFromAngle(angle, 300 * scale, this.thePlayer.body.velocity);
-	}*/
+
+	// Stops music
 	this.idle_music.stop();
 	this.death_sound.play();
+	
+	// Remove remained events
+	this.timer.clearPendingEvents();
+	this.timer.removeAll();
+	
+	// Kill mob
 	this.animations.play('death');
 	this.box.kill();
 	this.killBox.kill();
@@ -311,11 +308,14 @@ Mob.prototype.kills = function() {
 	this.game.time.events.add(Phaser.Timer.SECOND*1.4, this.kill, this);
 }
 
+// Stops music
 Mob.prototype.stopMusic = function() {
 	this.idle_music.stop();
 }
 
+// Respawns mob when player dies
 Mob.prototype.reinitialize = function() {
+	// Revives mob
 	this.dying = false;
 	this.revive();
 	this.idle_music.play();

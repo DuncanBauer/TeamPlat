@@ -80,22 +80,29 @@ function Mob2(game, atlas_key, atlas_frame, x, y, world, player, rotateAngle) {
 
 Mob2.prototype = Object.create(Phaser.Sprite.prototype);
 Mob2.prototype.update = function() {
+	// Enters if the mob is ready to fight
 	if(!this.spawning && !this.dying) {	
 		this.setup();
 		
+		// Get distance from the player
 		var x = this.x - this.thePlayer.x;
 		var y = this.y - this.thePlayer.y;
 		var dist = Math.sqrt((x*x) + (y*y));
 	
+		// Use distance to determine whether or not to attack
+		// in range
 		if(!this.flailing && dist <= 600 ) {
 			this.flailing = true;
 			this.animations.play('flail');
 		}
+		// too far
 		else if(this.flailing && dist > 600) {
 			this.flailing = false;
 			this.animations.play('idle');
 		}
+		// ready to attack
 		else if(this.flailing) {
+			// checks cooldown on weapon and fires at the player
 			if(this.game.time.now - this.fireCheck > this.fireCooldown) {
 				this.fireCheck = this.game.time.now;
 				this.playerX = this.thePlayer.x;
@@ -103,12 +110,14 @@ Mob2.prototype.update = function() {
 				this.timer.add(Phaser.Timer.SECOND *.2 + Math.floor(Math.random() * 1000) + 500, this.openFire, this);
 			}
 		
+			// Ignore damage if the player is invincible or is already dying
 			if(!this.thePlayer.invincible && !this.thePlayer.dying) {
 				this.game.physics.arcade.collide(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
 				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox1, this.thePlayer.determineLoser, null, this.thePlayer);
 				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 			}
 
+			// Mob bullets shouldnt be able to go through walls
 			this.game.physics.arcade.collide(this.weapon.bullets, this.myWorld.ground.children, function(bullet, ground) {
 				bullet.kill();
 			}, null, this);
@@ -127,6 +136,7 @@ Mob2.prototype.update = function() {
 		}
 	}
 	
+	// Sets mob volume based on player distance
 	if(dist > 400 && dist < 600) {
 		this.idle_music.volume = 1;
 	}
@@ -141,6 +151,7 @@ Mob2.prototype.update = function() {
 	}
 }
 
+// Sets the mob hitboxes based on frame - locks onto eye and claws
 Mob2.prototype.setup = function() {
 	this.set = true;
 	
@@ -332,36 +343,19 @@ Mob2.prototype.openFire = function() {
 	}
 }
 
+// Is called when the mob dies
 Mob2.prototype.kills = function() {
 	this.dying = true;
-	/*
-	var x = this.x - this.thePlayer.x;
-	var y = this.y - this.thePlayer.y;
-	
-	var dist = Math.sqrt((x*x) + (y*y));
-	var scale = 0;
-	
-	if(dist <= 100) {
-		scale = 2;
-	}
-	else if(dist <= 200) {
-		scale = 1.5;
-	}
-	else if(dist <= 220) {
-		scale = 1;
-	}
-	
-	if(scale > 0) {
-		var angle = this.game.physics.arcade.angleBetween(this, this.thePlayer) * (180/Math.PI);
-		this.game.physics.arcade.velocityFromAngle(angle, 300 * scale, this.thePlayer.body.velocity);
-	}
-	*/
+
+	// Stops music
 	this.idle_music.stop();
 	this.death_sound.play();
 	
+	// Remove remained events
 	this.timer.clearPendingEvents();
 	this.timer.removeAll();
 	
+	// Kill mob
 	this.animations.play('death');
 	this.box.kill();
 	this.killBox.kill();
@@ -370,15 +364,19 @@ Mob2.prototype.kills = function() {
 	this.game.time.events.add(Phaser.Timer.SECOND*1.4, this.kill, this);
 }
 
+// Stops music
 Mob2.prototype.stopMusic = function() {
 	this.idle_music.stop();
 }
 
+// Respawns mob when player dies
 Mob2.prototype.reinitialize = function() {
+	// Removes any bullets from the world
 	this.weapon.bullets.children.forEach(function(bullet) {
 		bullet.kill();
 	});
 
+	// Revives mob
 	this.dying = false;
 	this.revive();
 	this.idle_music.play();
