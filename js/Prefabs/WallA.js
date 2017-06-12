@@ -7,6 +7,8 @@ function WallA(game, atlas, frame, tileCount) {
 WallA.prototype = Object.create(Phaser.Group.prototype);
 WallA.prototype.constructor = WallA;
 
+
+// spawns a wall with the given tileCount and random tile rotation
 WallA.prototype.createWall = function(atlas, frame, tileCount) {
 	
 	for(i=0; i<tileCount; i+=1) {

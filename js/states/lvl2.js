@@ -41,6 +41,8 @@ Game2.prototype = {
 		*/
 	},
 	
+
+	// unused pause menu stuff below, didnt get to it
 	pause: function() {
 		if(this.game.paused) {
 			this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_TOPDOWN_TIGHT, 0.75, 0.75);

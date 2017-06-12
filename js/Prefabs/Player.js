@@ -3,6 +3,8 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	
 	this.anchor.setTo(0.5,1);
 	this.game.physics.arcade.enable(this);
+
+	// add animations
 	this.animations.add('dash', [3], 5, true);
 	this.animations.add('walk', [1,2,1,4], 5, true);
 	this.animations.add('jump', [2], 5, true);
@@ -101,6 +103,7 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	this.invincible = false;
 	this.runTime = this.game.time.now;
 	
+	// set emitter for shooting
 	this.emitter = this.game.add.emitter(this.x, this.y, 50);
 	this.emitter.makeParticles('vaporTrails');
 	this.emitter.setXSpeed(0, 0);
@@ -146,6 +149,7 @@ Player.prototype.update = function() {
 	if(!this.dying) {
 		this.dashChecking();
 
+		// check ground collision
 		if(this.game.physics.arcade.collide(this, this.myWorld.ground.children) && !this.body.touching.up) {
 			this.touchDown();
 			// cancel dash when hitting floor
@@ -154,6 +158,7 @@ Player.prototype.update = function() {
 			}
 		}
 
+		// check boss collision
 		if(this.myWorld.type == "boss") {
 			if(this.game.physics.arcade.collide(this, this.myWorld.caps.children)) {
 				this.touchDown();
@@ -235,12 +240,12 @@ Player.prototype.wallCollide = function (player, wall) {
 		// this keeps the player sprite in place if it slips between tiles
 		/* there is a small issue where it does a drag change when you pass almost if
 			not every tile seam, not sure if this will cause any noticeable gameplay
-			problems yet
+			problems yet <<< i fixed that issue
 		*/
 		if(this.x != this.wallX){
 			this.x = this.wallX;
 		}
-		console.log("drag "+this.body.drag.y);
+		// console.log("drag "+this.body.drag.y);
 	}
 }
 
@@ -906,6 +911,8 @@ Player.prototype.stupidPlayer2 = function(player, bullet) {
 	bullet.kill();
 }
 
+
+// kills player
 Player.prototype.timeToDie = function() {
 	this.dying = true;	
 	this.walk_sound.stop();

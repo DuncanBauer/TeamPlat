@@ -7,6 +7,7 @@ function PlatformA(game, atlas, frame, tileCount) {
 PlatformA.prototype = Object.create(Phaser.Group.prototype);
 PlatformA.prototype.constructor = PlatformA;
 
+// spawns a platform with the given tileCount and random tile rotations
 PlatformA.prototype.createPlat = function(atlas, frame, tileCount) {
 	for(i=0; i<tileCount; i+=1) {
 		let rand = Math.floor(Math.random() * 3);

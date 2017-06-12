@@ -22,6 +22,7 @@ function Checkpoint(game, sprite_key, frame, player, x, y){
 Checkpoint.prototype = Object.create(Phaser.Sprite.prototype);
 Checkpoint.prototype.update = function() {
 
+	// sets player current checkpoint when overlap occurs
 	if(this.game.physics.arcade.overlap(this, this.player)){
 		if(this.id != this.player.checkpointID){
 			if(!this.portOn){

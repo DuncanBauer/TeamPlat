@@ -1,3 +1,4 @@
+// this is a prefab for the leg collectible to use as health on boss fights
 function Leg(game, sprite, x, y, player) {
 	Phaser.Sprite.call(this, game, x, y, sprite);
 
