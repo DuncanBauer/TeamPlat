@@ -51,6 +51,12 @@ BossFight2.prototype = {
 	},
 
 	update:function() {
+
+		if(this.game.input.keyboard.isDown(Phaser.KeyCode.ESC)){
+			this.game.sound.stopAll();
+			this.game.state.start("LevelSelect");
+		}
+		
 		this.stockNum.text = this.player.legs;
 		
 		this.game.physics.arcade.overlap(this.player.weapon.bullets, this.world.minions, this.minionHit, null, this);
