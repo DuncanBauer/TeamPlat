@@ -15,10 +15,10 @@ function World(game) {
 	this.thePlayer = null;
 
 	// Start music
-//	this.bg_music = this.game.add.audio('bg_music');
-//	this.bg_music.loop = true;
-//	this.bg_music.volume = 1;
-//	this.bg_music.play();
+	this.bg_music = this.game.add.audio('bg_music');
+	this.bg_music.loop = true;
+	this.bg_music.volume = 1;
+	this.bg_music.play();
 };
 
 World.prototype = Object.create(Phaser.Group.prototype);
@@ -48,10 +48,14 @@ World.prototype.loadLegs = function() {
 	var newLeg = this.legs.add(new Leg(this.game, 'leg', 264, 2270, this.thePlayer));
 	var tween = this.game.add.tween(newLeg);
 	tween.to({y: newLeg.y - 10}, 1000, 'Linear', true, 200, false, true);
-	
-	//newLeg = this.legs.add(new Leg(this.game, 'leg', 464, 2270, this.thePlayer));
-	//var tween = this.game.add.tween(newLeg);
-	//tween.to({y: newLeg.y - 10}, 1000, 'Linear', true, 200, false, true);
+
+	newLeg = this.legs.add(new Leg(this.game, 'leg', 940, 400, this.thePlayer));
+	tween = this.game.add.tween(newLeg);
+	tween.to({y: newLeg.y - 10}, 1000, 'Linear', true, 200, false, true);
+
+	newLeg = this.legs.add(new Leg(this.game, 'leg', 1800, 1650, this.thePlayer));
+	tween = this.game.add.tween(newLeg);
+	tween.to({y: newLeg.y - 10}, 1000, 'Linear', true, 200, false, true);
 }
 
 World.prototype.loadChecks = function() {

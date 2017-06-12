@@ -375,6 +375,10 @@ Mob2.prototype.stopMusic = function() {
 }
 
 Mob2.prototype.reinitialize = function() {
+	this.weapon.bullets.children.forEach(function(bullet) {
+		bullet.kill();
+	});
+
 	this.dying = false;
 	this.revive();
 	this.idle_music.play();
