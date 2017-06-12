@@ -1,9 +1,10 @@
-function Boss(game, atlas_key, atlas_frame, x, y, world, player) {
+function Boss(game, atlas_key, atlas_frame, x, y, world, player, ironMode) {
 	Phaser.Sprite.call(this, game, x, y, atlas_key, atlas_frame);
 
 	this.ogX = x;
 	this.ogY = y;
 	
+	this.ironMode = ironMode;
 	this.type = "boss";
 	
 	this.game.physics.enable(this, Phaser.Physics.ARCADE);
@@ -281,13 +282,24 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 		this.invuln = true;
 		this.myWorld.shakeCameraMed2();
 		
-		this.timer.add(Phaser.Timer.SECOND*1.5, function() {
-			this.animations.play('idle');
-			this.takingDmg = false;
-			this.recFromDmg = false;
-			this.invuln = false;
-			this.control();
-		},this);
+		if(!this.ironMode) {
+			this.timer.add(Phaser.Timer.SECOND*1.5, function() {
+				this.animations.play('idle');
+				this.takingDmg = false;
+				this.recFromDmg = false;
+				this.invuln = false;
+				this.control();
+			},this);
+		}
+		else {
+			this.timer.add(Phaser.Timer.SECOND*1.5, function() {
+				this.animations.play('idle');
+				this.takingDmg = false;
+				this.recFromDmg = false;
+				this.invuln = false;
+				this.determineMove();
+			},this);
+		}
 	}
 	else if(this.health == 0) {
 		if(this.timer.events.length > 0) {
@@ -626,39 +638,77 @@ Boss.prototype.determineMove = function() {
 	this.invuln = false;
 	if(!this.takingDmg && !this.charging && !this.firing && !this.inControl && !this.jumping && !this.dying && !this.firePrep) {
 		this.idle();
-		console.log('determining');
 		var nextAttack = 0;
-		var rand = Math.floor(Math.random() * 6);
-		
+		var rand = 0;
 		var x = this.x - this.thePlayer.x;
 		var y = this.y - this.thePlayer.y;
 		var dist = Math.sqrt((x*x) + (y*y));
 		
-		if(rand >= 0 && rand <= 1) {
-			nextAttack = 0;
-		}
-		else if(rand > 1 && rand <= 3) {
-			nextAttack = 1;
-		}
-		else if(rand > 3 && rand < 5) {
-			nextAttack = 2;
-		}
+		if(!this.ironMode) {
+			rand = Math.floor(Math.random() * 6);
 		
-		if(dist > 800 || this.checkWalls()) {
-			nextAttack = 0;
-		}
+			if(rand >= 0 && rand <= 1) {
+				nextAttack = 0;
+			}
+			else if(rand > 1 && rand <= 3) {
+				nextAttack = 1;
+			}
+			else if(rand > 3 && rand <= 5) {
+				nextAttack = 2;
+			}
+			
+			if(dist > 700 || this.checkWalls()) {
+				nextAttack = 0;
+			}
 
-		if(!this.takingDmg && !this.dying) {
-			if(nextAttack == 0){
-				this.timer.add(Phaser.Timer.SECOND*2, this.charge, this);
+			if(!this.takingDmg && !this.dying) {
+				if(nextAttack == 0){
+					this.timer.add(Phaser.Timer.SECOND*2, this.charge, this);
+				}
+				else if(nextAttack == 1) {
+					this.timer.add(Phaser.Timer.SECOND*0.9, this.startFireAnim, this);
+					this.timer.add(Phaser.Timer.SECOND*1.7, this.openFire, this);
+				}
+				else if(nextAttack == 2) {
+					this.timer.add(Phaser.Timer.SECOND*.9, this.jump, this);
+				}
 			}
-			else if(nextAttack == 1) {
-				this.timer.add(Phaser.Timer.SECOND*0.9, this.startFireAnim, this);
-				this.timer.add(Phaser.Timer.SECOND*1.7, this.openFire, this);
+		}
+		else {
+			rand = Math.floor(Math.random() * 8);
+
+			if(rand >= 0 && rand <= 1) {
+				nextAttack = 0;
 			}
-			else if(nextAttack == 2) {
-				this.timer.add(Phaser.Timer.SECOND*.9, this.jump, this);
+			else if(rand > 1 && rand <= 3) {
+				nextAttack = 1;
 			}
+			else if(rand > 3 && rand <= 5) {
+				nextAttack = 2;
+			}
+			else if(rand > 5 && rand <= 7) {
+				nextAttack = 3;
+			}
+			
+			if(dist > 700 || this.checkWalls()) {
+				nextAttack = 0;
+			}
+
+			if(!this.takingDmg && !this.dying) {
+				if(nextAttack == 0){
+					this.timer.add(Phaser.Timer.SECOND*2, this.charge, this);
+				}
+				else if(nextAttack == 1) {
+					this.timer.add(Phaser.Timer.SECOND*0.9, this.startFireAnim, this);
+					this.timer.add(Phaser.Timer.SECOND*1.7, this.openFire, this);
+				}
+				else if(nextAttack == 2) {
+					this.timer.add(Phaser.Timer.SECOND*.9, this.jump, this);
+				}
+				else if(nextAttack == 3) {
+					this.timer.add(Phaser.Timer.SECOND*1.2, this.control, this);
+				}
+			}	
 		}
 	}
 }

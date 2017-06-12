@@ -41,7 +41,6 @@ LevelSelect.prototype = {
 	},
 	
 	update: function() {
-
 		if(this.game.input.keyboard.isDown(Phaser.KeyCode.ESC)){
 			this.game.sound.stopAll();
 			this.game.state.start("MainMenu");
@@ -76,6 +75,6 @@ LevelSelect.prototype = {
 	
 	playBoss: function() {
 		this.game.sound.stopAll();
-		this.game.state.start('BossFight');
+		this.game.state.start('BossFight2');
 	}
 }

@@ -109,13 +109,13 @@ Mob2.prototype.update = function() {
 				this.game.physics.arcade.overlap(this.thePlayer, this.hitBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 			}
 
-			this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.ground.children, function(bullet, ground) {
+			this.game.physics.arcade.collide(this.weapon.bullets, this.myWorld.ground.children, function(bullet, ground) {
 				bullet.kill();
 			}, null, this);
-			this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.walls.children, function(bullet, wall) {
+			this.game.physics.arcade.collide(this.weapon.bullets, this.myWorld.walls.children, function(bullet, wall) {
 				bullet.kill();
 			}, null, this);
-			this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.obstacles.children, function(bullet, obstacle) {
+			this.game.physics.arcade.collide(this.weapon.bullets, this.myWorld.obstacles.children, function(bullet, obstacle) {
 				bullet.kill();
 			}, null, this);
 		}
@@ -375,6 +375,7 @@ Mob2.prototype.stopMusic = function() {
 }
 
 Mob2.prototype.reinitialize = function() {
+	this.dying = false;
 	this.revive();
 	this.idle_music.play();
 	this.set = false;

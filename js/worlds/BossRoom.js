@@ -4,6 +4,7 @@ function BossRoom(game) {
 
 	this.ground = this.add(this.game.add.group());
 	this.walls  = this.add(this.game.add.group());
+	this.caps = this.add(this.game.add.group());
 	this.obstacles = this.add(this.game.add.group());
 	this.checkpoints = this.add(this.game.add.group());
 	this.minions = this.add(this.game.add.group());
@@ -83,7 +84,7 @@ BossRoom.prototype.loadFloor = function(atlas, frame) {
 }
 
 BossRoom.prototype.loadEnemies = function() {
-	this.boss.add(new Boss(this.game, 'bossbot_atlas', 'bossbot0', 1600, 2000, this, this.thePlayer));
+	this.boss.add(new Boss(this.game, 'bossbot_atlas', 'bossbot0', 1600, 2000, this, this.thePlayer, false));
 }
 
 BossRoom.prototype.callMinions = function() {
