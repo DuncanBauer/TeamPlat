@@ -16,7 +16,11 @@ MainMenu.prototype = {
 		this.buttons = this.game.add.group();
 		
 		// Create start this.game button
-		var button = this.game.add.button(this.game.world.centerX - 150, this.game.world.centerY - 100, 'play_Button', this.playgame, this);
+		var button = this.game.add.button(this.game.world.centerX - 290, this.game.world.centerY - 300, 'title_button', null, this);
+		this.buttons.create(button);
+
+
+		var button = this.game.add.button(this.game.world.centerX - 150, this.game.world.centerY, 'play_Button', this.playgame, this);
 		this.buttons.create(button);
 		
 		this.bg_music = this.game.add.audio('GearUp_bg');

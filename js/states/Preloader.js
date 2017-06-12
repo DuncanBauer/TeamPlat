@@ -13,6 +13,7 @@ Preloader.prototype = {
 		this.game.load.image('background01', '/img/background02.png');
 		this.game.load.image('background02', '/img/background03.png');
 		this.game.load.image('play_Button', '/img/playbutton.png');
+		this.game.load.image('title_button', '/img/titlebutton.png')
 		this.game.load.image('power_Button', '/img/power_Button.png');
 		this.game.load.image('lvl1button', '/img/levelbutton1.png');
 		this.game.load.image('lvl2button', '/img/levelbutton2.png');
@@ -62,6 +63,6 @@ Preloader.prototype = {
 		console.log('Preloader: create');
 		
 		// Starts MainMenu state
-		this.game.state.start('LevelSelect');
+		this.game.state.start('MainMenu');
 	}
 }
