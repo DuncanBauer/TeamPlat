@@ -41,6 +41,10 @@ LevelSelect.prototype = {
 		button = this.game.add.button(this.game.world.centerX, 340, 'lvl2button', this.playLevel2, this);
 		button.anchor.set(.5);
 		this.buttons.create(button);
+
+		button = this.game.add.button(this.game.world.centerX, 470, 'bossFightButton', this.playBoss2, this);
+			button.anchor.set(.5);
+			this.buttons.create(button);
 	},
 	
 	update: function() {
@@ -77,6 +81,11 @@ LevelSelect.prototype = {
 	},
 	
 	playBoss: function() {
+		this.game.sound.stopAll();
+		this.game.state.start('BossFight');
+	},
+
+	playBoss2: function() {
 		this.game.sound.stopAll();
 		this.game.state.start('BossFight2');
 	}
