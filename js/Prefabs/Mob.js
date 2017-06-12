@@ -64,11 +64,11 @@ Mob.prototype.update = function() {
 		var y = this.y - this.thePlayer.y;
 		var dist = Math.sqrt((x*x) + (y*y));
 		
-		if(!this.flailing && dist <= 600) {
+		if(!this.flailing && dist <= 175) {
 			this.flailing = true;
 			this.animations.play('flail');
 		}
-		else if(this.flailing && dist > 600) {
+		else if(this.flailing && dist > 175) {
 			this.flailing = false;
 			this.animations.play('idle');
 		}

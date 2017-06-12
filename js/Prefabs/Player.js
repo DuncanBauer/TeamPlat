@@ -151,6 +151,16 @@ Player.prototype.update = function() {
 			}
 		}
 
+		if(this.myWorld.type == "boss") {
+			if(this.game.physics.arcade.collide(this, this.myWorld.caps.children)) {
+				this.touchDown();
+				// cancel dash when hitting floor
+				if(this.dashingDown){
+					this.dashCancel();
+				}
+			}
+		}
+
 		/* Initial wall collision handling (seems to work great so far)
 		**********************************/
 		this.game.physics.arcade.collide(this, this.myWorld.walls.children, this.wallCollide, null, this);
@@ -160,6 +170,7 @@ Player.prototype.update = function() {
 			this.body.drag.y = 0;
 			this.wallX = null;
 			this.onWall = false;
+			this.slide_sound.stop();
 			this.animations.play('jump');
 			console.log("drag "+this.body.drag.y);
 		}
@@ -182,19 +193,19 @@ Player.prototype.update = function() {
 		}
 		
 		//if(!this.invincible) {
-			this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
+			this.game.physics.arcade.collide(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
 		//}
 
-		this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.ground.children, function(bullet, ground) {
+		this.game.physics.arcade.collide(this.weapon.bullets, this.myWorld.ground.children, function(bullet, ground) {
 			bullet.kill();
 		}, null, this);
-		this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.walls.children, function(bullet, walls) {
+		this.game.physics.arcade.collide(this.weapon.bullets, this.myWorld.walls.children, function(bullet, walls) {
 			bullet.kill();
 		}, null, this);
-		this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.obstacles.children, function(bullet, obstacle) {
+		this.game.physics.arcade.collide(this.weapon.bullets, this.myWorld.obstacles.children, function(bullet, obstacle) {
 			bullet.kill();
 		}, null, this);
-		this.game.physics.arcade.overlap(this, this.myWorld.obstacles.children, this.stupidPlayer, null, this);
+		this.game.physics.arcade.collide(this, this.myWorld.obstacles.children, this.stupidPlayer, null, this);
 		
 		//this.moveEmitter();
 	}
@@ -243,7 +254,7 @@ Player.prototype.moveRight = function() {
 	//if(this.body.touching.down) {		
 	//  Move to the right
 	
-	if(!this.walk_sound.isPlaying && !this.dashing) {
+	if(!this.walk_sound.isPlaying && !this.dashing && !this.jumping && !this.onWall) {
 		this.walk_sound.play();
 	}
 	
@@ -267,7 +278,7 @@ Player.prototype.moveLeft = function() {
 	//if(this.body.touching.down) {		
 		//  Move to the left		
 		
-	if(!this.walk_sound.isPlaying && !this.dashing) {
+	if(!this.walk_sound.isPlaying && !this.dashing && !this.jumping && !this.onWall) {
 		this.walk_sound.play();
 	}
 	
@@ -397,9 +408,7 @@ Player.prototype.jump = function() {
 			this.jumping = true;
 		}
 		
-		if(this.walk_sound.isPlaying) {
-			this.walk_sound.stop();
-		}
+		this.walk_sound.stop();
 		this.animations.play('jump');
 		// Play jump sound
 		this.jump_sound.play();
@@ -409,6 +418,7 @@ Player.prototype.jump = function() {
 	}else if(this.onWall){
 		this.animations.play('jump');
 		this.slide_sound.stop();
+		this.jump_sound.play();
 		this.body.velocity.y = -500;
 		this.body.velocity.x = -300*Math.sign(this.scale.x);
 		console.log(this.body.velocity.x);
@@ -887,7 +897,9 @@ Player.prototype.stupidPlayer2 = function(player, bullet) {
 }
 
 Player.prototype.timeToDie = function() {
-	this.dying = true;
+	this.dying = true;	
+	this.walk_sound.stop();
+	this.slide_sound.stop();
 	this.death_sound.play();
 	this.game.input.keyboard.stop();
 	this.body.velocity.x = 0;

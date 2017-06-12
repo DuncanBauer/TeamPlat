@@ -4,6 +4,7 @@ function BossRoom2(game) {
 
 	this.ground = this.add(this.game.add.group());
 	this.walls  = this.add(this.game.add.group());
+	this.caps = this.add(this.game.add.group());
 	this.obstacles = this.add(this.game.add.group());
 	this.checkpoints = this.add(this.game.add.group());
 	this.minions = this.add(this.game.add.group());
@@ -16,6 +17,10 @@ function BossRoom2(game) {
 	this.minionCount = 0;
 	
 	this.type = "boss";
+		
+	// Start music
+	this.bg_music = this.game.add.audio('Armless_bg');
+	this.bg_music.loop = true;
 };
 
 BossRoom2.prototype = Object.create(Phaser.Group.prototype);
@@ -26,6 +31,14 @@ BossRoom2.prototype.retreivePlayer = function(player) {
 	this.init();
 }
 
+BossRoom2.prototype.resetFight = function() {
+	this.bg_music.stop();
+	this.minions.forEach(function(minion) {
+		minion.stopMusic();
+	}, Mob2);
+	this.game.state.restart();
+}
+
 BossRoom2.prototype.init = function() {
 	this.mobSpawnLocations.push([172,2327]);
 	this.mobSpawnLocations.push([525,2327]);
@@ -33,7 +46,7 @@ BossRoom2.prototype.init = function() {
 	this.mobSpawnLocations.push([1328,2327]);
 	this.mobSpawnLocations.push([1738,2327]);
 	this.mobSpawnLocations.push([1438,2327]);
-	this.mobSpawnLocations.push([238,2327]);
+	this.mobSpawnLocations.push([338,2327]);
 	this.mobSpawnLocations.push([738,2327]);
 	
 	this.mobSpawnLocations.push([372,2008]);
@@ -45,9 +58,20 @@ BossRoom2.prototype.init = function() {
 	this.mobSpawnLocations.push([1950,2008]);
 
 	this.loadFloor('platform_atlas', 'platform0');
+	this.loadWalls('platform_atlas', 'platform0');
 	this.loadEnemies();
+	this.loadPortal();
 	
 	this.loadStartLine();
+}
+
+BossRoom2.prototype.loadPortal = function() {
+	let temp = this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 1800, 2110, 'LevelSelect', 2));
+	temp.kills();
+}
+
+BossRoom2.prototype.revivePortal = function() {
+	this.checkpoints.children[0].revive();
 }
 
 BossRoom2.prototype.loadFloor = function(atlas, frame) {
@@ -60,17 +84,62 @@ BossRoom2.prototype.loadFloor = function(atlas, frame) {
 	temp.y = 1400;
 }
 
+BossRoom2.prototype.loadWalls = function(atlas, frame) {
+	let temp = this.walls.add(new WallA(this.game, atlas, frame, 5));
+	temp.x = this.game.world.width/4;
+	temp.y = 1540;
+
+	temp = this.caps.add(new PlatformA(this.game, atlas, frame, 1));
+	temp.x = this.game.world.width/4;
+	temp.y = 1540;
+
+	temp = this.caps.add(new PlatformA(this.game, atlas, frame, 1));
+	temp.x = this.game.world.width/4;
+	temp.y = 1540 + 4*32;
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 5));
+	temp.x = this.game.world.width/2;
+	temp.y = 1540;
+
+	temp = this.caps.add(new PlatformA(this.game, atlas, frame, 1));
+	temp.x = this.game.world.width/2;
+	temp.y = 1540;
+
+	temp = this.caps.add(new PlatformA(this.game, atlas, frame, 1));
+	temp.x = this.game.world.width/2;
+	temp.y = 1540 + 4*32;
+
+	temp = this.walls.add(new WallA(this.game, atlas, frame, 5));
+	temp.x = (this.game.world.width/4)*3;
+	temp.y = 1540;
+
+	temp = this.caps.add(new PlatformA(this.game, atlas, frame, 1));
+	temp.x = (this.game.world.width/4)*3;
+	temp.y = 1540;
+
+	temp = this.caps.add(new PlatformA(this.game, atlas, frame, 1));
+	temp.x = (this.game.world.width/4)*3;
+	temp.y = 1540 + 4*32;
+}
+
 BossRoom2.prototype.loadEnemies = function() {
-	this.boss.add(new Boss(this.game, 'robobitch_atlas', 'robobitch0', 1600, 2000, this, this.thePlayer));
+	this.boss.add(new Boss(this.game, 'bossbot_atlas', 'bossbot0', 1600, 2000, this, this.thePlayer, true));
 }
 
 BossRoom2.prototype.callMinions = function() {
 	let temp = [];
 	let taken = [];
-	let rand = Math.floor(Math.random() * 10) + 5;
-	console.log(rand);
+	let tempConst = 6;
 	
-	let tempConst = 5;
+	if(this.boss.children[0].health == 75) {
+		tempConst = 6;
+	}
+	else if(this.boss.children[0].health == 50) {
+		tempConst = 9;
+	}
+	else if(this.boss.children[0].health == 25) {
+		tempConst = 12;
+	}
 	
 	let i = 0
 	while(i < tempConst) {
@@ -100,8 +169,10 @@ BossRoom2.prototype.callMinions = function() {
 
 BossRoom2.prototype.killMinion = function() {
 	this.minionCount--;
-	if(this.minionCount == 0) {
-		this.game.time.events.add(1, this.boss.children[0].determineMove, this.boss.children[0]);
+	if(this.minionCount == 0) {	
+		this.boss.children[0].inControl = false;
+		this.boss.children[0].timer.add(Phaser.Timer.SECOND*.9, this.boss.children[0].determineMove, this.boss.children[0]);
+		this.boss.children[0].invuln = false;
 	}
 }
 
@@ -109,18 +180,30 @@ BossRoom2.prototype.loadStartLine = function() {
 	this.startLine = this.game.add.sprite(1000, 0, null);
 	this.game.physics.enable(this.startLine, Phaser.Physics.ARCADE);
 	this.startLine.body.setSize(5, this.game.world.height);
-
 }
 
-BossRoom2.prototype.resetWorld = function() {
+BossRoom2.prototype.resetWorld = function() {	
+	this.game.input.keyboard.start();
+	this.game.sound.stopAll();
 	this.game.state.restart();
 }
 
 BossRoom2.prototype.shakeCamera = function() {
-	this.game.camera.shake(.02, 1100);
+	this.game.camera.shake(.02, 3600);
 }
 	
 BossRoom2.prototype.shakeCameraLite = function() {
 	this.game.camera.shake(.005, 200);
 }
 	
+BossRoom2.prototype.shakeCameraLong = function() {
+	this.game.camera.shake(.01, 4000);
+}
+	
+BossRoom2.prototype.shakeCameraMed = function() {
+	this.game.camera.shake(.01, 500);
+}
+	
+BossRoom2.prototype.shakeCameraMed2 = function() {
+	this.game.camera.shake(.015, 1500);
+}
