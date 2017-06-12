@@ -449,7 +449,7 @@ World2.prototype.loadObstacles = function(atlas, frame) {
 
 // Loads the bottom line of the map
 World2.prototype.loadAbsBottom = function() {
-	this.absBottom = this.game.add.sprite(0, 4500, null);
+	this.absBottom = this.game.add.sprite(0, 3500, null);
 	this.game.physics.enable(this.absBottom, Phaser.Physics.ARCADE);
 	this.absBottom.body.setSize(this.game.world.width, 5);
 }

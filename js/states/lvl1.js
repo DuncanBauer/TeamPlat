@@ -107,7 +107,7 @@ Game.prototype = {
 		}
 
 		if(!this.player.dying) {
-			this.game.physics.arcade.overlap(this.player, this.world.absBottom, null, this.player.respawn, this.player);
+			this.game.physics.arcade.overlap(this.player, this.world.absBottom, null, this.player.timeToDie, this.player);
 		}
 	},
 	

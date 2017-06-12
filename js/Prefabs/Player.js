@@ -857,7 +857,7 @@ Player.prototype.stupidPlayer = function(player, collisionBox) {
 		this.dashCancel();
 	
 		this.timeToDie();
-		this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.respawn, this);
+		
 	}
 }
 
@@ -905,7 +905,7 @@ Player.prototype.stupidPlayer2 = function(player, bullet) {
 	else {
 		this.dashCancel();
 		this.timeToDie();
-		this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.respawn, this);
+		
 	}
 	bullet.kill();
 }
@@ -913,6 +913,7 @@ Player.prototype.stupidPlayer2 = function(player, bullet) {
 
 // kills player
 Player.prototype.timeToDie = function() {
+	this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.respawn, this);
 	this.dying = true;	
 	this.walk_sound.stop();
 	this.slide_sound.stop();

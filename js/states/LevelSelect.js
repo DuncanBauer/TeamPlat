@@ -27,6 +27,10 @@ LevelSelect.prototype = {
 			
 			time = this.times.add(this.game.add.text(this.game.world.centerX + button.width / 2 + 100, 100, (this.game.times[0]/1000)));
 			time.anchor.set(.5)
+		}
+
+		if(this.game.legs[1] != null && this.game.legs[1] != undefined) {
+			this.game.time.events.add(Phaser.Timer.SECOND*1, this.spawnLeg2, this);
 
 			time = this.times.add(this.game.add.text(this.game.world.centerX + button.width / 2 + 100, 350, (this.game.times[1]/1000)));
 			time.anchor.set(.5)
@@ -73,8 +77,8 @@ LevelSelect.prototype = {
 		leg.scale.y *= 1.5;
 		this.legs.create(leg);
 		this.temp++;
-		if(this.temp < this.game.legs[0]) {
-			this.game.time.events.add(Phaser.Timer.SECOND*1, this.spawnLeg, this);
+		if(this.temp < this.game.legs[1]) {
+			this.game.time.events.add(Phaser.Timer.SECOND*1, this.spawnLeg2, this);
 		}
 	},
 	

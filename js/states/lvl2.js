@@ -107,8 +107,10 @@ Game2.prototype = {
 			this.game.state.start("LevelSelect");
 		}
 
+		//this.game.debug.body(this.world.absBottom);
 		if(!this.player.dying) {
-			//this.game.physics.arcade.overlap(this.player, this.world.absBottom, null, this.player.respawn, this.player);
+			this.game.physics.arcade.overlap(this.player, this.world.absBottom, null, this.player.timeToDie, this.player);
+			this.player.respawn;
 		}
 	},
 	

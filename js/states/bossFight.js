@@ -23,8 +23,8 @@ BossFight.prototype = {
 		this.world = new BossRoom(this.game);
 		
 		this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2300, this.world);
-		//this.player.setLegs(this.game.legs[0]);
-		this.player.setLegs(3);
+		this.player.setLegs(this.game.legs[0]);
+		//this.player.setLegs(3);
 		this.game.add.existing(this.player);
 
 		this.world.retreivePlayer(this.player);

@@ -295,9 +295,7 @@ Mob.prototype.kills = function() {
 	this.idle_music.stop();
 	this.death_sound.play();
 	
-	// Remove remained events
-	this.timer.clearPendingEvents();
-	this.timer.removeAll();
+
 	
 	// Kill mob
 	this.animations.play('death');
