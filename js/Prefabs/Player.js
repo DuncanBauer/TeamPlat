@@ -85,6 +85,9 @@ function Player(game, atlas_key, atlas_frame, x, y, world) {
 	this.leftKey = this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
 	//this.leftKey.onDown.add(this.moveLeft, this);
 	this.leftKey.onUp.add(this.stopMovement, this);
+
+	this.upKey = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+	this.downKey = this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
 	
 	this.jumpKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 	this.jumpKey.onDown.add(this.jump, this);
@@ -143,7 +146,7 @@ Player.prototype.update = function() {
 	if(!this.dying) {
 		this.dashChecking();
 
-		if(this.game.physics.arcade.collide(this, this.myWorld.ground.children)) {
+		if(this.game.physics.arcade.collide(this, this.myWorld.ground.children) && !this.body.touching.up) {
 			this.touchDown();
 			// cancel dash when hitting floor
 			if(this.dashingDown){
@@ -193,7 +196,7 @@ Player.prototype.update = function() {
 		}
 		
 		//if(!this.invincible) {
-			this.game.physics.arcade.collide(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
+			this.game.physics.arcade.overlap(this.weapon.bullets, this.myWorld.enemies, this.enemyHit, null, this)
 		//}
 
 		this.game.physics.arcade.collide(this.weapon.bullets, this.myWorld.ground.children, function(bullet, ground) {
@@ -451,7 +454,6 @@ Player.prototype.jumpLite = function() {
 		this.slide_sound.stop();
 		this.body.velocity.y = -500;
 		this.body.velocity.x = -300*Math.sign(this.scale.x);
-		console.log(this.body.velocity.x);
 	}
 }
 
@@ -463,6 +465,7 @@ Player.prototype.touchDown = function() {
 		this.jumping = false;
 		this.doubleJumpd = false;
 		this.upDjump = false;
+		this.animations.play('stand');
 		var cursors = this.game.input.keyboard.createCursorKeys();
 		if(!(cursors.left.isDown || cursors.right.isDown)){
 			this.body.acceleration.x = 0;
@@ -474,6 +477,7 @@ Player.prototype.touchDown = function() {
  * IS CALLED ON COLLISION WITH OBJECT CANCELS DASHING
  */
 Player.prototype.dashCancel = function() {
+	this.resetKeys();
 	this.dashingRight = false;
 	this.dashingLeft = false;
 	this.dashingUp = false;
@@ -738,9 +742,13 @@ Player.prototype.respawn = function() {
 	this.game.input.keyboard.start();
 	this.dying = false;
 	this.game.camera.follow(this);
-	if(this.dashingBack || this.dashingDown || this.dashingUp || this.dashingForward) {
+	if(this.dashingBack || this.dashingDown || this.dashingUp || this.dashingForward || this.dashing) {
 		this.dashCancel();
 	}
+
+	this.weapon.bullets.children.forEach(function(bullet) {
+		bullet.kill();
+	});
 
 	this.resetKeys();
 	
@@ -885,11 +893,13 @@ Player.prototype.stupidPlayer2 = function(player, bullet) {
 			}, this);
 		}
 		else {
+			this.dashCancel();
 			this.timeToDie();			
 			this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.myWorld.resetWorld, this.myWorld);
 		}
 	}
 	else {
+		this.dashCancel();
 		this.timeToDie();
 		this.game.time.events.add(Phaser.Timer.SECOND*1.7, this.respawn, this);
 	}
@@ -901,8 +911,10 @@ Player.prototype.timeToDie = function() {
 	this.walk_sound.stop();
 	this.slide_sound.stop();
 	this.death_sound.play();
+	this.resetKeys();
 	this.game.input.keyboard.stop();
 	this.body.velocity.x = 0;
+	this.body.acceleration.x = 0;
 	this.body.velocity.y = -500;
 	this.animations.play('idle');
 	this.game.camera.unfollow();
@@ -919,6 +931,8 @@ Player.prototype.setLegs = function(legs) {
 Player.prototype.resetKeys = function() {
 	this.leftKey.reset(false);
 	this.rightKey.reset(false);
+	this.upKey.reset(false);
+	this.downKey.reset(false);
 	this.jumpKey.reset(false);
 	this.dashKey.reset(false);
 	this.attackKey.reset(false);

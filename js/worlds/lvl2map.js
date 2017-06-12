@@ -61,9 +61,13 @@ World2.prototype.loadLegs = function() {
 	var tween = this.game.add.tween(newLeg);
 	tween.to({y: newLeg.y - 10}, 1000, 'Linear', true, 200, false, true);
 	
-	//newLeg = this.legs.add(new Leg(this.game, 'leg', 464, 2270, this.thePlayer));
-	//var tween = this.game.add.tween(newLeg);
-	//tween.to({y: newLeg.y - 10}, 1000, 'Linear', true, 200, false, true);
+	newLeg = this.legs.add(new Leg(this.game, 'leg', 100, 700, this.thePlayer));
+	tween = this.game.add.tween(newLeg);
+	tween.to({y: newLeg.y - 10}, 1000, 'Linear', true, 200, false, true);
+	
+	newLeg = this.legs.add(new Leg(this.game, 'leg', 2500 - 52*32, 2000 + 30*32, this.thePlayer));
+	tween = this.game.add.tween(newLeg);
+	tween.to({y: newLeg.y - 10}, 1000, 'Linear', true, 200, false, true);
 }
 
 World2.prototype.loadChecks = function() {
@@ -78,6 +82,8 @@ World2.prototype.loadChecks = function() {
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 2600, 1900));
 
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 3850, 1220));
+
+	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 2500 - 53*32, 2000 + 33*32));
 
 	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 4010, 1415, 'LevelSelect', 1));
 }

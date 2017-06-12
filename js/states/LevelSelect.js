@@ -62,6 +62,18 @@ LevelSelect.prototype = {
 		}
 	},
 	
+	spawnLeg2: function() {
+		var leg = this.legs.add(new Leg(this.game, 'leg', this.game.world.centerX - this.buttons.children[0].width / 2 - 180 - (this.temp * 64), 340));
+		leg.anchor.set(.5);
+		leg.scale.x *= 1.5;
+		leg.scale.y *= 1.5;
+		this.legs.create(leg);
+		this.temp++;
+		if(this.temp < this.game.legs[0]) {
+			this.game.time.events.add(Phaser.Timer.SECOND*1, this.spawnLeg, this);
+		}
+	},
+	
 	playLevel1: function() {
 		this.game.sound.stopAll();
 		this.game.state.start('Game');
