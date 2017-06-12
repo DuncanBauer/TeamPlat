@@ -52,13 +52,13 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player, ironMode) {
 	this.chargeBox2.anchor.set(0.5);
 	this.chargeBox2.type = "boss";
 	this.chargeBox2.parent = this;
-
+/*
 	this.smashBox = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.smashBox, Phaser.Physics.ARCADE);
 	this.smashBox.body.setSize(600, 20);
 	this.smashBox.anchor.set(0.5);
-	this.smashBox.type = "smash";
-	this.smashBox.parent = this;
+	//this.smashBox.type = "smash";
+	this.smashBox.parent = this;*/
 	
 	this.killBox1 = this.game.add.sprite(this.x, this.y, null);
 	this.game.physics.enable(this.killBox1, Phaser.Physics.ARCADE);
@@ -157,54 +157,89 @@ function Boss(game, atlas_key, atlas_frame, x, y, world, player, ironMode) {
 
 Boss.prototype = Object.create(Phaser.Sprite.prototype);
 Boss.prototype.update = function() {
+	// Ignores collision when doing jump attack
 	if(!this.jumping){
 		this.game.physics.arcade.collide(this, this.myWorld.ground.children);
 	}
-		
+	
+	// Enables boss hitboxes if not enabled
 	if(!this.set) {
 		this.setup();
 	}
 	
+	// If the boss isnt dying
 	if(!this.dying) {
+		// If the boss isnt invulnverable and the fight has started
 		if(!this.invuln && !this.disabled) {
+			// Track collision of player bullets
 			this.game.physics.arcade.overlap(this.killBox1, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
 			this.game.physics.arcade.overlap(this.killBox2, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
 			this.game.physics.arcade.overlap(this.killBox3, this.thePlayer.weapon.bullets, this.takeBulletDmg, null, this);
 		}
 		
+		// If the player isnt invincible and isnt dying
 		if(!this.thePlayer.invincible && !this.thePlayer.dying) {
+			// Track collision of boss bullets
 			this.game.physics.arcade.overlap(this.thePlayer, this.weapon.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
 			this.game.physics.arcade.overlap(this.thePlayer, this.weapon1.bullets, this.thePlayer.stupidPlayer2, null, this.thePlayer);
 			
+			// If the boss is shooting
 			if(this.charging) {
+				// Track collision of box charge boxes
 				this.game.physics.arcade.overlap(this.thePlayer, this.chargeBox1, this.thePlayer.determineLoser, null, this.thePlayer);
 				this.game.physics.arcade.overlap(this.thePlayer, this.chargeBox2, this.thePlayer.determineLoser, null, this.thePlayer);
 			}
 
+
 			if(this.recovering) {
-				this.game.physics.arcade.overlap(this.thePlayer, this.smashBox, this.thePlayer.determineLoser, null, this.thePlayer);
+				if(this.thePlayer.body.touching.down) {
+					this.thePlayer.body.maxVelocity.x = 2000;
+					this.thePlayer.body.acceleration.x = 0;
+
+					if(this.thePlayer.x < this.x) {
+						this.thePlayer.body.velocity.x = -1075;
+					}
+					else if(this.thePlayer.x > this.x) {
+						this.thePlayer.body.velocity.x = 1075;
+					}
+
+					this.thePlayer.pauseInput(1.5);
+					this.game.time.events.add(Phaser.Timer.SECOND*1.5, this.thePlayer.loseInvinc, this);
+
+					this.game.time.events.add(Phaser.Timer.SECOND*1, function() {
+						this.thePlayer.body.maxVelocity.x = 350;
+					}, this);
+				}
+			//	this.game.physics.arcade.overlap(this.thePlayer, this.smashBox, this.thePlayer.determineLoser, null, this.thePlayer);
 			}
 		}
 			
+		// Do nothing if the boss is stunned
 		if(this.takingDmg) {
 		}
+		// Repo charge hitboxes and charge if boss is charging
 		else if(this.charging) {
 			this.repoChargeHitboxes();
 			this.letsCharge();
 		}
+		// Repo hitboxes if boss is about to firing
 		else if(this.firePrep) {
 			this.setKillBoxesFirePrep();
 		}
+		// Repo hitboxes and fire if boss is firing
 		else if(this.firing) {
 			this.setKillBoxesFire();
 			this.fire();
 		}
+		// Repo hitboxes if boss is jumping
 		else if(this.jumping) {
 			this.setKillBoxesJump();
 		}
+		// Repo hitboxes if boss is landing from jump
 		else if(this.recovering) {
 			this.setKillBoxesRecovery();
 		}
+		// Repo hitboxes if boss is doing nothing
 		else if(this.idling) {
 			if(this.animations.currentFrame.index == 9) {
 				this.setKillBoxesRecovery();
@@ -214,33 +249,41 @@ Boss.prototype.update = function() {
 			}
 			this.idleTime();
 		}
+		// Do nothing if disabled or controlling robots
 		else if(this.disabled || this.inControl) {
 		}
+		// If boss is doing absolutely nothing
 		else{
 			this.setKillBoxesIdle();
 		}
 	}
 }
 
+// Plays boss scream sound
 Boss.prototype.scream = function() {
 	this.scream_sound.play();
 }
 
+// Plays boss death animation
 Boss.prototype.deathAnim = function() {
 	this.animations.play('death');
 	this.dying = true;
 }
 
+// Is called when the player fires on the boss
 Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 	bullet.kill();
 	this.health--;
 	
 	console.log(this.health);
+	// If the boss is at 75, 50, or 25, stun boss
 	if(this.health == 75 || this.health == 50 || this.health == 25) {
+		// Removes any pending events from the boss
 		if(this.timer.events.length > 0) {
 			this.timer.removeAll();
 		}
 		
+		// Stuns boss
 		this.body.acceleration.x = 0;
 		this.body.acceleration.y = 0;
 		this.body.velocity.x = 0;
@@ -277,11 +320,13 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 			this.scream_sound.stop();
 		}
 		
+		// Do super dmg
 		this.dmg_sound.play();
 		this.animations.play('bobble');
 		this.invuln = true;
 		this.myWorld.shakeCameraMed2();
 		
+		// If this is the first iteration of the boss
 		if(!this.ironMode) {
 			this.timer.add(Phaser.Timer.SECOND*1.5, function() {
 				this.animations.play('idle');
@@ -291,6 +336,7 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 				this.control();
 			},this);
 		}
+		// If this is the ironMode boss
 		else {
 			this.timer.add(Phaser.Timer.SECOND*1.5, function() {
 				this.animations.play('idle');
@@ -301,11 +347,14 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 			},this);
 		}
 	}
+	// If the boss has no health left
 	else if(this.health == 0) {
+		// Remove any pending events from boss
 		if(this.timer.events.length > 0) {
 			this.timer.removeAll();
 		}
 		
+		// Stun boss
 		this.body.acceleration.x = 0;
 		this.body.acceleration.y = 0;
 		this.body.velocity.x = 0;
@@ -334,15 +383,20 @@ Boss.prototype.takeBulletDmg = function(killBox, bullet) {
 		this.timer.add(Phaser.Timer.SECOND*3, function() {
 			this.dmg_sound.play();
 		}, this);
+
+		// Kills boss
 		this.myWorld.bg_music.fadeTo(4000, 2.5);
 		this.timer.add(Phaser.Timer.SECOND*4.1, this.toDie, this);
 		this.myWorld.shakeCameraLong();
 	}
+	// if taking reg damage
 	else {
+		// Shakes camera a bit
 		this.myWorld.shakeCameraLite();
 	}
 }
 
+// Plays the death sequence
 Boss.prototype.toDie = function() {
 	this.death_sound.play();
 	this.animations.play('death');
@@ -350,11 +404,13 @@ Boss.prototype.toDie = function() {
 	this.myWorld.bg_music.fadeTo()
 }
 
+// Last frame of boss death
 Boss.prototype.deathEnd = function() {
 	this.animations.play('deathEnd');
 	this.timer.add(Phaser.Timer.SECOND*3, this.myWorld.revivePortal, this.myWorld);
 }
 
+// Reposition hit boxes for boss idle
 Boss.prototype.setKillBoxesIdle = function() {
 	var killBox = this.killBox1;
 	killBox.body.x = this.x - killBox.width / 2 - 105;
@@ -376,6 +432,7 @@ Boss.prototype.setKillBoxesIdle = function() {
 	killBox.anchor.set(0.5);
 }
 
+// Reposition hit boxes for boss recovery
 Boss.prototype.setKillBoxesRecovery = function() {
 	var hitbox;
 	var killBox;
@@ -398,14 +455,15 @@ Boss.prototype.setKillBoxesRecovery = function() {
 		killBox.body.x = this.x - this.body.width/5 + 8;
 		killBox.body.y = this.y - killBox.height / 2 - 50;
 		killBox.anchor.set(0.5);	
-
+/*
 		hitbox = this.smashBox;
 		hitbox.body.x = this.x - 300;
 		hitbox.body.y = this.y + this.height/2;
 		//hitbox.anchor.set(0.5);
-	}
+*/	}
 }
 
+// Reposition hit boxes for boss jump
 Boss.prototype.setKillBoxesJump = function() {
 	var killBox;
 
@@ -491,6 +549,7 @@ Boss.prototype.setKillBoxesJump = function() {
 	}
 }
 
+// Reposition hit boxes for boss fire
 Boss.prototype.setKillBoxesFire = function() {
 	var killBox = this.killBox1;
 	killBox.body.width = 100;
@@ -512,6 +571,7 @@ Boss.prototype.setKillBoxesFire = function() {
 	killBox.anchor.set(0.5);
 }
 
+// Reposition hit boxes for boss fire prep
 Boss.prototype.setKillBoxesFirePrep = function() {
 	var killBox;
 	
@@ -577,6 +637,7 @@ Boss.prototype.setKillBoxesFirePrep = function() {
 	}
 }
 
+// Reposition hit boxes for boss charge
 Boss.prototype.repoChargeHitboxes = function() {
 	var chargeBox;
 	var killBox;
@@ -636,14 +697,18 @@ Boss.prototype.repoChargeHitboxes = function() {
 
 Boss.prototype.determineMove = function() {
 	this.invuln = false;
+	// Determine move if nothing else is being done
 	if(!this.takingDmg && !this.charging && !this.firing && !this.inControl && !this.jumping && !this.dying && !this.firePrep) {
 		this.idle();
 		var nextAttack = 0;
 		var rand = 0;
+
+		// gets distance to player
 		var x = this.x - this.thePlayer.x;
 		var y = this.y - this.thePlayer.y;
 		var dist = Math.sqrt((x*x) + (y*y));
 		
+		// If this is the first boss iteration
 		if(!this.ironMode) {
 			rand = Math.floor(Math.random() * 6);
 		
@@ -657,11 +722,14 @@ Boss.prototype.determineMove = function() {
 				nextAttack = 2;
 			}
 			
+			// if the player is really far, boss will charge
 			if(dist > 700 || this.checkWalls()) {
 				nextAttack = 0;
 			}
 
+			// If boss isnt stunned and isnt dying
 			if(!this.takingDmg && !this.dying) {
+				// Calls charge, fire, or jump based on random number
 				if(nextAttack == 0){
 					this.timer.add(Phaser.Timer.SECOND*2, this.charge, this);
 				}
@@ -674,6 +742,7 @@ Boss.prototype.determineMove = function() {
 				}
 			}
 		}
+		// If this is the 2nd iteration of the boss
 		else {
 			rand = Math.floor(Math.random() * 8);
 
@@ -690,11 +759,14 @@ Boss.prototype.determineMove = function() {
 				nextAttack = 3;
 			}
 			
+			// Charges if player is really far
 			if(dist > 700 || this.checkWalls()) {
 				nextAttack = 0;
 			}
 
+			// If boss isnt stunned and isnt dying
 			if(!this.takingDmg && !this.dying) {
+				// Calls charge, fire, jump, or control based on random number
 				if(nextAttack == 0){
 					this.timer.add(Phaser.Timer.SECOND*2, this.charge, this);
 				}
@@ -713,26 +785,40 @@ Boss.prototype.determineMove = function() {
 	}
 }
 
+// Super cool jump attack
 Boss.prototype.jump = function() {
+	// Jumps
 	this.jumping = true;
 	this.idling = false;
 	
 	this.animations.play('smash');
 	this.body.velocity.y = -700;
+	// Ends jump in 1.35 seconds
 	this.timer.add(Phaser.Timer.SECOND*1.35, this.endJump, this);
 }
 
+Boss.prototype.recover = function() {
+	this.recovering = false;
+}
+
+// Boss lands from jump
 Boss.prototype.endJump = function() {
+	// Ends jump
 	this.jumping = false;
 	this.recovering = true;
 	this.idling = true;
 	this.pound_sound.play();
 	this.animations.play('control');
 	this.myWorld.shakeCameraMed();
+	// Goes to next attack
+	this.timer.add(Phaser.Timer.SECOND*.4, this.recover, this);
 	this.timer.add(Phaser.Timer.SECOND*.9, this.determineMove, this);
 }
 
+// Spawns minions to take control of
 Boss.prototype.control = function() {
+	// Stops movement
+	// Turns invulverable
 	this.inControl = true;
 	this.idling = false;
 	this.invuln = true;
@@ -743,10 +829,13 @@ Boss.prototype.control = function() {
 	this.timer.add(Phaser.Timer.SECOND*.9, this.myWorld.callMinions, this.myWorld);
 }
 
+// Always nothing forever
 Boss.prototype.idle = function() {
 	this.idling = true;
 	this.recovering = false;
 	var x = Math.floor(Math.random() * 2);
+
+	// moved left or right based on random num, no longer used i think
 	if(x) {
 		this.idleLeft = false;
 	}
@@ -755,55 +844,67 @@ Boss.prototype.idle = function() {
 	}
 }
 
+// Literally do nothing
 Boss.prototype.idleTime = function() {
 	if(this.animations.currentFrame.index == this.animations.frameTotal-1) {
 		this.animations.play('idle');
 	}
 }
 
+// Starts firing animation
 Boss.prototype.startFireAnim = function() {
 	this.animations.play('fire');
 	this.firePrep = true;
 }
 
+// Starts shooting
 Boss.prototype.openFire = function() {
 	this.idling = false;
 	this.body.acceleration.x = 0;
 	
+	// Sets positioning for firing
 	this.fireY = this.y - 600;
 	this.fireX1 = this.x - 800;
 	this.fireX2 = this.x + 800;
 	this.firePrep = false;
 	this.firing = true;
 	
+	// Sets weapon positions
 	this.weapon.x = this.x + this.width/2 - 8;
 	this.weapon.y = this.y - 30;
 	this.weapon1.x = this.x - this.width/2 + 8;
 	this.weapon1.y = this.y - 30;
 	
 	this.fire_sound.play();
+	// Ends shooting in 1.3s
 	this.timer.add(Phaser.Timer.SECOND*1.3, this.ceaseFire, this);
 }
 
 Boss.prototype.fire = function() {
+	// Shoots left and right, from top to bottom
 	this.weapon.fireAtXY(this.fireX2, this.fireY);
 	this.weapon1.fireAtXY(this.fireX1, this.fireY);
+	// increase y value of targe
 	this.fireY += 15;
 }
 
+// Stops shooting
 Boss.prototype.ceaseFire = function() {
 	this.firing = false;
 	this.idling = true;
 	this.animations.play('unfire');
+	// Moves to next attack
 	this.timer.add(Phaser.Timer.SECOND*1, this.determineMove, this);
 }
 
+// Starts boss charge attack
 Boss.prototype.charge = function() {
 	this.charging = true;
 	this.idling = false;
 	
 	this.fly_sound.play();
 	
+	// Charges towards the player
 	var x = this.thePlayer.x;
 	if(x > this.x) {
 		this.animations.play('charge1');
@@ -813,28 +914,37 @@ Boss.prototype.charge = function() {
 		this.animations.play('charge');
 		this.chargeRight = false;
 	}
+	// Ends charge after 2 seconds
 	this.timer.add(Phaser.Timer.SECOND*2, this.endCharge, this);
 }
 
+// Moves boss during charge
 Boss.prototype.letsCharge = function() {
-	
+	// if charging right
 	if(this.chargeRight) {
+		// move boss right
 		this.body.acceleration.x = this.chargeSpeed;
 	}
 	else {
+		// move boss left
 		this.body.acceleration.x = -1 * this.chargeSpeed;
 	}
 }
 
+// Stops boss charge attack
 Boss.prototype.endCharge = function() {
+	// Ends charge
 	this.fly_sound.stop();
 	this.animations.play('idle');
 	this.idling = true;
 	this.body.acceleration.x = 0;
 	this.charging = false;
+
+	// Starts new attack
 	this.timer.add(Phaser.Timer.SECOND*1, this.determineMove, this);
 }
 
+// Checks the distance between the boss and walls
 Boss.prototype.checkWalls = function() {
 	if(this.x < 0 + this.width/2 + 40 || this.x > this.game.world.width - this.width/2 - 40) {
 		return true;
@@ -844,59 +954,29 @@ Boss.prototype.checkWalls = function() {
 	}
 }
 
-Boss.prototype.readjust = function() {
-	if(this.x < 0 + this.width/2 + 40) {
-		this.body.acceleration.x = 400;
-		this.timer.add(Phaser.Timer.SECOND*.9, this.dropAccel, this);
-		this.timer.add(Phaser.Timer.SECOND*2.9, this.startFireAnim, this);
-		this.timer.add(Phaser.Timer.SECOND*3.7, this.openFire, this);
-	}
-	else if(this.x > this.game.world.width - this.width/2 - 40) {
-		this.body.acceleration.x = -400;
-		this.timer.add(Phaser.Timer.SECOND*.9, this.dropAccel, this);
-		this.timer.add(Phaser.Timer.SECOND*2.9, this.startFireAnim, this);
-		this.timer.add(Phaser.Timer.SECOND*3.7, this.openFire, this);
-	}
-	else {
-		this.timer.add(Phaser.Timer.SECOND*0.9, this.startFireAnim, this);
-		this.timer.add(Phaser.Timer.SECOND*1.7, this.openFire, this);
-	}
-}
-
-Boss.prototype.readjust2 = function() {
-	if(this.x < 0 + this.width/2 + 40) {
-		this.body.acceleration.x = 400;
-		this.timer.add(Phaser.Timer.SECOND*.9, this.dropAccel, this);
-		this.timer.add(Phaser.Timer.SECOND*2.9, this.jump, this);
-	}
-	else if(this.x > this.game.world.width - this.width/2 - 40) {
-		this.body.acceleration.x = -400;
-		this.timer.add(Phaser.Timer.SECOND*.9, this.dropAccel, this);
-		this.timer.add(Phaser.Timer.SECOND*2.9, this.jump, this);
-	}
-	else {
-		this.timer.add(Phaser.Timer.SECOND*0.9, this.jump, this);
-	}
-}
-
+// Stops all acceleration
 Boss.prototype.dropAccel = function() {
 	this.body.acceleration.x = 0;
 	this.body.acceleration.y = 0;
 }
 
+// When boss hits world bounds
 Boss.prototype.hitWorldBounds = function () {
 //	this.myWorld.shakeCameraLite();
 }
 
+// Starts the boss fight
 Boss.prototype.setup = function() {
 	this.set = true;
 	this.invuln = false;
 }
 
+// Enables boss at the start of fire
 Boss.prototype.enable = function() {
 	this.disabled = false;
 }
 
+// Kills boss
 Boss.prototype.kills = function() {
 	this.box.kill();
 	this.killBox.kill();

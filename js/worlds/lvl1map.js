@@ -2,6 +2,7 @@ function World(game) {
 	Phaser.Group.call(this, game);
 	this.game = game;
 
+	// Creates the groups for the world map
 	this.ground = this.add(this.game.add.group());
 	this.walls  = this.add(this.game.add.group());
 	this.obstacles = this.add(this.game.add.group());
@@ -24,15 +25,18 @@ function World(game) {
 World.prototype = Object.create(Phaser.Group.prototype);
 World.prototype.constructor = World;
 
+// Gives world a reference of player
 World.prototype.retreivePlayer = function(player) {
 	this.thePlayer = player;
 	this.init();
 }
 
+// Stops background music
 World.prototype.stopMusic = function() {
 	this.bg_music.stop();
 }
 
+// Initializes the world, spawns all prefabs
 World.prototype.init = function() {
 	this.loadWalls('platform_atlas', 'platform0');
 	this.loadFloor('platform_atlas', 'platform0');
@@ -44,6 +48,7 @@ World.prototype.init = function() {
 	this.loadAbsBottom();
 }
 
+// Loads legs (lives) in the map and gives them a super sweet tween
 World.prototype.loadLegs = function() {
 	var newLeg = this.legs.add(new Leg(this.game, 'leg', 264, 2270, this.thePlayer));
 	var tween = this.game.add.tween(newLeg);
@@ -58,6 +63,7 @@ World.prototype.loadLegs = function() {
 	tween.to({y: newLeg.y - 10}, 1000, 'Linear', true, 200, false, true);
 }
 
+// Loads checkpoints and the end portal in the map
 World.prototype.loadChecks = function() {
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, this.thePlayer.x-100, this.thePlayer.y+100));
 	this.checkpoints.add(new Checkpoint(this.game, 'checkpoint', 'portal0', this.thePlayer, 1415, 2275));
@@ -67,6 +73,7 @@ World.prototype.loadChecks = function() {
 	this.checkpoints.add(new Portal(this.game, 'checkpoint', 'portal0', this.thePlayer, 2050, 1850, 'LevelSelect', 0));
 }
 
+// Loads all horizontal platforms
 World.prototype.loadFloor = function(atlas, frame) {
 	let temp = this.ground.add(new PlatformA(this.game, atlas, frame, 32));
 	temp.x = -32;
@@ -125,6 +132,7 @@ World.prototype.loadFloor = function(atlas, frame) {
 	temp.y = 1348;
 }
 
+// Loads all vertical platforms (walls)
 World.prototype.loadWalls = function(atlas, frame) {
 	let temp = this.walls.add(new WallA(this.game, atlas, frame, 3));
 	temp.x = 1365;
@@ -196,14 +204,12 @@ World.prototype.loadWalls = function(atlas, frame) {
 
 }
 
+// Loads all enemies
 World.prototype.loadEnemies = function() {
 	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 520, 974, this, this.thePlayer, 0));
-	/*this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 332, 2500, this, this.thePlayer, 90));
-	this.enemies.add(new Mob2(this.game, 'robobitch_atlas', 'robobitch0', 432, 2500, this, this.thePlayer, 180));
-	this.enemies.add(new Mob(this.game, 'robobitch_atlas', 'robobitch0', 532, 2500, this, this.thePlayer, 270));
-*/
 }
 
+// Loads all obstacles
 World.prototype.loadObstacles = function(atlas, frame) {
 	temp = this.obstacles.add(new Obstacle(this.game, atlas, frame, 0, 0, 0.5, 0.5, 0, 7));
 	temp.x = 986;
@@ -230,6 +236,7 @@ World.prototype.loadObstacles = function(atlas, frame) {
 	temp.y = 1380;
 }
 
+// Loads bottom line of map
 World.prototype.loadAbsBottom = function() {
 	this.absBottom = this.game.add.sprite(0, 3000, null);
 	this.game.physics.enable(this.absBottom, Phaser.Physics.ARCADE);
@@ -237,13 +244,10 @@ World.prototype.loadAbsBottom = function() {
 
 }
 
+// Respawns all enemies when the player dies
 World.prototype.resetWorld = function() {
 	this.enemies.forEach(function(enemy) {
 		enemy.stopMusic();
 		enemy.reinitialize();
 	}, Mob);
-
-	//this.legs.forEach(function(leg) {
-	//	leg.reinitialize();
-	//}, Leg);
 }

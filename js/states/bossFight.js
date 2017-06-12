@@ -23,7 +23,8 @@ BossFight.prototype = {
 		this.world = new BossRoom(this.game);
 		
 		this.player = new Player(this.game, 'player_atlas', 'player_1', 32, 2300, this.world);
-		this.player.setLegs(this.game.legs[0]);
+		//this.player.setLegs(this.game.legs[0]);
+		this.player.setLegs(3);
 		this.game.add.existing(this.player);
 
 		this.world.retreivePlayer(this.player);
@@ -57,8 +58,10 @@ BossFight.prototype = {
 			this.game.state.start("LevelSelect");
 		}
 
-		this.stockNum.text = this.player.legs;
-		
+		if(this.player.legs != null && this.player.legs != undefined) {
+			this.stockNum.text = this.player.legs;
+		}
+
 		this.game.physics.arcade.overlap(this.player.weapon.bullets, this.world.minions, this.minionHit, null, this);
 		//this.game.physics.arcade.overlap(this.player, this.world.minions, this.contest, null, this);	
 		
